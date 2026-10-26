@@ -1,0 +1,4 @@
+.exhibit-hero { display: grid; gap: 28px; }
+.exhibit-image { min-height: 320px; border-radius: var(--radius); background: #dedbd3; object-fit: cover; }
+.exhibit-meta { color: var(--accent); font-weight: 800; }
+.exhibit-description { line-height: 1.9; }

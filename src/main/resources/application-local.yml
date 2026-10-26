@@ -1,0 +1,13 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+logging:
+  level:
+    com.bulog: DEBUG

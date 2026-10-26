@@ -1,0 +1,4 @@
+.collectible-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.collectible-card__image { aspect-ratio: 4 / 3; width: 100%; object-fit: cover; background: #dedbd3; }
+.collectible-card__body { padding: 20px; }
+.collectible-card--locked { filter: grayscale(1); opacity: 0.52; }

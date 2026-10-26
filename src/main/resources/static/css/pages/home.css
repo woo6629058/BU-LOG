@@ -1,0 +1,4 @@
+.home-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: -28px 0 72px; }
+.guide { margin-top: 80px; padding: clamp(32px, 6vw, 64px); border-radius: var(--radius); background: var(--surface); }
+.guide h2 { max-width: 620px; margin: 0 0 32px; font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: -0.05em; }
+.guide ol { margin: 0; padding-left: 1.4rem; line-height: 2; }
