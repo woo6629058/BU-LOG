@@ -1,4 +1,266 @@
-.home-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: -28px 0 72px; }
-.guide { margin-top: 80px; padding: clamp(32px, 6vw, 64px); border-radius: var(--radius); background: var(--surface); }
-.guide h2 { max-width: 620px; margin: 0 0 32px; font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: -0.05em; }
-.guide ol { margin: 0; padding-left: 1.4rem; line-height: 2; }
+/*
+ * 홈 · 나의 탐험: Figma 01 홈(390×844) 기준.
+ * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ * "추정" 주석이 붙은 값은 PNG를 보고 정한 값이다.
+ */
+.home {
+  --home-ink: var(--color-ink, #2B211A);
+  --home-muted: var(--color-muted, #8A7B6E);
+  --home-subtle: var(--color-subtle, #A8998A);
+  --home-accent: var(--color-accent, #C0603A);
+  --home-gold: var(--color-gold, #C9A13B);
+  --home-gold-bright: var(--color-gold-bright, #E2B85A);
+  --home-line-soft: var(--color-line-soft, #EDE4D7);
+  --home-track: var(--color-track, #EFE8DD);
+  --home-surface: var(--color-surface, #FFFFFF);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 52px 24px 32px;
+  color: var(--home-ink);
+  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+}
+
+.home__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.home__museum {
+  margin: 0;
+  color: var(--home-accent); /* 추정 */
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
+.home__title {
+  margin: 0;
+  font-family: var(--font-serif, "Gowun Batang", serif);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.home__intro {
+  margin: 0;
+  color: var(--home-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 수집 현황 카드 */
+.home-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 134px;
+  padding: 20px;
+  border-radius: 20px;
+  color: #FFFFFF;
+  background: linear-gradient(160deg, #7A4A2E, #5A3420);
+}
+
+.home-progress__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  min-height: 46px;
+}
+
+.home-progress__label {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px; /* 추정 */
+  font-weight: 500;
+}
+
+.home-progress__count {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px; /* 추정 */
+  white-space: nowrap;
+}
+
+.home-progress__count strong {
+  color: #FFFFFF;
+  font-family: var(--font-serif, "Gowun Batang", serif);
+  font-size: 32px; /* 추정 */
+  font-weight: 700;
+  line-height: 1;
+}
+
+.home-progress__bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.home-progress__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--home-gold-bright);
+}
+
+.home-progress__hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px; /* 추정 */
+}
+
+.home-progress__hint::before {
+  content: "";
+  flex-shrink: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--home-gold-bright);
+}
+
+/* 전시실 세트 */
+.home__rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.home__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.home__section-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.home__section-meta {
+  margin: 0;
+  color: var(--home-muted);
+  font-size: 11px; /* 추정 */
+}
+
+.home__room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-room {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 57px;
+  padding: 10px 16px; /* 추정 */
+  border: 1px solid var(--home-line-soft);
+  border-radius: 14px;
+  background: var(--home-surface);
+}
+
+.home-room--complete {
+  min-height: 58px;
+  border: 1.5px solid var(--home-gold);
+}
+
+.home-room__text {
+  min-width: 0;
+}
+
+.home-room__name,
+.home-room__desc {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.home-room__name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.home-room__desc {
+  margin-top: 2px;
+  color: var(--home-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.home-room__status {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.home-room__count {
+  color: var(--home-subtle); /* 추정 */
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.home-room__count.is-active {
+  color: var(--home-accent);
+}
+
+.home-room__badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: var(--home-gold);
+  font-size: 10px; /* 추정 */
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.home-room__bar {
+  display: block;
+  width: 54px; /* 추정 */
+  height: 4px; /* 추정 */
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--home-track);
+}
+
+.home-room__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--home-accent);
+}
+
+.home-room--complete .home-room__bar span {
+  background: var(--home-gold);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
