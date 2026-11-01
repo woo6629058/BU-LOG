@@ -1,6 +1,7 @@
 // 유물 카드 공통 렌더러: 카드북, 카드 획득, 카드 상세 화면에서 사용한다.
 // card는 화면 표시용 형식이며 API 응답 형식이 아니다. API 응답은 각 페이지에서 이 형식으로 변환한다.
 // { acquired, number?, grade?: 'gold' | 'normal', name?, roomName?, imageUrl?, imageAlt? }
+// 옵션: headingLevel(2~6), interactive(미획득 카드를 버튼으로 렌더)
 
 const GRADE_LABELS = { gold: 'GOLD', normal: 'NORMAL' };
 const GRADE_NAMES = { gold: '골드', normal: '일반' };
@@ -63,23 +64,25 @@ function renderPlaceholder() {
   `;
 }
 
-function renderLockedCard(roomName) {
+// interactive이면 누를 수 있는 버튼으로 렌더한다. 버튼 안에는 span만 사용한다.
+function renderLockedCard(roomName, interactive) {
   const label = roomName ? `${LOCKED_TEXT}, ${roomName}` : LOCKED_TEXT;
+  const tag = interactive ? 'button' : 'article';
   return `
-    <article class="artifact-card artifact-card--locked" aria-label="${escapeHtml(label)}">
-      <div class="artifact-card__frame">
+    <${tag}${interactive ? ' type="button"' : ''} class="artifact-card artifact-card--locked" aria-label="${escapeHtml(label)}">
+      <span class="artifact-card__frame">
         <span class="artifact-card__mystery" aria-hidden="true">?</span>
-        <p class="artifact-card__locked-text" aria-hidden="true">${LOCKED_TEXT}</p>
-        ${roomName ? `<p class="artifact-card__locked-room" aria-hidden="true">${escapeHtml(roomName)}</p>` : ''}
-      </div>
-    </article>
+        <span class="artifact-card__locked-text" aria-hidden="true">${LOCKED_TEXT}</span>
+        ${roomName ? `<span class="artifact-card__locked-room" aria-hidden="true">${escapeHtml(roomName)}</span>` : ''}
+      </span>
+    </${tag}>
   `;
 }
 
-export function renderArtifactCard(card, { headingLevel = 3 } = {}) {
+export function renderArtifactCard(card, { headingLevel = 3, interactive = false } = {}) {
   card = card ?? {};
   const roomName = text(card.roomName);
-  if (card.acquired !== true) return renderLockedCard(roomName);
+  if (card.acquired !== true) return renderLockedCard(roomName, interactive === true);
 
   const grade = normalizeGrade(card.grade);
   const number = normalizeNumber(card.number);
