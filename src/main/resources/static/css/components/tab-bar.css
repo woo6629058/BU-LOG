@@ -1,0 +1,124 @@
+/*
+ * 하단 탭바: Figma 탭바(390×72) 기준.
+ * 높이는 아이폰 홈 표시줄 영역(safe-area)을 포함해 --tab-bar-height 하나로 계산하고,
+ * 본문 하단 여백과 페이지 토스트 위치도 같은 값을 사용한다.
+ * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ */
+body.has-tab-bar {
+  --tab-bar-height: calc(72px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--tab-bar-height);
+}
+
+.tab-bar {
+  --tab-accent: var(--color-accent, #C0603A);
+  --tab-subtle: var(--color-subtle, #A8998A);
+  --tab-line: var(--color-line, #E4DACB);
+  --tab-surface: var(--color-surface, #FFFFFF);
+  --tab-ink: var(--color-ink, #2B211A);
+
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  height: var(--tab-bar-height, 72px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--tab-line);
+  background: var(--tab-surface);
+  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+}
+
+.tab-bar__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 390px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.tab-bar__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  color: var(--tab-subtle);
+  background: none;
+  font-size: 11px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tab-bar__link[aria-current="page"] {
+  color: var(--tab-accent);
+  font-weight: 700;
+}
+
+.tab-bar__link[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.tab-bar__link:focus-visible {
+  outline: 2px solid var(--tab-accent);
+  outline-offset: -4px;
+}
+
+.tab-bar__icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* 준비 중 안내: 처음부터 두고 투명도로 숨겨 표시할 때마다 등장 효과가 적용되게 한다. */
+.tab-bar__notice {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 48px);
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: #FFFFFF;
+  background: var(--tab-ink);
+  box-shadow: 0 8px 20px rgba(43, 33, 26, 0.24);
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 8px);
+  transition: opacity 200ms, transform 200ms, visibility 0s 200ms;
+}
+
+.tab-bar__notice.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.tab-bar__hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-bar__notice,
+  .tab-bar__notice.is-shown {
+    transition: none;
+  }
+}

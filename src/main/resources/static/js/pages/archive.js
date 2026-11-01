@@ -1,4 +1,4 @@
-import { mountLayout } from '../common/layout.js';
+import { NOTICE_EVENT, mountTabBar } from '../common/tab-bar.js';
 import { bindArtifactCardImages, renderArtifactCard } from '../common/artifact-card.js';
 import {
   ALL_ROOMS,
@@ -9,7 +9,7 @@ import {
   summarize,
 } from './archive-data.js';
 
-mountLayout({ active: 'archive' });
+mountTabBar({ active: 'cardbook' });
 
 const LEAVE_DURATION = 180;
 const STAGGER_STEP = 60;
@@ -122,6 +122,7 @@ function hideToast() {
 }
 
 function showToast(message) {
+  document.dispatchEvent(new CustomEvent(NOTICE_EVENT, { detail: { source: 'archive' } }));
   toast.textContent = message;
   toast.classList.add('is-shown');
   clearTimeout(toastTimer);
@@ -194,6 +195,11 @@ grid.addEventListener('click', (event) => {
 grid.addEventListener('focusin', (event) => {
   const item = event.target.closest('.archive__item.is-pending');
   if (item) revealItem(item, 0);
+});
+
+// 탭바 안내가 뜨면 카드북 토스트를 닫는다.
+document.addEventListener(NOTICE_EVENT, (event) => {
+  if (event.detail?.source !== 'archive') hideToast();
 });
 
 bindArtifactCardImages(grid);
