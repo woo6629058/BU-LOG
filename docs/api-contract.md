@@ -11,19 +11,17 @@
   "isSuccess": true,
   "code": "COMMON_200",
   "message": "요청에 성공했습니다.",
-  "result": {},
-  "errorDetail": null
+  "result": {}
 }
 ```
 
-실패 응답에서는 `result`가 `null`이며 입력값 등 추가 정보가 있으면 `errorDetail`에 포함됩니다.
+값이 `null`인 필드는 응답에서 제외됩니다. 실패 응답의 추가 정보는 `errorDetail`에 포함됩니다.
 
 ```json
 {
   "isSuccess": false,
   "code": "COMMON_400_002",
   "message": "입력값 검증에 실패했습니다.",
-  "result": null,
   "errorDetail": {
     "field": "오류 내용"
   }
@@ -48,8 +46,7 @@
     "museumName": "부천시립박물관",
     "sourceName": "e뮤지엄",
     "sourceUrl": "https://www.emuseum.go.kr/"
-  },
-  "errorDetail": null
+  }
 }
 ```
 
@@ -60,7 +57,6 @@
   "isSuccess": false,
   "code": "EXHIBIT_404_001",
   "message": "전시물을 찾을 수 없습니다.",
-  "result": null,
   "errorDetail": {
     "exhibitId": "unknown"
   }
@@ -83,8 +79,7 @@
       { "id": 11, "content": "고려" },
       { "id": 12, "content": "조선" }
     ]
-  },
-  "errorDetail": null
+  }
 }
 ```
 
@@ -108,8 +103,7 @@
     "explanation": "정답 해설",
     "cardIssued": true,
     "cardId": 7
-  },
-  "errorDetail": null
+  }
 }
 ```
 
@@ -134,8 +128,7 @@
         "acquiredAt": "2026-10-26T18:00:00+09:00"
       }
     ]
-  },
-  "errorDetail": null
+  }
 }
 ```
 

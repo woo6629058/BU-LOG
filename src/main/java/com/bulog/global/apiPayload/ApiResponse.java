@@ -4,9 +4,11 @@ import com.bulog.global.apiPayload.code.BaseCode;
 import com.bulog.global.apiPayload.code.BaseErrorCode;
 import com.bulog.global.apiPayload.code.GeneralSuccessCode;
 import com.bulog.global.apiPayload.code.SuccessReasonDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"isSuccess", "code", "message", "result", "errorDetail"})
 public record ApiResponse<T>(
         boolean isSuccess,
