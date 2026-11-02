@@ -1,19 +1,15 @@
 import { mountLayout } from '../common/layout.js';
-import { bindArtifactCardImages, renderArtifactCard } from '../common/artifact-card.js';
+import { createArtifactCardFront } from '../common/artifact-card.js';
+import { SAMPLE_CARDS } from '../common/collection-data.js';
 
 mountLayout();
 
-// Figma 시안 문구 기반 샘플. API 연결 시 발급된 카드 정보로 교체한다.
-const sampleCard = {
-  acquired: true,
-  number: 5,
-  grade: 'gold',
-  name: '소줏고리',
-  roomName: '옹기2전시실',
-};
+// 공통 샘플의 소줏고리를 보여준다. API 연결 시 발급된 카드 정보로 교체한다.
+const sampleCard = SAMPLE_CARDS.find((card) => card.id === 'sojugori');
 
-const cardResult = document.querySelector('#card-result');
-cardResult.innerHTML = renderArtifactCard(sampleCard, { headingLevel: 2 });
-bindArtifactCardImages(cardResult);
+const holder = document.createElement('div');
+holder.className = 'artifact-card';
+holder.append(createArtifactCardFront(sampleCard, { headingLevel: 2 }));
+document.querySelector('#card-result').replaceChildren(holder);
 
 // TODO(Frontend B): cardId로 발급된 카드 정보를 조회하고 획득 애니메이션을 적용한다.

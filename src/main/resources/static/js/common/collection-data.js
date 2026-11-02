@@ -15,14 +15,24 @@ export const SAMPLE_ROOMS = [
 ];
 
 // 카드 번호별 획득 카드. 번호는 전시실 순서대로 4장씩 배정한다 (옹기1 1–4, 옹기2 5–8, ...).
+// id: 카드 상세 주소에 쓰는 식별자(?id=sojugori). grade: 'legend'(전설) | 'normal'(일반).
+// 소줏고리만 Figma 06 카드 상세의 문구가 있고, 없는 정보(tagline, story, category, acquiredAt)는 화면에서 생략한다.
 const SAMPLE_ACQUIRED = {
-  5: { name: '소줏고리', grade: 'gold' },
-  6: { name: '양념단지', grade: 'normal' },
-  7: { name: '시루', grade: 'gold' },
-  8: { name: '장군', grade: 'normal' },
-  9: { name: '반달돌칼', grade: 'gold' },
-  10: { name: '구멍무늬토기', grade: 'normal' },
-  13: { name: '명화의 화병', grade: 'gold' },
+  5: {
+    id: 'sojugori',
+    name: '소줏고리',
+    grade: 'legend',
+    tagline: '김을 모아 술을 만드는 옹기 과학자!',
+    story: '발효시킨 술을 끓여 맑은 소주를 받아 내던 옹기. 위로 오른 김이 식으며 맺힌 술방울이 꼭지로 흘러나온다.',
+    category: '생활용품 옹기',
+    acquiredAt: '2026.11.01',
+  },
+  6: { id: 'yangnyeomdanji', name: '양념단지', grade: 'normal' },
+  7: { id: 'siru', name: '시루', grade: 'legend' },
+  8: { id: 'janggun', name: '장군', grade: 'normal' },
+  9: { id: 'bandaldolkal', name: '반달돌칼', grade: 'legend' },
+  10: { id: 'gumeongmunuitogi', name: '구멍무늬토기', grade: 'normal' },
+  13: { id: 'hwabyeong', name: '명화의 화병', grade: 'legend' },
 };
 
 export const SAMPLE_CARDS = SAMPLE_ROOMS.flatMap((room, roomIndex) =>
@@ -97,4 +107,18 @@ export function describeNextGoal(rooms, cards) {
   return summarizeRooms(rooms, cards).every((summary) => summary.complete)
     ? '모든 전시실 세트를 완성했어요'
     : '등록된 유물 카드를 모두 모았어요';
+}
+
+// 미획득 카드의 자리 상태(카드 번호 → 'next' | 'locked').
+// 전시실마다 번호가 가장 작은 미획득 카드가 다음 유물이고, 나머지는 잠긴 카드다.
+// 필터와 관계없이 같은 카드가 같은 상태가 되도록 전체 카드로 계산한다.
+export function slotStatesOf(cards) {
+  const states = new Map();
+  const nextFound = new Set();
+  const unacquired = cards.filter((card) => !card.acquired).sort((a, b) => a.number - b.number);
+  for (const card of unacquired) {
+    states.set(card.number, nextFound.has(card.roomId) ? 'locked' : 'next');
+    nextFound.add(card.roomId);
+  }
+  return states;
 }

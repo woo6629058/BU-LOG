@@ -1,11 +1,12 @@
 import { NOTICE_EVENT, mountTabBar } from '../common/tab-bar.js';
-import { bindArtifactCardImages, renderArtifactCard } from '../common/artifact-card.js';
+import { createArtifactCardFront, createArtifactCardSlot } from '../common/artifact-card.js';
 import {
   ALL_ROOMS,
   SAMPLE_CARDS,
   SAMPLE_ROOMS,
   filterCards,
   findBannerRoom,
+  slotStatesOf,
   summarize,
 } from '../common/collection-data.js';
 
@@ -20,6 +21,8 @@ const TOAST_DURATION = 2500;
 const rooms = SAMPLE_ROOMS;
 const cards = SAMPLE_CARDS;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+// 미획득 카드의 자리 상태(다음 유물·잠긴 카드)는 필터와 관계없이 전체 카드로 정한다.
+const slotStates = slotStatesOf(cards);
 
 const filters = document.querySelector('#archive-filters');
 const grid = document.querySelector('#archive-grid');
@@ -100,17 +103,24 @@ function observeItems() {
   grid.querySelectorAll('.archive__item.is-pending').forEach((item) => observer.observe(item));
 }
 
-// 목록 요소는 유지하고 안쪽만 교체해야 이미지 오류 처리가 계속 동작한다.
+function renderItem(card, index, pending) {
+  const item = document.createElement('li');
+  item.className = `archive__item${pending ? ' is-pending' : ''}`;
+  item.dataset.index = String(index);
+  const holder = document.createElement('div');
+  holder.className = 'artifact-card';
+  holder.append(card.acquired
+    ? createArtifactCardFront(card, { headingLevel: 2 })
+    : createArtifactCardSlot({ state: slotStates.get(card.number), roomName: card.roomName }, { interactive: true }));
+  item.append(holder);
+  return item;
+}
+
+// 목록 요소는 유지하고 안쪽만 교체한다.
 function renderGrid(roomId) {
-  const pending = canAnimate() ? ' is-pending' : '';
+  const pending = canAnimate();
   renderedCards = filterCards(cards, roomId);
-  grid.innerHTML = renderedCards
-    .map((card, index) => `
-      <li class="archive__item${pending}" data-index="${index}">
-        ${renderArtifactCard(card, { headingLevel: 2, interactive: true })}
-      </li>
-    `)
-    .join('');
+  grid.replaceChildren(...renderedCards.map((card, index) => renderItem(card, index, pending)));
   grid.hidden = renderedCards.length === 0;
   empty.hidden = renderedCards.length > 0;
   observeItems();
@@ -128,6 +138,17 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(hideToast, TOAST_DURATION);
   announce(message);
+}
+
+function slotMessage(card) {
+  if (slotStates.get(card?.number) === 'next') {
+    return card.roomName
+      ? `아직 발견하지 못한 유물이에요. ${card.roomName}에서 QR을 찾아 미션에 도전해 보세요`
+      : '아직 발견하지 못한 유물이에요.';
+  }
+  return card?.roomName
+    ? `아직 잠긴 유물이에요. ${card.roomName}의 이전 유물을 먼저 모아 보세요`
+    : '아직 잠긴 유물이에요.';
 }
 
 function shake(element) {
@@ -182,13 +203,11 @@ filters.addEventListener('click', (event) => {
 });
 
 grid.addEventListener('click', (event) => {
-  const button = event.target.closest('button.artifact-card--locked');
+  const button = event.target.closest('button.artifact-slot');
   if (!button) return;
   const card = renderedCards[Number(button.closest('.archive__item')?.dataset.index)];
-  shake(button.querySelector('.artifact-card__mystery'));
-  showToast(card?.roomName
-    ? `아직 발견하지 못한 유물이에요. ${card.roomName}에서 QR을 찾아 미션에 도전해 보세요`
-    : '아직 발견하지 못한 유물이에요.');
+  shake(button.querySelector('.artifact-slot__mark'));
+  showToast(slotMessage(card));
 });
 
 // 등장 전인 카드로 포커스가 이동하면 관찰을 멈추고 등장 처리한다. 즉시 표시는 CSS :focus-within이 맡는다.
@@ -202,7 +221,6 @@ document.addEventListener(NOTICE_EVENT, (event) => {
   if (event.detail?.source !== 'archive') hideToast();
 });
 
-bindArtifactCardImages(grid);
 renderSummary();
 renderFilters();
 renderGrid(selectedRoomId);

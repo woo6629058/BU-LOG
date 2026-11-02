@@ -130,12 +130,12 @@
 }
 
 /* 등장 전에는 골드 반짝임을 멈춰 두었다가 등장할 때 시작한다. */
-.archive__item.is-pending .artifact-card__frame::after {
+.archive__item.is-pending .artifact-face__inner::after {
   animation: none;
 }
 
 /* 미획득 카드를 누르면 물음표가 흔들린다. */
-.archive .artifact-card__mystery.is-shaking {
+.archive .artifact-slot__mark.is-shaking {
   animation: archive-shake 450ms ease-in-out;
 }
 
@@ -204,7 +204,7 @@
     transition: none;
   }
 
-  .archive .artifact-card__mystery.is-shaking {
+  .archive .artifact-slot__mark.is-shaking {
     animation: none;
   }
 }

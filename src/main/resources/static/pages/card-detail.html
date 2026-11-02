@@ -2,20 +2,48 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>카드 상세 | BU:LOG</title>
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/components/card.css">
   <link rel="stylesheet" href="/css/pages/card.css">
   <script type="module" src="/js/pages/card-detail.js"></script>
 </head>
-<body>
-  <header id="site-header"></header>
-  <main class="page-shell">
-    <p class="eyebrow">COLLECTION DETAIL</p>
-    <h1 class="page-title">카드 상세</h1>
-    <section class="card-stage" id="card-detail" aria-live="polite"></section>
+<body class="card-detail-page">
+  <main class="card-detail">
+    <header class="card-detail__bar">
+      <a class="card-detail__close" href="/pages/archive.html" aria-label="카드북으로 돌아가기">
+        <img src="/images/icons/close.svg" alt="" width="24" height="24">
+      </a>
+      <h1 class="card-detail__title" id="detail-title">카드 상세</h1>
+      <p class="card-detail__count" id="detail-count"></p>
+    </header>
+
+    <section class="card-detail__stage" id="detail-stage" aria-labelledby="detail-title" hidden>
+      <div class="detail-scene" id="detail-scene">
+        <div class="detail-card" id="detail-card"></div>
+      </div>
+      <img class="card-detail__floor" src="/images/cards/floor-shadow.svg" alt="" width="250" height="36">
+      <p class="card-detail__hint">
+        <img src="/images/icons/rotate-3d.svg" alt="" width="18" height="18">
+        <span id="detail-hint">좌우로 드래그해서 카드를 돌려보세요</span>
+      </p>
+    </section>
+
+    <div class="card-detail__actions" id="detail-actions" hidden>
+      <button type="button" class="card-detail__button card-detail__button--secondary" id="detail-flip">뒷면 보기</button>
+      <button type="button" class="card-detail__button card-detail__button--primary" id="detail-showcase">진열장에 두기</button>
+    </div>
+    <ol class="card-detail__dots" id="detail-dots" aria-hidden="true" hidden></ol>
+
+    <div class="card-detail__error" id="detail-error" hidden>
+      <p>카드를 찾을 수 없어요.</p>
+      <a class="card-detail__button card-detail__button--primary" href="/pages/archive.html">카드북으로 가기</a>
+    </div>
+
+    <p class="visually-hidden" id="detail-status" role="status"></p>
+    <!-- 화면 표시용 토스트. 스크린리더 안내는 #detail-status가 맡는다. -->
+    <p class="card-detail__toast" id="detail-toast" aria-hidden="true"></p>
   </main>
-  <footer id="site-footer"></footer>
 </body>
 </html>

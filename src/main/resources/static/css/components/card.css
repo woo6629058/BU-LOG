@@ -1,160 +1,76 @@
 /*
- * 유물 카드: Figma 기본 카드(260×364) 기준.
- * 카드 너비에 맞춰 비율대로 줄어들도록 내부 치수는 --u(카드 너비 / 260)의 배수로 지정한다.
- * 색상은 common.css 토큰이 정해지기 전까지 카드 지역 변수의 fallback 값을 사용한다.
+ * 유물 카드(js/common/artifact-card.js): Figma 유물 카드(2:33, 2:48)·뒷면(49:170)·다음 유물(2:64)·잠긴 카드(87:311) 기준.
+ * 면의 내부 치수는 --u(가장 가까운 inline-size 컨테이너 너비 / 260)의 배수로 지정해 비율대로 줄고 는다.
+ * 한 장만 놓을 때는 .artifact-card 안에 면 하나를 넣는다. 3D 회전 배치는 사용하는 페이지가 맡는다.
+ * 색상은 common.css 토큰이 정해지기 전까지 등급별 지역 변수를 사용한다.
+ * "추정" 주석이 붙은 값은 시안이 없어 다른 값을 바탕으로 정한 값이다.
  */
 .artifact-card {
-  --card-ink: var(--color-ink, #2B211A);
-  --card-muted: var(--color-muted, #8A7B6E);
-  --card-subtle: var(--color-subtle, #A8998A);
-  --card-accent: var(--color-accent, #C0603A);
-  --card-line: var(--color-line, #E4DACB);
-  --card-track: var(--color-track, #EFE8DD);
-  --card-surface: var(--color-surface, #FFFFFF);
-  --card-gold: var(--color-gold, #C9A13B);
-  --card-gold-surface: var(--color-gold-surface, #FBF4E2);
-  --card-serif: var(--font-serif, "Gowun Batang", serif);
-  --card-sans: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
-  --u: calc(100cqw / 260);
-
   container-type: inline-size;
   width: 100%;
   aspect-ratio: 260 / 364;
-  /* 전역 article 규칙(common.css)의 여백·테두리를 덮어쓴다. */
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-family: var(--card-sans);
 }
 
-.artifact-card__frame {
+/* 전역 article 규칙(common.css)의 여백·테두리를 덮어쓴다. */
+.artifact-face {
+  --u: calc(100cqw / 260);
+
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--u) * 10);
-  height: 100%;
-  padding: calc(var(--u) * 16);
-  overflow: hidden;
-  border: calc(var(--u) * 1.5) solid var(--card-line);
-  border-radius: calc(var(--u) * 18);
-  background: var(--card-surface);
-  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 12) rgba(43, 33, 26, 0.18);
-}
-
-.artifact-card__meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: calc(var(--u) * 18);
-}
-
-.artifact-card__no {
-  color: var(--card-muted);
-  font-size: calc(var(--u) * 11);
-  font-weight: 700;
-}
-
-.artifact-card__grade {
-  padding: calc(var(--u) * 3) calc(var(--u) * 9);
-  border-radius: 999px;
-  color: var(--card-muted);
-  background: var(--card-track);
-  font-size: calc(var(--u) * 11);
-  font-weight: 700;
-  letter-spacing: calc(var(--u) * 0.66);
-  line-height: 1.2;
-}
-
-.artifact-card__image {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  border-radius: calc(var(--u) * 12);
-  background: linear-gradient(180deg, #B7A48F, #8A7B6E);
-}
-
-.artifact-card__image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-}
-
-.artifact-card__placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--u) * 6);
-  height: 100%;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: calc(var(--u) * 11);
-}
-
-.artifact-card__icon {
-  width: calc(var(--u) * 48);
-  height: calc(var(--u) * 48);
-}
-
-.artifact-card__name,
-.artifact-card__room,
-.artifact-card__brand {
   margin: 0;
+  padding: calc(var(--u) * 7);
+  border: calc(var(--u) * 1.5) solid rgba(255, 255, 255, 0.9);
+  border-radius: calc(var(--u) * 20);
+  background: var(--artifact-frame);
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 10) rgba(26, 13, 51, 0.28);
+  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+}
+
+/* 등급별 팔레트 */
+.artifact-face--legend {
+  --artifact-frame: linear-gradient(234.46deg, #FFE066 14.645%, #FF9F43 46.464%, #FF5C8A 85.355%);
+  --artifact-inner: #FFFBEA;
+  --artifact-ink: #7A2E0E;
+  --artifact-grade: linear-gradient(90deg, #FF9F43, #FF5C8A);
+  --artifact-feature: #FFF0C2;
+  --artifact-feature-line: #FFC857;
+  --artifact-art: radial-gradient(closest-side, #FFF4C2 0%, #FFDE8D 30%, #FFC857 60%, #F8A93E 80%, #F08A24 100%);
+  --artifact-info-label: #A8743A;
+}
+
+.artifact-face--normal {
+  --artifact-frame: linear-gradient(234.46deg, #6FD3FF 14.645%, #3D8BFF 50%, #6A5CFF 85.355%);
+  --artifact-inner: #F3FAFF;
+  --artifact-ink: #13306B;
+  --artifact-grade: linear-gradient(90deg, #3D8BFF, #6A5CFF);
+  --artifact-feature: #E3F3FF;
+  --artifact-feature-line: #9ED8FF;
+  --artifact-art: radial-gradient(closest-side, #E6F7FF 0%, #9ED8FF 60%, #77BEF8 80%, #4FA3F0 100%);
+  --artifact-info-label: #4F78B0; /* 추정 */
+}
+
+.artifact-face__inner {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(var(--u) * 7);
+  min-height: 0;
+  padding: calc(var(--u) * 10) calc(var(--u) * 10) calc(var(--u) * 9);
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  border-radius: calc(var(--u) * 14);
+  color: var(--artifact-ink);
+  background: var(--artifact-inner);
 }
 
-.artifact-card__name {
-  color: var(--card-ink);
-  font-family: var(--card-serif);
-  font-size: calc(var(--u) * 24);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: 0;
-}
-
-.artifact-card__room {
-  margin-top: calc(var(--u) * -6);
-  color: var(--card-accent);
-  font-size: calc(var(--u) * 12);
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.artifact-card__brand {
-  padding-top: calc(var(--u) * 10);
-  border-top: calc(var(--u) * 1) solid var(--card-line);
-  color: var(--card-subtle);
-  font-size: calc(var(--u) * 9);
-  font-weight: 700;
-  letter-spacing: calc(var(--u) * 1.62);
-  line-height: 1.2;
-}
-
-/* 골드 등급 */
-.artifact-card--gold .artifact-card__frame {
-  border: calc(var(--u) * 3) solid var(--card-gold);
-  background: var(--card-gold-surface);
-}
-
-.artifact-card--gold .artifact-card__grade {
-  color: #FFFFFF;
-  background: var(--card-gold);
-}
-
-.artifact-card--gold .artifact-card__image {
-  background: linear-gradient(180deg, #9A5E38, #6B3F25);
-}
-
-.artifact-card--gold .artifact-card__brand {
-  border-top-color: rgba(201, 161, 59, 0.4);
-}
-
-/* 골드 반짝임: 표시될 때 빛이 카드 표면을 한 번 지나간다. 시작 시점은 --card-shine-delay로 조절한다. */
-.artifact-card--gold .artifact-card__frame {
+/* 전설 카드 앞면 반짝임: 빛이 카드 표면을 한 번 지나간다. 시작 시점은 --card-shine-delay로 조절한다. */
+.artifact-face--front.artifact-face--legend .artifact-face__inner {
   position: relative;
 }
 
-.artifact-card--gold .artifact-card__frame::after {
+.artifact-face--front.artifact-face--legend .artifact-face__inner::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -169,64 +85,358 @@
   to { transform: translateX(120%); }
 }
 
-/* 미획득 */
-.artifact-card--locked .artifact-card__frame {
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--u) * 6);
-  border: calc(var(--u) * 1.5) dashed #D6CAB9;
-  background: var(--card-track);
-  box-shadow: none;
-  text-align: center;
+.artifact-face__inner--back {
+  gap: calc(var(--u) * 8);
+  padding: calc(var(--u) * 11) calc(var(--u) * 11) calc(var(--u) * 9);
 }
 
-.artifact-card__mystery {
-  color: #CFC2B0;
-  font-family: var(--card-serif);
+/* 전역 article p 규칙(common.css)의 여백·색·행간도 덮어쓴다. */
+.artifact-face__inner p,
+.artifact-face__inner dl,
+.artifact-face__inner dd {
+  margin: 0;
+  color: inherit;
+  line-height: 1.4;
+}
+
+/* 이름 줄 */
+.artifact-face__name-row {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+}
+
+.artifact-face__name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--artifact-ink);
+  line-height: 1.25;
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.artifact-face__name--display {
+  font-family: "Do Hyeon", var(--font-sans, "Noto Sans KR", sans-serif);
+  font-size: calc(var(--u) * 25);
+  font-weight: 400;
+}
+
+.artifact-face__name--serif {
+  font-family: var(--font-serif, "Gowun Batang", serif);
+  font-size: calc(var(--u) * 24);
+  font-weight: 700;
+}
+
+.artifact-face__number {
+  flex-shrink: 0;
+  padding: calc(var(--u) * 3) calc(var(--u) * 8);
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: var(--artifact-ink);
+  font-size: calc(var(--u) * 11);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 앞면 유물 그림 */
+.artifact-face__art {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 4);
+  min-height: 0;
+  overflow: hidden;
+  border: calc(var(--u) * 3) solid #FFFFFF;
+  border-radius: calc(var(--u) * 12);
+  background: var(--artifact-art);
+}
+
+.artifact-face__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artifact-face__sparkle,
+.artifact-face__holo {
+  position: absolute;
+  inset: calc(var(--u) * -3);
+  pointer-events: none;
+}
+
+.artifact-face__sparkle {
+  width: calc(100% + var(--u) * 6);
+  height: calc(100% + var(--u) * 6);
+}
+
+.artifact-face__holo {
+  background: linear-gradient(208.3deg, rgba(255, 110, 199, 0) 13.397%, rgba(255, 110, 199, 0.35) 35.359%, rgba(122, 245, 255, 0.35) 50%, rgba(255, 245, 110, 0.35) 64.641%, rgba(255, 245, 110, 0) 86.603%);
+  mix-blend-mode: overlay;
+}
+
+.artifact-face__art-icon {
+  position: relative;
+  width: calc(var(--u) * 54);
+  height: calc(var(--u) * 54);
+}
+
+.artifact-face__art-label {
+  position: relative;
+  color: #FFFFFF;
+  font-size: calc(var(--u) * 11);
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* 별·등급·전시실 */
+.artifact-face__rarity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+}
+
+.artifact-face__grade-group {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+}
+
+.artifact-face__stars {
+  display: flex;
+  gap: calc(var(--u) * 1);
+}
+
+.artifact-face__star {
+  width: calc(var(--u) * 16);
+  height: calc(var(--u) * 16);
+}
+
+.artifact-face__grade,
+.artifact-face__room {
+  border-radius: 999px;
+  color: #FFFFFF;
+  font-size: calc(var(--u) * 10);
+  white-space: nowrap;
+}
+
+.artifact-face__grade {
+  padding: calc(var(--u) * 2) calc(var(--u) * 8);
+  background: var(--artifact-grade);
+  font-weight: 900;
+}
+
+.artifact-face__room {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  min-width: 0;
+  padding: calc(var(--u) * 2) calc(var(--u) * 8) calc(var(--u) * 2) calc(var(--u) * 6);
+  background: var(--artifact-ink);
+  font-weight: 700;
+}
+
+.artifact-face__room-icon {
+  flex-shrink: 0;
+  width: calc(var(--u) * 14);
+  height: calc(var(--u) * 14);
+}
+
+/* 앞면 한 줄 소개 */
+.artifact-face__feature {
+  padding: calc(var(--u) * 7) calc(var(--u) * 10);
+  border: calc(var(--u) * 1.5) solid var(--artifact-feature-line);
+  border-radius: calc(var(--u) * 10);
+  background: var(--artifact-feature);
+  font-size: calc(var(--u) * 12);
+  font-weight: 700;
+}
+
+/* 뒷면 유물 이야기 */
+.artifact-face__story {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--u) * 6);
+  min-height: 0;
+  padding: calc(var(--u) * 10) calc(var(--u) * 11);
+  overflow: hidden;
+  border: calc(var(--u) * 2) solid var(--artifact-feature-line);
+  border-radius: calc(var(--u) * 12);
+  background: #FFFFFF;
+}
+
+.artifact-face__inner .artifact-face__story-title {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 5);
+  padding: calc(var(--u) * 3) calc(var(--u) * 9) calc(var(--u) * 3) calc(var(--u) * 7);
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: var(--artifact-grade);
+  font-size: calc(var(--u) * 10);
+  font-weight: 900;
+}
+
+.artifact-face__story-icon {
+  width: calc(var(--u) * 14);
+  height: calc(var(--u) * 14);
+}
+
+.artifact-face__inner .artifact-face__story-text {
+  color: #4A3D33;
+  font-size: calc(var(--u) * 12);
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+/* 뒷면 정보 */
+.artifact-face__info {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 5);
+  padding: calc(var(--u) * 8) calc(var(--u) * 11);
+  border: calc(var(--u) * 1.5) solid var(--artifact-feature-line);
+  border-radius: calc(var(--u) * 10);
+  background: var(--artifact-feature);
+}
+
+.artifact-face__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--u) * 8);
+}
+
+.artifact-face__info dt {
+  color: var(--artifact-info-label);
+  font-size: calc(var(--u) * 10);
+  font-weight: 500;
+}
+
+.artifact-face__info dd {
+  font-size: calc(var(--u) * 11);
+  font-weight: 700;
+}
+
+/* 하단 */
+.artifact-face__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.artifact-face__brand {
+  font-size: calc(var(--u) * 10);
+  font-weight: 900;
+}
+
+.artifact-face__brand-dash {
+  color: #FF5C8A;
+}
+
+.artifact-face__museum {
+  color: #A8998A;
+  font-size: calc(var(--u) * 7);
+  font-weight: 700;
+  letter-spacing: calc(var(--u) * 0.7);
+}
+
+/* 미획득 카드 자리: 다음 유물(2:64)과 잠긴 카드(87:311) */
+.artifact-slot {
+  --u: calc(100cqw / 260);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: calc(var(--u) * 18);
+  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.artifact-slot--next {
+  gap: calc(var(--u) * 12);
+  border: calc(var(--u) * 2.5) dashed #C0603A;
+  background: #FBEDE5;
+}
+
+.artifact-slot--locked {
+  gap: calc(var(--u) * 14);
+  border: calc(var(--u) * 1.5) solid #C9BBA9;
+  background: #DCD2C4;
+}
+
+.artifact-slot--next .artifact-slot__mark {
+  color: #C0603A;
+  font-family: var(--font-serif, "Gowun Batang", serif);
   font-size: calc(var(--u) * 72);
+  font-weight: 700;
   line-height: 1;
 }
 
-.artifact-card__locked-text,
-.artifact-card__locked-room {
-  margin: 0;
-  color: var(--card-muted);
+.artifact-slot--locked .artifact-slot__mark {
+  width: calc(var(--u) * 72);
+  height: calc(var(--u) * 72);
 }
 
-.artifact-card__locked-text {
-  margin-top: calc(var(--u) * 18);
+.artifact-slot__title {
+  font-weight: 700;
+}
+
+.artifact-slot--next .artifact-slot__title {
+  color: #C0603A;
+  font-size: calc(var(--u) * 14);
+}
+
+.artifact-slot--locked .artifact-slot__title {
+  color: #8A7B6E;
+  font-size: calc(var(--u) * 18);
+}
+
+.artifact-slot__desc {
+  color: #8A7B6E;
+  font-size: calc(var(--u) * 13);
+}
+
+.artifact-slot__room {
+  color: #8A7B6E;
   font-size: calc(var(--u) * 12);
 }
 
-.artifact-card__locked-room {
-  color: var(--card-subtle);
-  font-size: calc(var(--u) * 10);
+.artifact-slot--locked .artifact-slot__room {
+  color: #A8998A;
 }
 
-/* 누를 수 있는 미획득 카드 (interactive 옵션) */
-button.artifact-card {
-  display: block;
+/* 누를 수 있는 미획득 카드(interactive) */
+button.artifact-slot {
   appearance: none;
   color: inherit;
-  background: none;
-  font-size: inherit;
-  line-height: inherit;
-  text-align: center;
   cursor: pointer;
 }
 
-/* 외곽선이 카드 모서리를 따르도록 프레임에 표시한다. */
-button.artifact-card:focus-visible {
-  outline: none;
-}
-
-button.artifact-card:focus-visible .artifact-card__frame {
-  outline: 2px solid var(--card-accent);
+button.artifact-slot:focus-visible {
+  outline: 2px solid #C0603A;
   outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .artifact-card--gold .artifact-card__frame::after {
+  .artifact-face--front.artifact-face--legend .artifact-face__inner::after {
     display: none;
   }
 }
