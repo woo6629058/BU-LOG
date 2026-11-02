@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.bulog.domain.exhibit.dto.res.ExhibitResponseDTO;
 import com.bulog.domain.exhibit.entity.Exhibit;
 import com.bulog.domain.exhibit.exception.ExhibitException;
-import com.bulog.domain.exhibit.repository.ExhibitRepository;
+import com.bulog.domain.exhibit.repository.ExhibitReader;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +38,8 @@ class ExhibitServiceTest {
 
     @Test
     void 존재하지_않는_전시물이면_예외가_발생한다() {
-        ExhibitRepository emptyRepository = id -> Optional.empty();
-        ExhibitService exhibitService = new ExhibitService(emptyRepository);
+        ExhibitReader emptyReader = id -> Optional.empty();
+        ExhibitService exhibitService = new ExhibitService(emptyReader);
 
         assertThatThrownBy(() -> exhibitService.getExhibit("missing"))
                 .isInstanceOf(ExhibitException.class)

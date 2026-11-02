@@ -70,8 +70,8 @@
 ```json
 {
   "isSuccess": true,
-  "code": "COMMON_200",
-  "message": "요청에 성공했습니다.",
+  "code": "QUIZ_200_001",
+  "message": "퀴즈 조회에 성공했습니다.",
   "result": {
     "quizId": 1,
     "question": "이 전시물이 제작된 시대는 언제일까요?",
@@ -96,16 +96,16 @@
 ```json
 {
   "isSuccess": true,
-  "code": "COMMON_200",
-  "message": "요청에 성공했습니다.",
+  "code": "QUIZ_200_002",
+  "message": "퀴즈 채점에 성공했습니다.",
   "result": {
     "correct": true,
-    "explanation": "정답 해설",
-    "cardIssued": true,
-    "cardId": 7
+    "explanation": "정답 해설"
   }
 }
 ```
+
+제출한 선택지가 해당 퀴즈에 속하지 않으면 `400 Bad Request`를 반환합니다. 카드 발급과 방문자별 시도 저장은 카드·방문자 API 구현 시 이 흐름에 연결합니다.
 
 ## 나의 아카이브
 
