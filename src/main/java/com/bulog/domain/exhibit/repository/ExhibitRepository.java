@@ -1,9 +1,7 @@
 package com.bulog.domain.exhibit.repository;
 
 import com.bulog.domain.exhibit.entity.Exhibit;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExhibitRepository {
-
-    Optional<Exhibit> findById(String exhibitId);
+public interface ExhibitRepository extends JpaRepository<Exhibit, String>, ExhibitReader {
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Profile("local")
-public class LocalExhibitRepository implements ExhibitRepository {
+public class LocalExhibitRepository implements ExhibitReader {
 
     private static final Map<String, Exhibit> EXHIBITS = Map.of(
             "goryeo-celadon",
