@@ -3,15 +3,19 @@
    폰: 화면에 꽉 차게 / PC: 가운데에 폰 너비(420px)로 표시
    ========================================================= */
 
-/* 이 화면에서만 쓰는 색 (피그마 02를 보고 맞춘 값, 정확한 코드는 피그마에서 확인 후 수정) */
+/* 이 화면에서만 쓰는 색 (피그마 '제작 레퍼런스 보드'의 BU-LOG 색상 기준) */
 .exhibit-page {
-  --ex-bg: #f7f1ea;          /* 화면 배경 크림색 */
-  --ex-text: #2a2420;        /* 진한 글자 */
-  --ex-sub: #5b524c;         /* 설명 글자 */
-  --ex-brown: #c0603a;       /* 버튼, 강조 글자 */
-  --ex-tag-bg: #ece5dc;      /* 회색 태그 배경 */
-  --ex-mission-bg: #fbece5;  /* 미션 박스 배경 */
-  --ex-mission-line: #f0cdbf;
+  --ex-bg: #f6f1e9;          /* 한지: 화면 배경 */
+  --ex-text: #2b211a;        /* 먹색: 진한 글자 */
+  --ex-sub: #5b4d42;         /* 설명 글자 */
+  --ex-muted: #8a7b6e;       /* 회갈색: 작은 보조 글자 */
+  --ex-brown: #c0603a;       /* 테라코타: 버튼, 강조 글자 */
+  --ex-onggi: #7a4a2e;       /* 옹기 갈색: 사진 자리 배경 */
+  --ex-tag-bg: #ece4d9;      /* 회색 태그 배경 */
+  --ex-accent-bg: #fbe8e0;   /* 연분홍: 전시실 태그 배경 */
+  --ex-mission-bg: #fcece5;  /* 미션 박스 배경 */
+  --ex-mission-line: #f2d2c4;
+  font-family: "Noto Sans KR", Pretendard, system-ui, sans-serif;
   background: var(--ex-bg);
 }
 
@@ -67,7 +71,7 @@
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 16px;
-  background: linear-gradient(180deg, #a0603d 0%, #6b3b22 100%);
+  background: linear-gradient(180deg, #9c603e 0%, var(--ex-onggi) 55%, #5a3420 100%);
 }
 
 .exhibit-photo__placeholder {
@@ -106,8 +110,7 @@
 
 .exhibit-tag--accent {
   color: var(--ex-brown);
-  background: transparent;
-  padding-left: 0;
+  background: var(--ex-accent-bg);
 }
 
 .exhibit-tag[hidden] { display: none; }
@@ -116,10 +119,11 @@
 /* common.css의 h1이 매우 커서 이 화면에 맞게 줄임 */
 .exhibit-name {
   margin: 12px 0 8px;
+  font-family: "Gowun Batang", serif; /* 피그마: 유물 이름은 고운바탕 */
   font-size: 28px;
   line-height: 1.3;
-  letter-spacing: -0.02em;
-  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-weight: 700;
 }
 
 .exhibit-description {
@@ -155,7 +159,7 @@
 .mission-box__note {
   margin: 0;
   font-size: 12px;
-  color: var(--ex-sub);
+  color: var(--ex-muted);
 }
 
 /* ---------- 하단 고정 버튼 ---------- */
@@ -167,7 +171,7 @@
   width: 100%;
   max-width: 420px;
   padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, rgba(247, 241, 234, 0) 0%, var(--ex-bg) 35%);
+  background: linear-gradient(180deg, rgba(246, 241, 233, 0) 0%, var(--ex-bg) 35%);
 }
 
 /* common.css의 검정 알약 버튼을 피그마의 갈색 둥근 네모로 바꿈 (이 화면에서만) */
