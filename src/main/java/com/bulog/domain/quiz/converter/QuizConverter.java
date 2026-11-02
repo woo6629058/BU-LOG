@@ -1,5 +1,6 @@
 package com.bulog.domain.quiz.converter;
 
+import com.bulog.domain.card.dto.res.CardAcquisitionResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizAttemptResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizOptionResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizResponseDTO;
@@ -18,7 +19,11 @@ public final class QuizConverter {
         return new QuizResponseDTO(quiz.getId(), quiz.getQuestion(), options);
     }
 
-    public static QuizAttemptResponseDTO toAttemptResponse(Quiz quiz, boolean correct) {
-        return new QuizAttemptResponseDTO(correct, quiz.getExplanation());
+    public static QuizAttemptResponseDTO toAttemptResponse(
+            Quiz quiz,
+            boolean correct,
+            CardAcquisitionResponseDTO card
+    ) {
+        return new QuizAttemptResponseDTO(correct, quiz.getExplanation(), card);
     }
 }

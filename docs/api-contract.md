@@ -2,6 +2,33 @@
 
 모든 API 경로는 `/api`로 시작하며 JSON을 사용합니다.
 
+게스트 방문자는 서버가 발급하는 `BU_LOG_VISITOR` HttpOnly 쿠키로 식별합니다. 프론트엔드는
+이 쿠키 값을 직접 읽거나 저장하지 않으며, 같은 출처로 요청하면 브라우저가 자동으로 전송합니다.
+회원 인증은 세션 쿠키를 사용합니다.
+
+## CSRF 토큰
+
+상태를 변경하는 `POST`, `PUT`, `PATCH`, `DELETE` 요청 전에는 다음 API로 CSRF 토큰을
+조회합니다.
+
+`GET /api/auth/csrf`
+
+```json
+{
+  "isSuccess": true,
+  "code": "COMMON_200",
+  "message": "요청에 성공했습니다.",
+  "result": {
+    "headerName": "X-XSRF-TOKEN",
+    "parameterName": "_csrf",
+    "token": "발급된 토큰"
+  }
+}
+```
+
+이후 상태 변경 요청의 `X-XSRF-TOKEN` 헤더에 응답의 `token` 값을 포함합니다. 브라우저
+요청에서는 세션과 게스트 쿠키가 전송되도록 동일 출처 요청을 사용합니다.
+
 ## 공통 응답
 
 성공 응답은 다음 구조를 사용합니다.
@@ -100,12 +127,76 @@
   "message": "퀴즈 채점에 성공했습니다.",
   "result": {
     "correct": true,
-    "explanation": "정답 해설"
+    "explanation": "정답 해설",
+    "card": {
+      "cardId": 7,
+      "exhibitId": "goryeo-celadon",
+      "newlyAcquired": true
+    }
   }
 }
 ```
 
-제출한 선택지가 해당 퀴즈에 속하지 않으면 `400 Bad Request`를 반환합니다. 카드 발급과 방문자별 시도 저장은 카드·방문자 API 구현 시 이 흐름에 연결합니다.
+제출한 선택지가 해당 퀴즈에 속하지 않으면 `400 Bad Request`를 반환합니다. 정답인 경우
+현재 방문자에게 카드가 발급됩니다. 이미 같은 카드를 가지고 있다면 기존 `cardId`와
+`newlyAcquired: false`를 반환합니다. 오답 응답에는 `card` 필드가 포함되지 않습니다.
+
+## 회원가입
+
+`POST /api/auth/signup`
+
+```json
+{
+  "email": "member@example.com",
+  "password": "password123!",
+  "nickname": "부록이"
+}
+```
+
+```json
+{
+  "isSuccess": true,
+  "code": "MEMBER_201_001",
+  "message": "회원가입에 성공했습니다.",
+  "result": {
+    "id": 1,
+    "email": "member@example.com",
+    "nickname": "부록이"
+  }
+}
+```
+
+회원가입과 동시에 로그인됩니다. 가입 전 게스트로 획득한 카드는 생성된 회원 계정에
+연결됩니다. 이미 사용 중인 이메일은 `MEMBER_409_001`을 반환합니다.
+
+## 로그인
+
+`POST /api/auth/login`
+
+```json
+{
+  "email": "member@example.com",
+  "password": "password123!"
+}
+```
+
+성공 응답 코드는 `MEMBER_200_001`입니다. 로그인 전 현재 브라우저에서 게스트로 획득한
+카드는 로그인한 회원에게 연결됩니다. 이메일 또는 비밀번호가 올바르지 않으면
+`MEMBER_401_001`을 반환합니다.
+
+## 로그아웃
+
+`POST /api/auth/logout`
+
+성공 응답 코드는 `MEMBER_200_002`입니다. 회원 세션을 종료하고 새로운 게스트 방문자
+쿠키를 발급하여 이후 기록이 로그아웃한 회원에게 추가되지 않도록 합니다.
+
+## 내 회원 정보
+
+`GET /api/auth/me`
+
+로그인한 회원의 `id`, `email`, `nickname`을 반환합니다. 로그인하지 않은 상태에서는
+`MEMBER_401_002`를 반환합니다.
 
 ## 나의 아카이브
 
@@ -121,15 +212,42 @@
     "totalCount": 10,
     "cards": [
       {
-        "id": 7,
-        "name": "고려청자 카드",
-        "imageUrl": "/images/cards/goryeo-celadon.jpg",
+        "cardId": 7,
+        "exhibitId": "goryeo-celadon",
+        "name": "청자 상감운학문 매병",
+        "era": "고려",
+        "imageUrl": "/images/exhibits/goryeo-celadon.jpg",
         "acquired": true,
-        "acquiredAt": "2026-10-26T18:00:00+09:00"
+        "acquiredAt": "2026-11-03T10:00:00"
       }
     ]
   }
 }
 ```
 
-익명 방문자는 백엔드가 발급한 HttpOnly 쿠키로 식별하며 프론트엔드가 토큰을 직접 저장하지 않습니다.
+게스트는 현재 브라우저 방문자의 카드만 조회합니다. 로그인 회원은 해당 계정에 연결된
+여러 브라우저의 방문 기록을 전시물 기준으로 합쳐서 조회합니다. 미획득 전시물도
+`acquired: false`로 반환하며 이때 `cardId`, `acquiredAt`은 응답에서 제외됩니다.
+
+## 카드 상세
+
+`GET /api/cards/{cardId}`
+
+```json
+{
+  "isSuccess": true,
+  "code": "CARD_200_002",
+  "message": "카드 조회에 성공했습니다.",
+  "result": {
+    "cardId": 7,
+    "exhibitId": "goryeo-celadon",
+    "name": "청자 상감운학문 매병",
+    "era": "고려",
+    "description": "전시물 설명",
+    "imageUrl": "/images/exhibits/goryeo-celadon.jpg",
+    "acquiredAt": "2026-11-03T10:00:00"
+  }
+}
+```
+
+현재 게스트 또는 로그인 회원이 소유하지 않은 카드에는 `CARD_404_001`을 반환합니다.
