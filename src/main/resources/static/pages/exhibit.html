@@ -3,25 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>전시물 | BU:LOG</title>
+  <title>유물 소개 | BU:LOG</title>
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/pages/exhibit.css">
   <script type="module" src="/js/pages/exhibit.js"></script>
 </head>
-<body>
+<body class="exhibit-page">
+  <!-- 공통 머리말: layout.js가 채움 (02 화면에서는 exhibit.css로 숨김, 회의에서 확인) -->
   <header id="site-header"></header>
-  <main class="page-shell" id="exhibit-content">
-    <p class="eyebrow">EXHIBIT</p>
-    <section class="exhibit-hero" aria-live="polite">
-      <div class="exhibit-image" role="img" aria-label="전시물 이미지 영역"></div>
-      <div>
-        <p class="exhibit-meta" id="exhibit-era">시대 정보</p>
-        <h1 class="page-title" id="exhibit-name">전시물 이름</h1>
-        <p class="exhibit-description" id="exhibit-description">백엔드 API 연결 후 전시물 설명이 표시됩니다.</p>
-        <a class="button button--primary" id="quiz-link" href="/pages/quiz.html">퀴즈 풀기</a>
-      </div>
+
+  <main class="exhibit" id="exhibit-content" aria-live="polite">
+    <!-- 상단 바: 뒤로가기 + 전시실 이름 + QR 인증 배지 -->
+    <div class="exhibit-topbar">
+      <a class="exhibit-back" href="/" aria-label="뒤로가기">
+        <span class="exhibit-back__icon" aria-hidden="true">‹</span>
+        <span id="exhibit-gallery">옹기2전시실</span>
+      </a>
+      <span class="exhibit-badge">✓ QR 인증 완료</span>
+    </div>
+
+    <!-- 유물 사진 (사진이 없으면 갈색 배경 + 안내 문구가 보임) -->
+    <div class="exhibit-photo">
+      <p class="exhibit-photo__placeholder">현장에서 촬영한 유물 사진</p>
+      <img class="exhibit-photo__img" id="exhibit-image" alt="" hidden>
+    </div>
+
+    <!-- 태그 -->
+    <div class="exhibit-tags">
+      <span class="exhibit-tag exhibit-tag--accent" id="exhibit-gallery-tag">옹기2전시실</span>
+      <span class="exhibit-tag" id="exhibit-card-no">카드 No.05</span>
+      <span class="exhibit-tag" id="exhibit-era" hidden></span>
+    </div>
+
+    <!-- 유물 이름, 설명 (API 데이터로 바뀜) -->
+    <h1 class="exhibit-name" id="exhibit-name">소줏고리</h1>
+    <p class="exhibit-description" id="exhibit-description">소줏고리는 발효시킨 술을 끓여 맑은 소주를 받아 내던 옹기예요. 아래위 두 동이를 맞붙인 모양으로, 위로 올라간 김이 식으면서 맺힌 술방울이 꼭지를 따라 흘러나옵니다.</p>
+
+    <!-- 관찰 미션 박스 (문구는 회의 후 API로 바꿀 예정) -->
+    <section class="mission-box" aria-labelledby="mission-label">
+      <p class="mission-box__label" id="mission-label">관찰 미션</p>
+      <p class="mission-box__question" id="mission-question">전시된 소줏고리를 직접 찾아보세요. 술이 흘러나오는 꼭지는 몇 개인가요?</p>
+      <p class="mission-box__note">한 번에 맞히면 골드 카드를 받아요</p>
     </section>
+
+    <!-- 하단 고정 버튼 -->
+    <div class="exhibit-cta">
+      <a class="button button--primary exhibit-cta__button" id="quiz-link" href="/pages/quiz.html">미션 도전하기</a>
+    </div>
   </main>
+
+  <!-- 공통 꼬리말: layout.js가 채움 (02 화면에서는 숨김) -->
   <footer id="site-footer"></footer>
 </body>
 </html>
