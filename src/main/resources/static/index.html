@@ -2,53 +2,41 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="전시의 이야기를 발견하고 기록하는 QR 기반 아카이브, BU:LOG">
-  <title>BU:LOG | 전시의 부록</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="부천시립박물관 전시실의 QR을 찍고 미션을 풀어 유물 카드를 모으는 BU:LOG">
+  <title>유물 카드 탐험 | BU:LOG</title>
   <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/pages/home.css">
   <script type="module" src="/js/pages/home.js"></script>
 </head>
 <body>
-  <header id="site-header"></header>
-  <main class="shell">
-    <p class="eyebrow">EXHIBITION ARCHIVE</p>
-    <h1>BU:LOG <span>부록</span></h1>
-    <p class="intro">QR로 전시를 만나고, 퀴즈와 카드로 기억을 남기는 작은 디지털 부록입니다.</p>
+  <main class="home">
+    <header class="home__header">
+      <p class="home__museum">부천시립박물관</p>
+      <h1 class="home__title">유물 카드 탐험</h1>
+      <p class="home__intro">전시실의 QR을 찍고 미션을 풀어 유물 카드를 모아보세요</p>
+    </header>
 
-    <section class="feature-grid" aria-label="BU:LOG 주요 기능">
-      <article>
-        <strong>01</strong>
-        <h2>QR 전시물</h2>
-        <p>작품 옆 QR을 스캔해 숨은 이야기를 확인합니다.</p>
-      </article>
-      <article>
-        <strong>02</strong>
-        <h2>퀴즈</h2>
-        <p>관람 중 발견한 내용을 가볍게 되짚어 봅니다.</p>
-      </article>
-      <article>
-        <strong>03</strong>
-        <h2>나만의 카드</h2>
-        <p>익명으로 참여하고 전시의 한 장면을 간직합니다.</p>
-      </article>
+    <section class="home-progress" aria-labelledby="home-progress-label">
+      <div class="home-progress__row">
+        <h2 class="home-progress__label" id="home-progress-label">수집한 유물 카드</h2>
+        <p class="home-progress__count">
+          <span aria-hidden="true"><strong id="home-acquired">0</strong> / <span id="home-total">0</span></span>
+          <span class="visually-hidden" id="home-count-label"></span>
+        </p>
+      </div>
+      <div class="home-progress__bar" aria-hidden="true"><span id="home-progress-fill"></span></div>
+      <p class="home-progress__hint" id="home-hint"></p>
     </section>
 
-    <div class="home-actions">
-      <a class="button button--primary" href="/pages/archive.html">나의 아카이브</a>
-      <a class="button button--secondary" href="#guide">이용 방법</a>
-    </div>
-
-    <section id="guide" class="guide" aria-labelledby="guide-title">
-      <p class="eyebrow">HOW TO USE</p>
-      <h2 id="guide-title">관람의 순간을 카드로 남겨보세요.</h2>
-      <ol>
-        <li>전시물 옆 QR 코드를 스캔합니다.</li>
-        <li>전시물 설명을 읽고 퀴즈에 참여합니다.</li>
-        <li>정답을 맞혀 디지털 카드를 수집합니다.</li>
-      </ol>
+    <section class="home__rooms" aria-labelledby="home-rooms-title">
+      <div class="home__section-header">
+        <h2 class="home__section-title" id="home-rooms-title">전시실 세트</h2>
+        <p class="home__section-meta" id="home-rooms-meta"></p>
+      </div>
+      <ul class="home__room-list" id="home-room-list"></ul>
     </section>
   </main>
-  <footer id="site-footer"></footer>
 </body>
 </html>

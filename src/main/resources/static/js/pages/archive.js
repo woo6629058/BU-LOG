@@ -7,7 +7,7 @@ import {
   filterCards,
   findBannerRoom,
   summarize,
-} from './archive-data.js';
+} from '../common/collection-data.js';
 
 mountTabBar({ active: 'cardbook' });
 
