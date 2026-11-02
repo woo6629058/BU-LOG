@@ -23,3 +23,9 @@ server:
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
+
+external:
+  emuseum:
+    base-url: ${EMUSEUM_API_BASE_URL:http://apis.data.go.kr/1371027/openapi}
+    service-key: ${EMUSEUM_API_SERVICE_KEY:}
+    institution-code: ${EMUSEUM_INSTITUTION_CODE:PS01003464}
