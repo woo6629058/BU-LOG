@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>QR 스캔 | BU:LOG</title>
+  <!-- 피그마 글꼴: 유물 이름 Gowun Batang, 본문 Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/pages/qr-scan.css">
+  <!-- QR 읽기 라이브러리 jsQR (카메라 화면에서 QR 글자를 읽어 줌) -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" defer></script>
+  <script type="module" src="/js/pages/qr-scan.js"></script>
+</head>
+<body class="qr-page">
+  <main class="qr" id="qr-content">
+    <!-- 카메라 화면 -->
+    <video class="qr-video" id="qr-video" playsinline muted autoplay></video>
+    <canvas id="qr-canvas" hidden></canvas>
+
+    <!-- 상단 바: 닫기 + 제목 + 플래시 -->
+    <div class="qr-topbar">
+      <a class="qr-icon-button" id="qr-close" href="/" aria-label="닫기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+      </a>
+      <h1 class="qr-title">QR 스캔</h1>
+      <!-- 플래시는 켤 수 있는 폰에서만 보임 -->
+      <button class="qr-icon-button" id="qr-torch" type="button" aria-label="플래시 켜기" aria-pressed="false" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" /></svg>
+      </button>
+      <span class="qr-icon-button qr-icon-button--placeholder" id="qr-torch-placeholder" aria-hidden="true"></span>
+    </div>
+
+    <!-- 스캔 네모 (상태: scanning 노랑 / found 초록 / locked 주황) -->
+    <div class="qr-frame" id="qr-frame" data-state="scanning">
+      <span class="qr-frame__corner qr-frame__corner--tl"></span>
+      <span class="qr-frame__corner qr-frame__corner--tr"></span>
+      <span class="qr-frame__corner qr-frame__corner--bl"></span>
+      <span class="qr-frame__corner qr-frame__corner--br"></span>
+      <span class="qr-frame__line" aria-hidden="true"></span>
+      <span class="qr-frame__badge" id="qr-badge" aria-hidden="true"></span>
+    </div>
+
+    <!-- 안내 문구 (에러가 나면 문구가 바뀜) -->
+    <div class="qr-guide" id="qr-guide" role="status" aria-live="polite">
+      <p class="qr-guide__title" id="qr-guide-title">전시물 옆 QR 코드를 네모 안에 맞춰 주세요</p>
+      <p class="qr-guide__sub" id="qr-guide-sub">자동으로 인식돼요</p>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="qr-actions" id="qr-actions">
+      <button class="qr-pill" id="qr-manual-open" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M7 10h1M11 10h1M15 10h2M7 14h10" /></svg>
+        번호로 입력
+      </button>
+      <a class="qr-pill" href="/pages/archive.html">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="11" height="15" rx="2" /><path d="M9 21h8a2 2 0 0 0 2-2V8" /></svg>
+        카드북
+      </a>
+    </div>
+    <p class="qr-brand">BU-LOG</p>
+
+    <!-- 번호로 입력 시트 -->
+    <form class="qr-sheet" id="qr-manual" hidden>
+      <span class="qr-sheet__handle" aria-hidden="true"></span>
+      <h2 class="qr-sheet__title">번호로 찾기</h2>
+      <p class="qr-sheet__desc">QR 코드 아래에 적힌 번호를 입력해 주세요</p>
+      <!-- TODO(조장과 확인): 카드 번호(No.08)로 찾는 API가 생기면 번호 입력으로 바꾸기. 지금은 전시물 id를 입력 -->
+      <label class="visually-hidden" for="qr-manual-input">전시물 번호</label>
+      <input class="qr-input" id="qr-manual-input" type="text" inputmode="text" autocomplete="off"
+             autocapitalize="off" spellcheck="false" placeholder="예: goryeo-celadon" required>
+      <div class="qr-sheet__buttons">
+        <button class="qr-button qr-button--ghost" id="qr-manual-cancel" type="button">취소</button>
+        <button class="qr-button" type="submit">찾기</button>
+      </div>
+    </form>
+
+    <!-- 결과 시트: 01-2 인식 완료 / 01-3 잠긴 유물 -->
+    <section class="qr-sheet" id="qr-result" aria-labelledby="qr-result-title" hidden>
+      <span class="qr-sheet__handle" aria-hidden="true"></span>
+      <div class="qr-result">
+        <div class="qr-result__thumb" id="qr-result-thumb">
+          <img id="qr-result-image" alt="" hidden>
+          <svg class="qr-result__icon qr-result__icon--photo" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="10" r="1.5" /><path d="m21 16-5-5-9 8" /></svg>
+          <svg class="qr-result__icon qr-result__icon--lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+        </div>
+        <div class="qr-result__text">
+          <p class="qr-result__meta" id="qr-result-meta"></p>
+          <h2 class="qr-result__title" id="qr-result-title"></h2>
+          <p class="qr-result__desc" id="qr-result-desc"></p>
+        </div>
+      </div>
+      <button class="qr-button qr-button--wide" id="qr-result-action" type="button"></button>
+    </section>
+  </main>
+</body>
+</html>
