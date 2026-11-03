@@ -3,20 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>전시물 퀴즈 | BU:LOG</title>
+  <title>관찰 미션 | BU:LOG</title>
+  <!-- 피그마 글꼴: 유물 이름·질문 Gowun Batang, 본문 Noto Sans KR (exhibit.html과 같음) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/pages/quiz.css">
   <script type="module" src="/js/pages/quiz.js"></script>
 </head>
-<body>
+<body class="quiz-page">
+  <!-- 공통 머리말: layout.js가 채움 (03 화면에서는 quiz.css로 숨김) -->
   <header id="site-header"></header>
-  <main class="page-shell">
-    <p class="eyebrow">QUIZ</p>
-    <h1 class="page-title" id="quiz-question">퀴즈를 불러오는 영역</h1>
-    <div class="quiz-options" id="quiz-options" aria-label="답안 선택"></div>
-    <button class="button button--primary" id="submit-answer" type="button" disabled>정답 확인</button>
-    <div class="quiz-feedback" id="quiz-feedback" role="status" aria-live="polite"></div>
+
+  <main class="quiz" id="quiz-content">
+    <!-- 상단 바: 닫기 + 남은 기회 -->
+    <div class="quiz-topbar">
+      <a class="quiz-close" id="quiz-close" href="/" aria-label="닫고 유물 소개로 돌아가기">✕</a>
+      <p class="quiz-chances" id="quiz-chances-wrap">
+        남은 기회
+        <span class="quiz-chances__dots" id="quiz-chances" aria-hidden="true"></span>
+        <span class="visually-hidden" id="quiz-chances-text"></span>
+      </p>
+    </div>
+
+    <!-- 유물 이름 · 전시실 (전시실은 API에 없어서 임시 글자) -->
+    <p class="quiz-label">
+      <span id="quiz-exhibit-name">유물</span> · <span id="quiz-gallery">옹기2전시실</span>
+    </p>
+
+    <!-- 질문 -->
+    <h1 class="quiz-question" id="quiz-question">퀴즈를 불러오고 있어요</h1>
+
+    <p class="quiz-notice">
+      <svg class="quiz-notice__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      검색으로는 알 수 없어요. 실물을 보고 답해 주세요
+    </p>
+
+    <!-- 게임 영역: 게임 종류(객관식 등)에 맞는 화면을 quiz.js가 채움 -->
+    <div class="quiz-game" id="quiz-game"></div>
+
+    <!-- 힌트 (서버가 힌트를 보내줄 때만 보임) -->
+    <button class="quiz-hint" id="quiz-hint" type="button" hidden>
+      힌트 보기 · 사용하면 일반 카드로 받아요
+    </button>
+
+    <!-- 채점 결과 / 안내 문구 -->
+    <div class="quiz-feedback" id="quiz-feedback" role="status" aria-live="polite" hidden>
+      <p class="quiz-feedback__title" id="quiz-feedback-title"></p>
+      <p class="quiz-feedback__message" id="quiz-feedback-message"></p>
+    </div>
+
+    <!-- 하단 고정 버튼 -->
+    <div class="quiz-cta" id="quiz-cta">
+      <button class="button button--primary quiz-cta__button" id="submit-answer" type="button" disabled>정답 제출</button>
+    </div>
   </main>
+
+  <!-- 공통 꼬리말: layout.js가 채움 (03 화면에서는 숨김) -->
   <footer id="site-footer"></footer>
 </body>
 </html>
