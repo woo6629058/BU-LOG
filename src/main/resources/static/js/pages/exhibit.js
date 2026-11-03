@@ -34,7 +34,8 @@ async function renderExhibit() {
   }
 
   try {
-    const exhibit = await getExhibit(exhibitId);
+    const response = await getExhibit(exhibitId);
+    const exhibit = response.result ?? response; // 서버 응답은 { isSuccess, code, message, result } 형태
 
     document.title = `${exhibit.name} | BU:LOG`;
     nameEl.textContent = exhibit.name;
