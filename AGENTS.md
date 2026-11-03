@@ -27,6 +27,16 @@
 ```text
 BU-LOG/
 ├── src/main/java/com/bulog/       Spring Boot 백엔드
+│   ├── domain/                    전시물·퀴즈·카드·방문자·회원 도메인
+│   │   ├── exhibit/               전시물 조회와 공공데이터 연동
+│   │   ├── quiz/                  퀴즈 조회와 정답 검증
+│   │   ├── card/                  카드 발급과 아카이브
+│   │   ├── visitor/               게스트 방문자 식별과 기록
+│   │   └── member/                회원가입과 로그인
+│   └── global/
+│       ├── apiPayload/            공통 응답·코드·예외·예외 처리기
+│       ├── config/                공통 설정
+│       └── entity/                공통 엔티티
 ├── src/main/resources/
 │   ├── static/
 │   │   ├── pages/                 화면별 HTML
@@ -42,8 +52,10 @@ BU-LOG/
 └── gradlew                        Gradle Wrapper
 ```
 
-- 백엔드 기능은 기존 `src/main/java/com/bulog/<domain>` 구조와 인접 코드의 패턴을 따릅니다.
-- 도메인은 `exhibit`, `quiz`, `card`, `visitor`를 기준으로 분리합니다.
+- 백엔드 기능은 기존 `src/main/java/com/bulog/domain/<domain>` 구조와 인접 코드의 패턴을 따릅니다.
+- 도메인은 `exhibit`, `quiz`, `card`, `visitor`, `member`를 기준으로 분리합니다.
+- 각 도메인은 `controller`, `service`, `repository`, `entity`, `dto`, `converter`, `exception` 구조를 사용합니다.
+- 여러 도메인이 함께 사용하는 코드만 `src/main/java/com/bulog/global`에 배치하고 특정 도메인 로직은 넣지 않습니다.
 - 프론트엔드 화면은 `src/main/resources/static/pages`, 페이지별 스타일은 `static/css/pages`, 페이지별 동작은 `static/js/pages`에 배치합니다.
 - 여러 화면에서 사용하는 코드만 `static/js/common` 또는 `static/css/components`에 배치합니다.
 - 프론트엔드 소스는 `src/main/resources/static`에서 관리하며 Spring Boot 빌드에 자동 포함합니다.

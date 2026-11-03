@@ -6,13 +6,24 @@
 
 ```text
 BU-LOG/
-├── src/main/java/                    # Spring Boot 백엔드
+├── src/main/java/com/bulog/           # Spring Boot 백엔드
+│   ├── domain/
+│   │   ├── exhibit/                   # 전시물 조회와 공공데이터 연동
+│   │   ├── quiz/                      # 퀴즈 조회와 정답 검증
+│   │   ├── card/                      # 카드 발급과 아카이브
+│   │   ├── visitor/                   # 게스트 방문자 식별과 기록
+│   │   └── member/                    # 회원가입과 로그인
+│   └── global/                        # 공통 응답, 예외, 설정, 보안
 ├── src/main/resources/
-│   ├── static/                       # HTML, CSS, JavaScript 프론트엔드
+│   ├── static/                        # HTML, CSS, JavaScript 프론트엔드
+│   │   ├── pages/                     # 화면별 HTML
+│   │   ├── css/                       # 공통·컴포넌트·화면별 스타일
+│   │   ├── js/                        # API·공통·화면별 JavaScript
+│   │   └── images/                    # 이미지 리소스
 │   ├── application.yml
 │   └── application-local.yml
-├── src/test/                         # 백엔드 테스트
-├── docs/                             # 팀 공통 문서와 API 명세
+├── src/test/java/                     # 백엔드 테스트
+├── docs/                              # 팀 공통 문서와 API 명세
 ├── build.gradle
 └── gradlew
 ```
@@ -40,7 +51,7 @@ Spring Boot 표준 구조를 사용합니다. 프론트엔드는 `src/main/resou
 
 - Frontend A: `exhibit.html`, `quiz.html` 및 대응하는 CSS/JS
 - Frontend B: 메인, 카드 획득, 아카이브, 카드 상세 및 대응하는 CSS/JS
-- Backend: 전시물·퀴즈·카드·익명 방문자 도메인, REST API, MySQL/JPA, 퀴즈 검증, 카드 발급, 방문자 기록, EC2 배포
+- Backend: 전시물·퀴즈·카드·게스트 방문자·회원 도메인, REST API, MySQL/JPA, 퀴즈 검증, 카드 발급, 방문자 기록, EC2 배포
 - Design: Figma UI/UX, 디지털 카드 템플릿, 로고와 컬러, QR 안내판, 전시물 이미지 및 콘텐츠
 
 공통 프론트엔드 파일은 `src/main/resources/static/css/common.css`, `src/main/resources/static/js/common`, `src/main/resources/static/js/api`에서 관리합니다. 백엔드 코드는 `src/main/java/com/bulog` 아래에서 도메인별로 관리합니다.

@@ -2,21 +2,30 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>나의 아카이브 | BU:LOG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>카드북 | BU:LOG</title>
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/components/card.css">
+  <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/pages/archive.css">
   <script type="module" src="/js/pages/archive.js"></script>
 </head>
 <body>
-  <header id="site-header"></header>
-  <main class="page-shell">
-    <p class="eyebrow">MY ARCHIVE</p>
-    <h1 class="page-title">나의 아카이브</h1>
-    <section class="archive-summary" id="archive-summary" aria-live="polite">수집 현황을 불러오는 영역</section>
-    <section class="archive-grid" id="archive-grid" aria-label="디지털 카드 목록"></section>
+  <main class="archive">
+    <header class="archive__header">
+      <h1 class="archive__title">카드북</h1>
+      <p class="archive__count">
+        <span aria-hidden="true"><strong id="archive-acquired">0</strong> / <span id="archive-total">0</span>장</span>
+        <span class="visually-hidden" id="archive-count-label"></span>
+      </p>
+    </header>
+    <div class="archive__filters" id="archive-filters" role="group" aria-label="전시실 필터"></div>
+    <p class="visually-hidden" id="archive-status" aria-live="polite"></p>
+    <ul class="archive__grid" id="archive-grid" aria-label="유물 카드 목록"></ul>
+    <p class="archive__empty" id="archive-empty" hidden>이 전시실에는 아직 등록된 카드가 없어요.</p>
+    <p class="archive__banner" id="archive-banner" hidden></p>
+    <!-- 화면 표시용 토스트. 스크린리더 안내는 #archive-status가 맡는다. -->
+    <p class="archive__toast" id="archive-toast" aria-hidden="true"></p>
   </main>
-  <footer id="site-footer"></footer>
 </body>
 </html>
