@@ -1,5 +1,7 @@
 package com.bulog.domain.quiz.service;
 
+import com.bulog.domain.card.dto.res.CardAcquisitionResponseDTO;
+import com.bulog.domain.card.service.CardService;
 import com.bulog.domain.quiz.converter.QuizConverter;
 import com.bulog.domain.quiz.dto.res.QuizAttemptResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizResponseDTO;
@@ -7,6 +9,7 @@ import com.bulog.domain.quiz.entity.Quiz;
 import com.bulog.domain.quiz.exception.QuizException;
 import com.bulog.domain.quiz.exception.code.QuizErrorCode;
 import com.bulog.domain.quiz.repository.QuizReader;
+import com.bulog.domain.visitor.entity.Visitor;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuizService {
 
     private final QuizReader quizReader;
+    private final CardService cardService;
 
     @Transactional(readOnly = true)
     public QuizResponseDTO getQuizByExhibitId(String exhibitId) {
@@ -29,8 +33,13 @@ public class QuizService {
         return QuizConverter.toResponse(quiz);
     }
 
-    @Transactional(readOnly = true)
-    public QuizAttemptResponseDTO grade(Long quizId, Long selectedOptionId) {
+    @Transactional
+    public QuizAttemptResponseDTO grade(
+            Long quizId,
+            Long selectedOptionId,
+            Visitor visitor,
+            Long authenticatedMemberId
+    ) {
         Quiz quiz = quizReader.findById(quizId)
                 .orElseThrow(() -> new QuizException(
                         QuizErrorCode.QUIZ_NOT_FOUND,
@@ -44,6 +53,10 @@ public class QuizService {
             );
         }
 
-        return QuizConverter.toAttemptResponse(quiz, quiz.isCorrectOption(selectedOptionId));
+        boolean correct = quiz.isCorrectOption(selectedOptionId);
+        CardAcquisitionResponseDTO card = correct
+                ? cardService.issueCard(visitor, authenticatedMemberId, quiz.getExhibitId())
+                : null;
+        return QuizConverter.toAttemptResponse(quiz, correct, card);
     }
 }

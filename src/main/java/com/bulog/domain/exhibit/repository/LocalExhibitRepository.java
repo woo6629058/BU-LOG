@@ -1,6 +1,7 @@
 package com.bulog.domain.exhibit.repository;
 
 import com.bulog.domain.exhibit.entity.Exhibit;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.annotation.Profile;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Profile("local")
-public class LocalExhibitRepository implements ExhibitReader {
+public class LocalExhibitRepository implements ExhibitCatalog {
 
     private static final Map<String, Exhibit> EXHIBITS = Map.of(
             "goryeo-celadon",
@@ -28,5 +29,10 @@ public class LocalExhibitRepository implements ExhibitReader {
     @Override
     public Optional<Exhibit> findById(String exhibitId) {
         return Optional.ofNullable(EXHIBITS.get(exhibitId));
+    }
+
+    @Override
+    public List<Exhibit> findAll() {
+        return List.copyOf(EXHIBITS.values());
     }
 }
