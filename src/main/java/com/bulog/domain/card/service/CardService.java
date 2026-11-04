@@ -79,7 +79,7 @@ public class CardService {
                         LinkedHashMap::new
                 ));
 
-        List<Exhibit> exhibits = exhibitCatalog.findAll();
+        List<Exhibit> exhibits = exhibitCatalog.findAllCollectible();
         List<ArchiveCardResponseDTO> archiveCards = exhibits.stream()
                 .map(exhibit -> CardConverter.toArchiveResponse(
                         exhibit,
