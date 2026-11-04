@@ -90,6 +90,58 @@
 }
 ```
 
+## 전시물 목록
+
+`GET /api/exhibits`
+
+조회 조건은 모두 선택 사항입니다.
+
+- `keyword`: 전시물 이름 검색
+- `exhibitionRoom`: 전시실 이름 필터
+- `collectible`: 카드 수집 대상 여부
+- `page`: 0부터 시작하는 페이지 번호, 기본값 `0`
+- `size`: 페이지당 개수, 기본값 `20`, 최대 `100`
+
+```json
+{
+  "isSuccess": true,
+  "code": "EXHIBIT_200_002",
+  "message": "전시물 목록 조회에 성공했습니다.",
+  "result": {
+    "exhibits": [
+      {
+        "id": "PS0100346400100000100000",
+        "name": "지세약해",
+        "era": null,
+        "imageUrl": "/api/exhibits/PS0100346400100000100000/image",
+        "museumName": "부천시립박물관",
+        "exhibitionRoom": "교육박물관",
+        "cardNumber": 1,
+        "visitOrder": 1,
+        "collectible": true
+      }
+    ],
+    "page": 0,
+    "size": 20,
+    "totalElements": 3687,
+    "totalPages": 185
+  }
+}
+```
+
+e뮤지엄에서 가져온 전체 소장품과 실제 카드 수집 대상으로 선정한 소장품을 함께 관리합니다.
+`collectible=true` 조건을 사용하면 카드 수집 대상만 조회할 수 있습니다. 전시실·카드 번호·관람
+순서는 카드 대상으로 선정할 때 입력합니다.
+
+## 전시물 이미지
+
+`GET /api/exhibits/{exhibitId}/image`
+
+e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접 노출하지 않도록 백엔드가 이미지를
+대신 조회하여 바이너리로 반환합니다. 정상 응답의 `Content-Type`은 원본 이미지 형식을 따르며,
+브라우저 캐시는 7일로 설정됩니다. 이미지가 없는 전시물은 `EXHIBIT_404_002`, e뮤지엄 장애는
+`EXHIBIT_503_002`를 반환합니다.
+
 ## 전시물 퀴즈
 
 `GET /api/exhibits/{exhibitId}/quiz`

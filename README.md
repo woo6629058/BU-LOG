@@ -60,13 +60,39 @@ Spring Boot 표준 구조를 사용합니다. 프론트엔드는 `src/main/resou
 
 API 요청·응답 명세는 [`docs/api-contract.md`](docs/api-contract.md)에 있습니다.
 
-## MySQL 및 EC2
+## 환경 설정
 
-`.env.example`을 참고해 EC2 환경변수를 등록하고 `prod` 프로필로 실행합니다. `.env`와 프로필별 비밀 설정 파일은 Git에서 제외됩니다.
+실제 비밀번호와 API 인증키는 코드나 설정 파일에 작성하지 않고 환경변수로 관리합니다.
+필요한 환경변수 이름과 예시값은 `.env.example`에서 확인할 수 있습니다. 실제 `.env`와
+프로필별 비밀 설정 파일은 Git에서 제외됩니다.
 
-- `SPRING_PROFILES_ACTIVE=prod`
-- `DB_URL`
-- `DB_USERNAME`
-- `DB_PASSWORD`
+### MySQL 및 실행 프로필
 
-초기 개발 단계의 `JPA_DDL_AUTO` 기본값은 `update`입니다. 실제 데이터와 스키마가 안정되면 `validate`로 전환하고 마이그레이션 도구 도입을 검토합니다.
+MySQL을 사용하는 개발·운영 환경에서는 다음 환경변수를 등록합니다.
+
+- `SPRING_PROFILES_ACTIVE`: 로컬 DB 개발은 `dev`, EC2 운영은 `prod`
+- `DB_URL`: MySQL JDBC 주소
+- `DB_USERNAME`: MySQL 사용자 이름
+- `DB_PASSWORD`: MySQL 비밀번호
+
+기본 `local` 프로필은 MySQL 연결 없이 프론트 화면과 로컬 샘플 데이터를 확인할 때 사용합니다.
+초기 개발 단계의 `JPA_DDL_AUTO` 기본값은 `update`입니다. 실제 데이터와 스키마가 안정되면
+`validate`로 전환하고 마이그레이션 도구 도입을 검토합니다.
+
+### e뮤지엄 Open API
+
+부천시립박물관 소장품 정보를 가져오기 위해 다음 환경변수를 사용합니다.
+
+- `EMUSEUM_API_SERVICE_KEY`: 공공데이터포털에서 발급받은 인증키
+- `EMUSEUM_INSTITUTION_CODE`: 부천시립박물관 기관 코드, 기본값 `PS01003464`
+- `EMUSEUM_SYNC_PAGE_SIZE`: 동기화 요청당 조회 개수, 기본값 `1000`
+
+인증키는 README, 코드, 커밋 또는 Pull Request에 작성하지 않습니다. e뮤지엄 이미지 주소도
+접근 정보가 포함될 수 있으므로 프론트엔드에 직접 전달하지 않고 백엔드 이미지 API를 통해
+제공합니다.
+
+### e뮤지엄 소장품 동기화
+
+DB가 연결된 `dev` 또는 `prod` 프로필에서 `EMUSEUM_SYNC_ENABLED=true`로 애플리케이션을
+한 번 실행하면 e뮤지엄 소장품 목록을 DB에 저장합니다. 동기화 완료 로그를 확인한 후에는
+재시작할 때마다 공공 API를 호출하지 않도록 다시 `false`로 변경합니다.

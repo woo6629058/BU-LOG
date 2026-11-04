@@ -8,6 +8,10 @@ public record ExhibitResponseDTO(
         String imageUrl,
         String museumName,
         String sourceName,
-        String sourceUrl
+        String sourceUrl,
+        String exhibitionRoom,
+        Integer cardNumber,
+        Integer visitOrder,
+        boolean collectible
 ) {
 }
