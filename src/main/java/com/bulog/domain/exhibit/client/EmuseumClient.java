@@ -89,25 +89,44 @@ public class EmuseumClient {
     }
 
     static EmuseumImage validateImageResponse(ResponseEntity<byte[]> response) {
-        MediaType contentType = response.getHeaders().getContentType();
         byte[] content = response.getBody();
+        MediaType detectedContentType = detectImageType(content);
         if (!response.getStatusCode().is2xxSuccessful()
-                || !isSupportedImageType(contentType)
-                || content == null
-                || content.length == 0) {
+                || detectedContentType == null) {
             throw new ExhibitException(ExhibitErrorCode.EMUSEUM_UNAVAILABLE);
         }
-        return new EmuseumImage(contentType, content);
+        return new EmuseumImage(detectedContentType, content);
     }
 
-    private static boolean isSupportedImageType(MediaType contentType) {
-        if (contentType == null) {
+    private static MediaType detectImageType(byte[] content) {
+        if (isJpeg(content)) {
+            return MediaType.IMAGE_JPEG;
+        }
+        if (isPng(content)) {
+            return MediaType.IMAGE_PNG;
+        }
+        return null;
+    }
+
+    private static boolean isJpeg(byte[] content) {
+        return content != null
+                && content.length >= 3
+                && (content[0] & 0xFF) == 0xFF
+                && (content[1] & 0xFF) == 0xD8
+                && (content[2] & 0xFF) == 0xFF;
+    }
+
+    private static boolean isPng(byte[] content) {
+        int[] signature = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+        if (content == null || content.length < signature.length) {
             return false;
         }
-        boolean imageType = "image".equalsIgnoreCase(contentType.getType());
-        boolean supportedSubtype = "jpeg".equalsIgnoreCase(contentType.getSubtype())
-                || "png".equalsIgnoreCase(contentType.getSubtype());
-        return imageType && supportedSubtype;
+        for (int index = 0; index < signature.length; index++) {
+            if ((content[index] & 0xFF) != signature[index]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void validateImageUri(URI imageUri) {
