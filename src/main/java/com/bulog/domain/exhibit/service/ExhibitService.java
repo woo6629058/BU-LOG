@@ -41,7 +41,10 @@ public class ExhibitService {
         PageRequest pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by(Sort.Order.asc("visitOrder"), Sort.Order.asc("name"))
+                Sort.by(
+                        Sort.Order.asc("visitOrder").nullsLast(),
+                        Sort.Order.asc("name")
+                )
         );
         return ExhibitConverter.toListResponse(exhibitCatalog.search(
                 normalize(keyword),

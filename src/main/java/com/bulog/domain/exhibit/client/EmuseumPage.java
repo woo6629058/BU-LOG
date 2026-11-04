@@ -6,6 +6,7 @@ public record EmuseumPage(
         int pageNumber,
         int pageSize,
         long totalCount,
+        int rawItemCount,
         List<EmuseumExhibitSummary> exhibits
 ) {
 }

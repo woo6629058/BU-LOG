@@ -27,6 +27,9 @@ class EmuseumXmlParserTest {
                       <item key="museumName2" value="부천시립박물관"/>
                       <item key="imgUri" value="http://example.com/img?serviceKey=hidden&amp;imageId=abc%2Bdef%3D"/>
                     </data>
+                    <data>
+                      <item key="id" value="PS0100346400100000200000"/>
+                    </data>
                   </list>
                 </result>
                 """;
@@ -36,6 +39,7 @@ class EmuseumXmlParserTest {
         assertThat(page.pageNumber()).isEqualTo(1);
         assertThat(page.pageSize()).isEqualTo(1000);
         assertThat(page.totalCount()).isEqualTo(3687);
+        assertThat(page.rawItemCount()).isEqualTo(2);
         assertThat(page.exhibits()).containsExactly(new EmuseumExhibitSummary(
                 "PS0100346400100000100000",
                 "지세약해",

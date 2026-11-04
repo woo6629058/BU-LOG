@@ -46,7 +46,13 @@ public class EmuseumXmlParser {
                 ));
             }
 
-            return new EmuseumPage(pageNumber, pageSize, totalCount, List.copyOf(exhibits));
+            return new EmuseumPage(
+                    pageNumber,
+                    pageSize,
+                    totalCount,
+                    dataNodes.getLength(),
+                    List.copyOf(exhibits)
+            );
         } catch (ExhibitException exception) {
             throw exception;
         } catch (Exception exception) {

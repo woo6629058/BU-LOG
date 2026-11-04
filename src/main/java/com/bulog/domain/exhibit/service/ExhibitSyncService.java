@@ -33,11 +33,11 @@ public class ExhibitSyncService {
 
         do {
             EmuseumPage page = emuseumClient.getExhibits(pageNumber, properties.syncPageSize());
-            if (page.exhibits().isEmpty() && processedCount < page.totalCount()) {
+            if (page.rawItemCount() == 0 && processedCount < page.totalCount()) {
                 throw new IllegalStateException("e뮤지엄 목록 동기화가 완료되기 전에 빈 페이지가 반환되었습니다.");
             }
             SyncPageResult result = storePage(page.exhibits());
-            processedCount += result.processedCount();
+            processedCount += page.rawItemCount();
             createdCount += result.createdCount();
             updatedCount += result.updatedCount();
             totalCount = page.totalCount();
@@ -48,6 +48,9 @@ public class ExhibitSyncService {
     }
 
     private SyncPageResult storePage(List<EmuseumExhibitSummary> summaries) {
+        if (summaries.isEmpty()) {
+            return new SyncPageResult(0, 0);
+        }
         List<String> externalIds = summaries.stream()
                 .map(EmuseumExhibitSummary::id)
                 .toList();
@@ -81,11 +84,10 @@ public class ExhibitSyncService {
 
         Collection<Exhibit> exhibits = existingByExternalId.values();
         exhibitRepository.saveAll(exhibits);
-        return new SyncPageResult(summaries.size(), createdCount, updatedCount);
+        return new SyncPageResult(createdCount, updatedCount);
     }
 
     private record SyncPageResult(
-            int processedCount,
             int createdCount,
             int updatedCount
     ) {

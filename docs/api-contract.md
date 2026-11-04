@@ -112,6 +112,7 @@
       {
         "id": "PS0100346400100000100000",
         "name": "지세약해",
+        "era": null,
         "imageUrl": "/api/exhibits/PS0100346400100000100000/image",
         "museumName": "부천시립박물관",
         "exhibitionRoom": "교육박물관",
