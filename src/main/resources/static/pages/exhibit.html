@@ -21,7 +21,7 @@
     <div class="exhibit-topbar">
       <a class="exhibit-back" href="/" aria-label="뒤로가기">
         <span class="exhibit-back__icon" aria-hidden="true">‹</span>
-        <span id="exhibit-gallery">옹기2전시실</span>
+        <span id="exhibit-gallery">돌아가기</span>
       </a>
       <span class="exhibit-badge">✓ QR 인증 완료</span>
     </div>
@@ -32,22 +32,21 @@
       <img class="exhibit-photo__img" id="exhibit-image" alt="" hidden>
     </div>
 
-    <!-- 태그 -->
+    <!-- 태그: 전시실, 유물 번호 (API 값이 없으면 숨김) -->
     <div class="exhibit-tags">
-      <span class="exhibit-tag exhibit-tag--accent" id="exhibit-gallery-tag">옹기2전시실</span>
-      <span class="exhibit-tag" id="exhibit-card-no">카드 No.08</span>
-      <span class="exhibit-tag" id="exhibit-era" hidden></span>
+      <span class="exhibit-tag exhibit-tag--accent" id="exhibit-gallery-tag" hidden></span>
+      <span class="exhibit-tag" id="exhibit-card-no" hidden></span>
     </div>
 
     <!-- 유물 이름, 설명 (API 데이터로 바뀜) -->
-    <h1 class="exhibit-name" id="exhibit-name">소줏고리</h1>
-    <p class="exhibit-description" id="exhibit-description">소줏고리는 발효시킨 술을 끓여 맑은 소주를 받아 내던 옹기예요. 아래위 두 동이를 맞붙인 모양으로, 위로 올라간 김이 식으면서 맺힌 술방울이 꼭지를 따라 흘러나옵니다.</p>
+    <h1 class="exhibit-name" id="exhibit-name">유물을 불러오고 있어요</h1>
+    <p class="exhibit-description" id="exhibit-description"></p>
 
-    <!-- 관찰 미션 박스 (문구는 회의 후 API로 바꿀 예정) -->
+    <!-- 관찰 미션 박스 (질문은 퀴즈 API에서 받아서 채움) -->
     <section class="mission-box" aria-labelledby="mission-label">
       <p class="mission-box__label" id="mission-label">관찰 미션</p>
-      <p class="mission-box__question" id="mission-question">전시된 소줏고리를 직접 찾아보세요. 술이 흘러나오는 꼭지는 몇 개인가요?</p>
-      <p class="mission-box__note">한 번에 맞히면 골드 카드를 받아요</p>
+      <p class="mission-box__question" id="mission-question">전시된 유물을 직접 찾아 자세히 살펴보세요.</p>
+      <p class="mission-box__note">한 번에 맞히면 황금 유물로 받아요</p>
     </section>
 
     <!-- 하단 고정 버튼 -->
