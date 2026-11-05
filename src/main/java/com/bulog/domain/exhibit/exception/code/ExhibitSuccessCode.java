@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 
 public enum ExhibitSuccessCode implements BaseCode {
 
-    EXHIBIT_FOUND(HttpStatus.OK, "EXHIBIT_200_001", "전시물 조회에 성공했습니다.");
+    EXHIBIT_FOUND(HttpStatus.OK, "EXHIBIT_200_001", "전시물 조회에 성공했습니다."),
+    EXHIBIT_LIST_FOUND(HttpStatus.OK, "EXHIBIT_200_002", "전시물 목록 조회에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -32,7 +35,33 @@ public class LocalExhibitRepository implements ExhibitCatalog {
     }
 
     @Override
-    public List<Exhibit> findAll() {
+    public List<Exhibit> findAllCollectible() {
+        return allExhibits().stream()
+                .filter(Exhibit::isCollectible)
+                .toList();
+    }
+
+    @Override
+    public Page<Exhibit> search(
+            String keyword,
+            String exhibitionRoom,
+            Boolean collectible,
+            Pageable pageable
+    ) {
+        List<Exhibit> filtered = allExhibits().stream()
+                .filter(exhibit -> keyword == null
+                        || exhibit.getName().toLowerCase().contains(keyword.toLowerCase()))
+                .filter(exhibit -> exhibitionRoom == null
+                        || exhibitionRoom.equals(exhibit.getExhibitionRoom()))
+                .filter(exhibit -> collectible == null
+                        || collectible == exhibit.isCollectible())
+                .toList();
+        int start = Math.min((int) pageable.getOffset(), filtered.size());
+        int end = Math.min(start + pageable.getPageSize(), filtered.size());
+        return new PageImpl<>(filtered.subList(start, end), pageable, filtered.size());
+    }
+
+    private List<Exhibit> allExhibits() {
         return List.copyOf(EXHIBITS.values());
     }
 }

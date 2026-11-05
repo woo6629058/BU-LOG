@@ -39,3 +39,5 @@ external:
     base-url: ${EMUSEUM_API_BASE_URL:http://apis.data.go.kr/1371027/openapi}
     service-key: ${EMUSEUM_API_SERVICE_KEY:}
     institution-code: ${EMUSEUM_INSTITUTION_CODE:PS01003464}
+    sync-enabled: ${EMUSEUM_SYNC_ENABLED:false}
+    sync-page-size: ${EMUSEUM_SYNC_PAGE_SIZE:1000}
