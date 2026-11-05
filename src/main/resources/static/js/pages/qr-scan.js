@@ -1,4 +1,5 @@
 import { getExhibit } from '../api/exhibits-api.js';
+import { apiRequest } from '../api/api-client.js';
 
 // QR을 몇 ms마다 읽을지 (너무 짧으면 폰이 뜨거워짐)
 const SCAN_INTERVAL_MS = 200;
@@ -229,10 +230,10 @@ async function lookUpExhibit(exhibitId) {
 }
 
 // 결과 시트 위쪽 작은 글자: "옹기2전시실 · No.08"
-// TODO(조장과 확인): 전시실 이름·카드 번호가 API에 생기면 이름 맞추기 (지금은 박물관 이름만 있음)
+// 전시실이 없으면 박물관 이름으로 대신 표시
 function buildMeta(exhibit) {
-  const place = exhibit.galleryName ?? exhibit.roomName ?? exhibit.museumName;
-  const number = exhibit.cardNumber ?? exhibit.cardNo;
+  const place = exhibit.exhibitionRoom ?? exhibit.museumName;
+  const number = exhibit.cardNumber;
   const numberText = number !== undefined && number !== null ? `No.${String(number).padStart(2, '0')}` : null;
   return [place, numberText].filter(Boolean).join(' · ');
 }
@@ -264,7 +265,7 @@ function showFound(exhibitId, exhibit) {
 
   els.resultMeta.textContent = buildMeta(exhibit);
   els.resultTitle.textContent = `${withObjectParticle(exhibit.name ?? '유물')} 찾았어요!`;
-  els.resultDesc.textContent = '미션을 성공하면 카드를 얻을 수 있어요';
+  els.resultDesc.textContent = '미션을 성공하면 그림 속 빈자리가 채워져요';
   els.resultAction.textContent = '미션 보러 가기';
   els.resultAction.onclick = () => {
     stopCamera();
@@ -310,10 +311,42 @@ els.manualOpen.addEventListener('click', () => {
 
 els.manualCancel.addEventListener('click', backToScanning);
 
-els.manualForm.addEventListener('submit', (event) => {
+// "8", "08", "No.08", "no 8" → 8 / 숫자가 아니면 null
+export function parseCardNumber(text) {
+  const match = String(text ?? '').trim().match(/^(?:no\.?\s*)?(\d{1,3})$/i);
+  return match ? Number(match[1]) : null;
+}
+
+// 수집 대상 유물 목록에서 번호가 같은 유물의 id 찾기 (수집 대상은 24개라 한 번에 받아도 충분)
+async function findExhibitIdByNumber(cardNumber) {
+  const list = unwrap(await apiRequest('/exhibits?collectible=true&size=100'));
+  const exhibit = (list?.exhibits ?? []).find((item) => item.cardNumber === cardNumber);
+  return exhibit?.id ?? null;
+}
+
+els.manualForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const exhibitId = parseExhibitId(els.manualInput.value);
+  const value = els.manualInput.value;
   els.manualForm.hidden = true;
+
+  const cardNumber = parseCardNumber(value);
+  if (cardNumber !== null) {
+    showGuide('유물을 찾고 있어요', '');
+    try {
+      const exhibitId = await findExhibitIdByNumber(cardNumber);
+      if (exhibitId) {
+        lookUpExhibit(exhibitId);
+      } else {
+        flashError(`No.${String(cardNumber).padStart(2, '0')} 유물을 찾을 수 없어요`, 'QR 코드 아래에 적힌 번호를 확인해 주세요');
+      }
+    } catch {
+      flashError('유물 정보를 불러오지 못했어요', '잠시 후 다시 시도해 주세요');
+    }
+    return;
+  }
+
+  // 숫자가 아니면 전시물 id나 주소로 보고 찾음 (개발 중 테스트용)
+  const exhibitId = parseExhibitId(value);
   if (!exhibitId) {
     flashError('번호를 다시 확인해 주세요', 'QR 코드 아래에 적힌 번호를 입력해 주세요');
     return;
