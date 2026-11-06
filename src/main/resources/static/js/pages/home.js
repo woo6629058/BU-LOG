@@ -1,17 +1,17 @@
 import { mountTabBar } from '../common/tab-bar.js';
 import {
-  SAMPLE_CARDS,
-  SAMPLE_ROOMS,
+  ROOMS,
+  SAMPLE_RECORDS,
+  acquiredSet,
   describeNextGoal,
   progressPercent,
-  summarize,
-  summarizeRooms,
+  summarizeAll,
+  summarizeRoom,
 } from '../common/collection-data.js';
 
 mountTabBar({ active: 'home' });
 
-const rooms = SAMPLE_ROOMS;
-const cards = SAMPLE_CARDS;
+const acquired = acquiredSet(SAMPLE_RECORDS);
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -21,51 +21,44 @@ function element(tag, className, text) {
 }
 
 function renderProgress() {
-  const { acquired, total } = summarize(cards);
-  document.querySelector('#home-acquired').textContent = acquired;
+  const { filled, total } = summarizeAll(ROOMS, acquired);
+  document.querySelector('#home-filled').textContent = filled;
   document.querySelector('#home-total').textContent = total;
-  document.querySelector('#home-count-label').textContent = `${total}장 중 ${acquired}장 수집`;
-  document.querySelector('#home-progress-fill').style.width = `${progressPercent(acquired, total)}%`;
-  document.querySelector('#home-hint').textContent = describeNextGoal(rooms, cards);
+  document.querySelector('#home-count-label').textContent = `${total}칸 중 ${filled}칸 채움`;
+  document.querySelector('#home-progress-fill').style.width = `${progressPercent(filled, total)}%`;
+  document.querySelector('#home-hint').textContent = describeNextGoal(ROOMS, acquired);
 }
 
-function renderRoom({ room, acquired, total, complete }) {
-  const item = element('li', `home-room${complete ? ' home-room--complete' : ''}`);
+function renderRoom({ room, filled, total, complete }, index) {
+  const item = element('li');
+  const link = element('a', `home-room${complete ? ' home-room--complete' : ''}`);
+  link.href = `/pages/picture-book.html?room=${encodeURIComponent(room.id)}`;
 
-  const text = element('div', 'home-room__text');
-  text.append(element('h3', 'home-room__name', room.name));
-  if (room.description) text.append(element('p', 'home-room__desc', room.description));
+  const number = element('span', 'home-room__number', complete ? '' : String(index + 1));
+  number.setAttribute('aria-hidden', 'true');
 
-  const status = element('div', 'home-room__status');
-  if (complete) {
-    const badge = element('span', 'home-room__badge', '세트 완성');
-    badge.append(element('span', 'visually-hidden', `, ${total}장 모두 수집`));
-    status.append(badge);
-  } else {
-    const count = element('span', `home-room__count${acquired > 0 ? ' is-active' : ''}`);
-    count.append(
-      element('span', '', `${acquired} / ${total}`),
-      element('span', 'visually-hidden', `${total}장 중 ${acquired}장 수집`),
-    );
-    count.firstChild.setAttribute('aria-hidden', 'true');
-    status.append(count);
-  }
+  const text = element('span', 'home-room__text');
+  text.append(element('span', 'home-room__name', room.name), element('span', 'home-room__desc', room.description));
 
+  const status = element('span', 'home-room__status');
+  const count = element('span', `home-room__count${filled > 0 ? ' is-active' : ''}`, complete ? '완성' : `${filled} / ${total}`);
+  count.setAttribute('aria-hidden', 'true');
   const bar = element('span', 'home-room__bar');
   bar.setAttribute('aria-hidden', 'true');
   const fill = element('span');
-  fill.style.width = `${progressPercent(acquired, total)}%`;
+  fill.style.width = `${progressPercent(filled, total)}%`;
   bar.append(fill);
-  status.append(bar);
+  status.append(count, bar);
 
-  item.append(text, status);
+  const label = complete ? `그림 완성` : `${total}칸 중 ${filled}칸 채움`;
+  link.append(number, text, status, element('span', 'visually-hidden', `, ${label}`));
+  item.append(link);
   return item;
 }
 
 function renderRooms() {
-  const { total } = summarize(cards);
-  document.querySelector('#home-rooms-meta').textContent = `${rooms.length}개 전시실 · ${total}장`;
-  document.querySelector('#home-room-list').replaceChildren(...summarizeRooms(rooms, cards).map(renderRoom));
+  const list = document.querySelector('#home-room-list');
+  list.replaceChildren(...ROOMS.map((room, index) => renderRoom(summarizeRoom(room, acquired), index)));
 }
 
 renderProgress();
