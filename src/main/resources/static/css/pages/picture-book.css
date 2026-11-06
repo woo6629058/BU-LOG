@@ -1,0 +1,338 @@
+/*
+ * 그림 도감: 전시실 칩으로 고른 전시실의 그림과 구역 목록.
+ * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ */
+.book {
+  --book-ink: var(--color-ink, #2B211A);
+  --book-muted: var(--color-muted, #6F6155);
+  --book-accent: var(--color-accent, #A8502F);
+  --book-line: var(--color-line-soft, #E4DACB);
+  --book-surface: var(--color-surface, #FFFFFF);
+  --book-done: var(--color-done-line, #C9A27A);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px 20px 32px;
+  color: var(--book-ink);
+  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+}
+
+/* 아래 display 규칙이 hidden 속성을 덮어쓰지 않게 한다 */
+.book [hidden] {
+  display: none;
+}
+
+.book__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 전시실 보기 → 전체 보기 */
+.book__back {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -12px;
+  border-radius: 50%;
+  color: var(--book-ink);
+}
+
+.book__back svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.book__back:focus-visible,
+.book__frame:focus-visible {
+  outline: 3px solid var(--book-accent);
+  outline-offset: 2px;
+}
+
+/* 전체 보기: 전시실 6곳을 2열 액자로 */
+.book__overview,
+.book__hall {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.book__intro {
+  margin: -6px 0 0;
+  color: var(--book-muted);
+  font-size: 13px;
+}
+
+.book__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book__frame {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 100%;
+  padding: 8px 8px 10px;
+  border: 1px solid var(--book-line);
+  border-radius: 14px;
+  color: var(--book-ink);
+  background: var(--book-surface);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.book__frame:hover {
+  border-color: var(--book-accent);
+}
+
+.book__frame:active {
+  transform: scale(0.98);
+}
+
+.book__frame.is-complete {
+  border: 1.5px solid var(--color-gold, #C9A13B);
+}
+
+.book__frame .scene {
+  margin-bottom: 6px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--scene-frame);
+}
+
+.book__frame-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.book__frame-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.book__frame-count {
+  flex-shrink: 0;
+  color: var(--book-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.book__frame.is-complete .book__frame-count {
+  color: var(--color-gold-text, #8A6516);
+}
+
+.book__frame-title {
+  overflow: hidden;
+  color: var(--book-muted);
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.book__demo-hint {
+  margin: -4px 0 0;
+  padding: 8px 12px;
+  border: 1px dashed var(--book-line);
+  border-radius: 10px;
+  color: var(--book-muted);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book__frame {
+    transition: none;
+  }
+}
+
+.book__title {
+  margin: 0;
+  font-family: var(--font-serif, "Gowun Batang", serif);
+  font-size: 26px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.book__count {
+  margin: 0 0 0 auto;
+  color: var(--book-muted);
+  font-size: 15px;
+}
+
+.book__count strong {
+  color: var(--book-accent);
+  font-size: 20px;
+}
+
+/* 전시실 칩: 줄바꿈 대신 가로로 넘긴다 */
+.book__rooms {
+  margin-inline: -20px;
+}
+
+.book__chips {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 20px 6px;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.book__chips::-webkit-scrollbar {
+  display: none;
+}
+
+.book__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--book-line);
+  border-radius: 999px;
+  color: var(--book-ink);
+  background: var(--book-surface);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.book__chip[aria-current="page"] {
+  border-color: var(--book-ink);
+  color: #FFFFFF;
+  background: var(--book-ink);
+}
+
+.book__chip:focus-visible,
+.book__region:focus-visible {
+  outline: 3px solid var(--book-accent);
+  outline-offset: 2px;
+}
+
+.book__scene {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.book__scene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.book__room-name {
+  margin: 0 0 2px;
+  color: var(--book-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.book__scene-title {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.book__scene-count {
+  flex-shrink: 0;
+  margin: 0;
+  color: var(--book-muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.book__message {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--book-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.book__message.is-complete {
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: var(--book-ink);
+  background: var(--color-note, #FBF1DF);
+  font-weight: 600;
+}
+
+/* 구역 목록: 2열 */
+.book__regions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book__region {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid var(--book-line);
+  border-radius: 12px;
+  color: var(--book-muted);
+  background: var(--book-surface);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.book__region.is-done {
+  border-color: var(--book-done);
+  color: var(--book-ink);
+  font-weight: 600;
+}
+
+.book__region-order {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1.5px dashed currentColor;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.book__region.is-done .book__region-order {
+  border: 0;
+  color: #FFFFFF;
+  background: var(--book-accent);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

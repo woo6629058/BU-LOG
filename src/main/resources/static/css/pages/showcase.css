@@ -1,0 +1,191 @@
+/*
+ * 진열장: 전시실마다 나무 진열장 하나(3열 선반)를 위에서 아래로 쌓는다 (시안 A).
+ * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ */
+.showcase {
+  --showcase-ink: var(--color-ink, #2B211A);
+  --showcase-muted: var(--color-muted, #6F6155);
+  --showcase-accent: var(--color-accent, #A8502F);
+  --showcase-track: var(--color-track, #E6DCCD);
+  --showcase-wood: var(--color-wood, #8A5A3B);
+  --showcase-wood-light: var(--color-wood-light, #A06E4C);
+  --showcase-wood-dark: var(--color-wood-dark, #4D2E1B);
+  --showcase-slot: var(--color-slot, #FFF8EC);
+
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px 20px 32px;
+  color: var(--showcase-ink);
+  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+}
+
+.showcase__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.showcase__title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.showcase__title {
+  margin: 0;
+  font-family: var(--font-serif, "Gowun Batang", serif);
+  font-size: 26px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.showcase__count {
+  margin: 0;
+  color: var(--showcase-muted);
+  font-size: 15px;
+}
+
+.showcase__count strong {
+  color: var(--showcase-accent);
+  font-size: 20px;
+}
+
+.showcase__bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--showcase-track);
+}
+
+.showcase__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--showcase-accent);
+}
+
+.showcase__intro {
+  margin: 0;
+  color: var(--showcase-muted);
+  font-size: 13px;
+}
+
+.showcase__halls {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.showcase__hall-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.showcase__hall-title {
+  margin: 0;
+  font-size: 16px;
+}
+
+.showcase__hall-count {
+  margin: 0;
+  color: var(--showcase-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 나무 진열장 */
+.showcase__cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 8px 4px;
+  border-radius: 14px;
+  background: linear-gradient(var(--showcase-wood-light), var(--showcase-wood));
+  box-shadow: inset 0 0 0 2px var(--showcase-wood-dark), 0 6px 14px rgba(43, 33, 26, 0.18);
+}
+
+.showcase__shelf {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 0;
+  padding: 6px 4px 14px;
+  list-style: none;
+}
+
+/* 선반 판 */
+.showcase__shelf::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  bottom: 2px;
+  left: -4px;
+  height: 8px;
+  border-radius: 2px;
+  background: linear-gradient(#6B4229, var(--showcase-wood-dark));
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.25);
+}
+
+.showcase__item {
+  --artifact-size: 52px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  min-height: 96px;
+  padding: 8px 4px 6px;
+  border-radius: 8px;
+  color: var(--showcase-ink);
+  background: var(--showcase-slot);
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+a.showcase__item:hover {
+  transform: translateY(-2px);
+}
+
+a.showcase__item:focus-visible {
+  outline: 3px solid #FFD98A;
+  outline-offset: 2px;
+}
+
+.showcase__item.is-missing {
+  background: color-mix(in srgb, var(--showcase-slot) 60%, transparent);
+}
+
+.showcase__name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.showcase__item.is-missing .showcase__name {
+  color: #5B4C40;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase__item {
+    transition: none;
+  }
+}

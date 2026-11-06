@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="전시실 그림이 얼마나 채워졌는지 보는 BU:LOG 그림 도감">
+  <title>그림 도감 | BU:LOG</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
+  <link rel="stylesheet" href="/css/components/tab-bar.css">
+  <link rel="stylesheet" href="/css/components/scene.css">
+  <link rel="stylesheet" href="/css/pages/picture-book.css">
+  <script type="module" src="/js/pages/picture-book.js"></script>
+</head>
+<body>
+  <main class="book">
+    <header class="book__header">
+      <a class="book__back" id="book-back" href="/pages/picture-book.html" aria-label="전체 그림 보기" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
+      </a>
+      <h1 class="book__title">그림 도감</h1>
+      <p class="book__count">
+        <span aria-hidden="true"><strong id="book-filled">0</strong> / <span id="book-total">0</span></span>
+        <span class="visually-hidden" id="book-count-label"></span>
+      </p>
+    </header>
+
+    <!-- 전체 보기: 전시실 6곳의 그림을 한 화면에 -->
+    <section class="book__overview" id="book-overview" aria-label="전시실 그림 모음" hidden>
+      <p class="book__intro">액자를 누르면 전시실 그림을 크게 볼 수 있어요</p>
+      <ul class="book__grid" id="book-grid"></ul>
+    </section>
+
+    <!-- 전시실 보기: ?room=… -->
+    <div class="book__hall" id="book-hall" hidden>
+      <nav class="book__rooms" aria-label="전시실">
+        <ul class="book__chips" id="book-chips"></ul>
+      </nav>
+
+      <section class="book__scene" aria-labelledby="book-scene-title">
+        <div class="book__scene-header">
+          <div>
+            <p class="book__room-name" id="book-room-name"></p>
+            <h2 class="book__scene-title" id="book-scene-title"></h2>
+          </div>
+          <p class="book__scene-count" id="book-scene-count"></p>
+        </div>
+        <div id="book-scene"></div>
+        <p class="book__demo-hint" id="book-demo-hint">임시: 그림의 빈 구역을 누르면 채워지는 화면을 볼 수 있어요</p>
+        <p class="book__message" id="book-message" aria-live="polite"></p>
+        <h3 class="visually-hidden">구역 목록</h3>
+        <ol class="book__regions" id="book-regions"></ol>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
