@@ -1,3 +1,0 @@
-.card-stage { display: grid; place-items: center; min-height: 420px; }
-.card-stage .artifact-card { width: min(260px, 100%); }
-.card-actions { display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
