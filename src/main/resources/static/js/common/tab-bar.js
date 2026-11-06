@@ -1,4 +1,4 @@
-// 하단 탭바: 홈·카드북 등 탭바가 있는 화면에서 사용한다.
+// 하단 탭바: 홈·그림 도감·진열장 등 탭바가 있는 화면에서 사용한다.
 // 아이콘은 Figma 원본 SVG를 받기 전까지 쓰는 근사 아이콘이다.
 
 const NOTICE_DURATION = 2000;
@@ -23,16 +23,22 @@ const TABS = [
     icon: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 19h1M19 14v1"/>',
   },
   {
-    key: 'cardbook',
-    label: '카드북',
-    href: '/pages/archive.html',
+    key: 'picture-book',
+    label: '그림 도감',
+    href: '/pages/picture-book.html',
     icon: '<rect x="5" y="3.5" width="11" height="15" rx="2"/><path d="M19 7v12a2 2 0 0 1-2 2H9"/>',
   },
   {
     key: 'showcase',
     label: '진열장',
-    href: null,
+    href: '/pages/showcase.html',
     icon: '<rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M4 10h16M4 15.5h16M9 6.5h6"/>',
+  },
+  {
+    key: 'ranking',
+    label: '명예의 전당',
+    href: null,
+    icon: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/>',
   },
 ];
 

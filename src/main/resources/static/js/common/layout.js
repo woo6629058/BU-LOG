@@ -1,6 +1,6 @@
 const navigation = [
   { key: 'home', label: '홈', href: '/' },
-  { key: 'archive', label: '나의 아카이브', href: '/pages/archive.html' },
+  { key: 'picture-book', label: '그림 도감', href: '/pages/picture-book.html' },
 ];
 
 export function mountLayout({ active } = {}) {
