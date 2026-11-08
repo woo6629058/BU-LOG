@@ -37,6 +37,9 @@ public class Exhibit extends BaseEntity {
     @Column(name = "image_url", length = 1000)
     private String imageUrl;
 
+    @Column(name = "external_image_url", length = 2000)
+    private String externalImageUrl;
+
     @Column(name = "museum_name", length = 200, nullable = false)
     private String museumName;
 
@@ -45,6 +48,18 @@ public class Exhibit extends BaseEntity {
 
     @Column(name = "source_url", length = 1000)
     private String sourceUrl;
+
+    @Column(name = "exhibition_room", length = 100)
+    private String exhibitionRoom;
+
+    @Column(name = "card_number")
+    private Integer cardNumber;
+
+    @Column(name = "visit_order")
+    private Integer visitOrder;
+
+    @Column(nullable = false)
+    private boolean collectible;
 
     private Exhibit(
             String id,
@@ -55,7 +70,9 @@ public class Exhibit extends BaseEntity {
             String imageUrl,
             String museumName,
             String sourceName,
-            String sourceUrl
+            String sourceUrl,
+            String externalImageUrl,
+            boolean collectible
     ) {
         this.id = requireText(id, "id");
         this.externalId = normalize(externalId);
@@ -66,6 +83,8 @@ public class Exhibit extends BaseEntity {
         this.museumName = requireText(museumName, "museumName");
         this.sourceName = requireText(sourceName, "sourceName");
         this.sourceUrl = normalize(sourceUrl);
+        this.externalImageUrl = normalize(externalImageUrl);
+        this.collectible = collectible;
     }
 
     public static Exhibit create(
@@ -88,8 +107,58 @@ public class Exhibit extends BaseEntity {
                 imageUrl,
                 museumName,
                 sourceName,
-                sourceUrl
+                sourceUrl,
+                null,
+                true
         );
+    }
+
+    public static Exhibit importFromEmuseum(
+            String externalId,
+            String name,
+            String museumName,
+            String externalImageUrl
+    ) {
+        String imageUrl = normalize(externalImageUrl) == null
+                ? null
+                : "/api/exhibits/" + externalId + "/image";
+        return new Exhibit(
+                externalId,
+                externalId,
+                name,
+                null,
+                "부천시립박물관 소장품입니다.",
+                imageUrl,
+                museumName,
+                "e뮤지엄",
+                "https://www.emuseum.go.kr/",
+                externalImageUrl,
+                false
+        );
+    }
+
+    public void updateExternalSummary(
+            String name,
+            String museumName,
+            String externalImageUrl
+    ) {
+        this.name = requireText(name, "name");
+        this.museumName = requireText(museumName, "museumName");
+        this.externalImageUrl = normalize(externalImageUrl);
+        this.imageUrl = this.externalImageUrl == null
+                ? null
+                : "/api/exhibits/" + id + "/image";
+    }
+
+    public void curate(
+            String exhibitionRoom,
+            Integer cardNumber,
+            Integer visitOrder
+    ) {
+        this.exhibitionRoom = requireText(exhibitionRoom, "exhibitionRoom");
+        this.cardNumber = requirePositive(cardNumber, "cardNumber");
+        this.visitOrder = requirePositive(visitOrder, "visitOrder");
+        this.collectible = true;
     }
 
     private static String requireText(String value, String fieldName) {
@@ -102,5 +171,12 @@ public class Exhibit extends BaseEntity {
 
     private static String normalize(String value) {
         return Objects.isNull(value) || value.isBlank() ? null : value.trim();
+    }
+
+    private static Integer requirePositive(Integer value, String fieldName) {
+        if (value == null || value <= 0) {
+            throw new IllegalArgumentException(fieldName + " must be positive");
+        }
+        return value;
     }
 }

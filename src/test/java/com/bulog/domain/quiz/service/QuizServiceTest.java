@@ -21,6 +21,9 @@ import com.bulog.domain.visitor.service.VisitorTokenService;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 class QuizServiceTest {
 
@@ -161,8 +164,18 @@ class QuizServiceTest {
         }
 
         @Override
-        public List<Exhibit> findAll() {
+        public List<Exhibit> findAllCollectible() {
             return List.of(exhibit);
+        }
+
+        @Override
+        public Page<Exhibit> search(
+                String keyword,
+                String exhibitionRoom,
+                Boolean collectible,
+                Pageable pageable
+        ) {
+            return new PageImpl<>(List.of(exhibit), pageable, 1);
         }
     }
 }
