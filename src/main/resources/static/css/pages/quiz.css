@@ -277,3 +277,191 @@
   background: #d9c9bd;
   cursor: not-allowed;
 }
+/* =========================================================
+   게임 종류별 화면 (숫자 세기, 자물쇠) + 연출
+   ========================================================= */
+
+/* 체험 모드 표시 (?demo=...) */
+.quiz-demo-badge {
+  margin-left: auto;
+  margin-right: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a6a12;
+  background: #f8efd6;
+}
+
+/* 오답: 좌우로 흔들기 */
+.is-shaking { animation: qz-shake 0.4s ease-in-out; }
+
+@keyframes qz-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+/* 숫자가 굴러가듯 바뀌기 */
+.is-rolling-up { animation: qz-roll-up 0.18s ease-out; }
+.is-rolling-down { animation: qz-roll-down 0.18s ease-out; }
+
+@keyframes qz-roll-up {
+  from { transform: translateY(40%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes qz-roll-down {
+  from { transform: translateY(-40%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ---------- B. 숫자 세기 ---------- */
+.quiz-counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 16px;
+  border: 1.5px solid var(--qz-line);
+  border-radius: 16px;
+  background: var(--qz-surface);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.quiz-counter.is-correct {
+  border-color: var(--qz-correct);
+  background: var(--qz-correct-bg);
+}
+
+.quiz-counter__button {
+  width: 52px;
+  height: 52px;
+  border: 1.5px solid var(--qz-line);
+  border-radius: 50%;
+  font: inherit;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--qz-brown);
+  background: #fff;
+  cursor: pointer;
+}
+
+.quiz-counter__button:active:not(:disabled) { transform: scale(0.94); }
+.quiz-counter__button:disabled { opacity: 0.35; cursor: default; }
+
+.quiz-counter__display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 96px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.quiz-counter__value {
+  display: inline-block;
+  font-family: "Gowun Batang", serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--qz-text);
+}
+
+.quiz-counter__unit { font-size: 15px; color: var(--qz-muted); }
+
+.quiz-counter__note {
+  margin: 10px 0 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--qz-muted);
+}
+
+/* ---------- E. 자물쇠 ---------- */
+.quiz-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+}
+
+/* 자물쇠 고리 (맞히면 위로 열림) */
+.quiz-lock__shackle {
+  width: 108px;
+  height: 70px;
+  margin-bottom: -14px;
+  border: 12px solid #a89684;
+  border-bottom: 0;
+  border-radius: 54px 54px 0 0;
+  transform-origin: 85% 100%;
+  transition: transform 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.quiz-lock__body {
+  width: 100%;
+  max-width: 300px;
+  padding: 18px 16px 14px;
+  border-radius: 20px;
+  background: #7a4a2e; /* 옹기 갈색 */
+  transition: background-color 0.3s;
+}
+
+.quiz-lock.is-open .quiz-lock__shackle { transform: translateY(-14px) rotate(-18deg); }
+.quiz-lock.is-open .quiz-lock__body { background: var(--qz-correct); }
+
+.quiz-lock__dials {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.quiz-lock__dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.quiz-lock__step {
+  width: 56px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #f6f1e9;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+
+.quiz-lock__step:active:not(:disabled) { background: rgba(255, 255, 255, 0.25); }
+.quiz-lock__step:disabled { opacity: 0.35; cursor: default; }
+
+.quiz-lock__number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 56px;
+  height: 64px;
+  border-radius: 10px;
+  font-family: "Gowun Batang", serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--qz-text);
+  background: #f6f1e9;
+  box-shadow: inset 0 2px 4px rgba(43, 33, 26, 0.25);
+}
+
+.quiz-lock__label {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f6f1e9;
+}
+
+/* 움직임 줄이기를 켠 사람에게는 연출을 끔 */
+@media (prefers-reduced-motion: reduce) {
+  .is-shaking, .is-rolling-up, .is-rolling-down { animation: none; }
+  .quiz-lock__shackle { transition: none; }
+}

@@ -27,9 +27,9 @@
       </p>
     </div>
 
-    <!-- 유물 이름 · 전시실 (전시실은 API에 없어서 임시 글자) -->
+    <!-- 유물 이름 · 전시실 (전시실이 없으면 이름만 보임) -->
     <p class="quiz-label">
-      <span id="quiz-exhibit-name">유물</span> · <span id="quiz-gallery">옹기2전시실</span>
+      <span id="quiz-exhibit-name">유물</span><span id="quiz-gallery-wrap" hidden> · <span id="quiz-gallery"></span></span>
     </p>
 
     <!-- 질문 -->
@@ -43,12 +43,12 @@
       검색으로는 알 수 없어요. 실물을 보고 답해 주세요
     </p>
 
-    <!-- 게임 영역: 게임 종류(객관식 등)에 맞는 화면을 quiz.js가 채움 -->
+    <!-- 게임 영역: 게임 종류(객관식 / 숫자 세기 / 자물쇠)에 맞는 화면을 quiz.js가 채움 -->
     <div class="quiz-game" id="quiz-game"></div>
 
     <!-- 힌트 (서버가 힌트를 보내줄 때만 보임) -->
     <button class="quiz-hint" id="quiz-hint" type="button" hidden>
-      힌트 보기 · 사용하면 일반 카드로 받아요
+      힌트 보기 · 사용하면 일반 유물로 받아요
     </button>
 
     <!-- 채점 결과 / 안내 문구 -->
