@@ -54,7 +54,7 @@ function renderTab(tab, active) {
   }
   const current = tab.key === active ? ' aria-current="page"' : '';
   return `
-    <a class="tab-bar__link" href="${tab.href}"${current}>
+    <a class="tab-bar__link" href="${tab.href}" data-tab="${tab.key}"${current}>
       ${icon}<span>${tab.label}</span>
     </a>
   `;
@@ -85,8 +85,7 @@ export function mountTabBar({ active } = {}) {
     notice.classList.remove('is-shown');
   });
 
-  nav.addEventListener('click', (event) => {
-    if (!event.target.closest('[aria-disabled="true"]')) return;
+  function showNotice() {
     document.dispatchEvent(new CustomEvent(NOTICE_EVENT, { detail: { source: 'tab-bar' } }));
     notice.textContent = NOTICE_TEXT;
     notice.classList.add('is-shown');
@@ -97,5 +96,12 @@ export function mountTabBar({ active } = {}) {
     clearTimeout(statusTimer);
     status.textContent = '';
     statusTimer = setTimeout(() => { status.textContent = NOTICE_TEXT; }, 50);
+  }
+
+  nav.addEventListener('click', (event) => {
+    if (event.target.closest('[aria-disabled="true"]')) showNotice();
   });
+
+  // 탭바 밖의 준비 중 버튼(홈의 로그인 등)도 같은 안내를 띄울 수 있게 돌려준다.
+  return showNotice;
 }
