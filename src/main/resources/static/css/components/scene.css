@@ -1,0 +1,155 @@
+/*
+ * 전시실 그림 (js/common/scene.js). 그림 채우기 성공·그림 도감 화면에서 쓴다.
+ * 색상은 common.css 토큰이 정해지기 전까지 fallback 값을 사용한다.
+ */
+.scene {
+  --scene-frame: var(--color-frame, #D9B98C);
+  --scene-glow: var(--color-glow, #FFD98A);
+  --scene-cover: var(--color-cover, #F1E6D3);
+  --scene-cover-line: var(--color-cover-line, #A8865F);
+  --scene-ink: var(--color-ink, #2B211A);
+
+  position: relative;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--scene-cover);
+  box-shadow: 0 0 0 3px var(--scene-frame), 0 8px 18px rgba(43, 33, 26, 0.16);
+}
+
+.scene > svg,
+.scene__stage,
+.scene__stage > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.scene__stage {
+  position: relative;
+}
+
+/* reveal: 채운 구역의 컬러 조각 */
+.scene__fill {
+  transition: opacity 0.3s ease;
+}
+
+.scene__fill.is-empty {
+  opacity: 0;
+}
+
+.scene__outline {
+  fill: none;
+  stroke: var(--scene-glow);
+  stroke-width: 0;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.scene__outline.is-highlighted {
+  stroke-width: 8;
+  animation: scene-outline 2s ease-out forwards;
+}
+
+/* 빈 구역 링크 (그림 도감): 평소엔 보이지 않고, 가리키거나 키보드로 고르면 빛난다 */
+.scene__hit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 6;
+  cursor: pointer;
+  transition: fill 0.15s ease, stroke 0.15s ease;
+}
+
+.scene__link {
+  outline: none;
+}
+
+.scene__link:hover .scene__hit,
+.scene__link:focus-visible .scene__hit {
+  fill: rgba(255, 248, 236, 0.28);
+  stroke: var(--scene-glow);
+}
+
+a.scene__spot {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+a.scene__spot:hover,
+a.scene__spot:focus-visible {
+  box-shadow: 0 0 0 3px var(--scene-glow);
+}
+
+/* cover: 남은 구역의 물음표 덮개 */
+.scene__spot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.scene__spot.is-covered {
+  border: 1.5px dashed var(--scene-cover-line);
+  background: color-mix(in srgb, var(--scene-cover) 92%, transparent);
+}
+
+.scene__spot.is-covered::after {
+  content: "?";
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1.5px dashed var(--scene-cover-line);
+  border-radius: 50%;
+  color: var(--scene-cover-line);
+  background: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.scene__spot.is-highlighted {
+  box-shadow: 0 0 0 3px var(--scene-glow), 0 0 16px 4px var(--scene-glow);
+  animation: scene-spot 2s ease-out forwards;
+}
+
+/* 채우기 연출: reveal은 밝게 빛나며 나타났다가 제자리 색으로, cover는 덮개가 커지며 사라진다 */
+.scene__fill.is-filling {
+  animation: scene-fill 0.8s ease-out;
+}
+
+.scene__spot.is-uncovering {
+  animation: scene-uncover 0.6s ease-in forwards;
+}
+
+@keyframes scene-uncover {
+  to { opacity: 0; transform: scale(1.3); }
+}
+
+@keyframes scene-fill {
+  from { opacity: 0; filter: brightness(1.6) saturate(0.6); }
+  60% { opacity: 1; filter: brightness(1.25); }
+  to { opacity: 1; filter: none; }
+}
+
+@keyframes scene-outline {
+  from { stroke-opacity: 1; }
+  to { stroke-opacity: 0; }
+}
+
+@keyframes scene-spot {
+  to { box-shadow: 0 0 0 3px transparent, 0 0 16px 4px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene__fill,
+  .scene__fill.is-filling,
+  .scene__spot.is-uncovering,
+  .scene__outline.is-highlighted,
+  .scene__spot.is-highlighted {
+    animation: none;
+    transition: none;
+  }
+}

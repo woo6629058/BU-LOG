@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="미션을 풀어 모은 유물을 전시실별 선반에 보여 주는 BU:LOG 진열장">
+  <title>진열장 | BU:LOG</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
+  <link rel="stylesheet" href="/css/components/tab-bar.css">
+  <link rel="stylesheet" href="/css/components/artifact-figure.css">
+  <link rel="stylesheet" href="/css/pages/showcase.css">
+  <script type="module" src="/js/pages/showcase.js"></script>
+</head>
+<body>
+  <main class="showcase">
+    <header class="showcase__header">
+      <div class="showcase__title-row">
+        <h1 class="showcase__title">진열장</h1>
+        <p class="showcase__count">
+          <span aria-hidden="true"><strong id="showcase-filled">0</strong> / <span id="showcase-total">0</span></span>
+          <span class="visually-hidden" id="showcase-count-label"></span>
+        </p>
+      </div>
+      <div class="showcase__bar" aria-hidden="true"><span id="showcase-progress"></span></div>
+      <p class="showcase__intro">회색 유물은 전시실에서 QR을 찾아 미션을 풀면 진열돼요</p>
+    </header>
+    <div class="showcase__halls" id="showcase-halls"></div>
+  </main>
+</body>
+</html>
