@@ -132,12 +132,13 @@ IDE 실행 설정 또는 터미널 환경변수에 다음 값을 등록합니다
 
 ```dotenv
 SPRING_PROFILES_ACTIVE=dev
-DB_URL=jdbc:mysql://localhost:3306/bulog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+DB_URL='jdbc:mysql://localhost:3306/bulog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul'
 DB_USERNAME=your_local_user
 DB_PASSWORD=your_local_password
 ```
 
 Spring Boot는 `.env`를 자동으로 읽지 않으므로 IDE 실행 설정에 넣거나 터미널에서 불러옵니다.
+`DB_URL`의 `&`가 셸 명령 구분자로 처리되지 않도록 로컬 `.env`에서는 값을 작은따옴표로 감쌉니다. IDE 실행 설정에는 따옴표 없이 넣고, 서버의 `/opt/bulog/.env`(`docker --env-file`)도 따옴표를 값으로 읽으므로 감싸지 않습니다.
 
 ```bash
 set -a
