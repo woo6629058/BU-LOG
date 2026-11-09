@@ -96,3 +96,22 @@ MySQL을 사용하는 개발·운영 환경에서는 다음 환경변수를 등�
 DB가 연결된 `dev` 또는 `prod` 프로필에서 `EMUSEUM_SYNC_ENABLED=true`로 애플리케이션을
 한 번 실행하면 e뮤지엄 소장품 목록을 DB에 저장합니다. 동기화 완료 로그를 확인한 후에는
 재시작할 때마다 공공 API를 호출하지 않도록 다시 `false`로 변경합니다.
+
+## 배포
+
+`main` 브랜치에 머지되면 GitHub Actions(`.github/workflows/ci-cd.yml`)가 자동으로 배포합니다.
+
+`main`으로 향하는 Pull Request에서는 테스트와 빌드만 실행하고, 이미지 push와 배포는 하지 않습니다.
+
+```text
+GitHub Actions: 테스트 → bootJar → Docker 이미지 → GHCR(ghcr.io/woo6629058/bu-log)
+              → AWS OIDC 로그인 → SSM으로 EC2의 /opt/bulog/deploy.sh 실행
+EC2(Ubuntu):   Nginx(80/443) → bulog 컨테이너(127.0.0.1:8080) → RDS MySQL
+```
+
+- 서버 설정 파일: `/opt/bulog/.env` (예시는 `.env.example`, Git에 올리지 않습니다)
+- 배포 스크립트: `deploy/deploy.sh` → 서버의 `/opt/bulog/deploy.sh`
+- Nginx 설정: `deploy/nginx/bulog.conf` → 서버의 `/etc/nginx/sites-available/bulog`
+- GitHub `production` 환경 Variables: `AWS_DEPLOY_ROLE_ARN`, `EC2_INSTANCE_ID` (배포 브랜치는 `main`만 허용)
+- 수동 배포: Actions 탭에서 `CI/CD` 워크플로를 `Run workflow`로 실행합니다.
+- 서버 접속: AWS 콘솔 → EC2 → 인스턴스 → 연결 → Session Manager (SSH 포트를 열지 않습니다)
