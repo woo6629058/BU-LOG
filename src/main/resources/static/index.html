@@ -13,6 +13,14 @@
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/pages/home.css">
+  <!-- 로그인 여부를 확인하는 동안 홈을 가린다 (게스트로 둘러보기를 고른 브라우저는 바로 보여 준다). home.js가 해제한다. -->
+  <script>
+    try {
+      if (window.localStorage.getItem('bulog.guest') !== '1') document.documentElement.classList.add('auth-checking');
+    } catch (error) {
+      document.documentElement.classList.add('auth-checking');
+    }
+  </script>
   <script type="module" src="/js/pages/home.js"></script>
 </head>
 <body class="page-home">
@@ -23,10 +31,16 @@
         BU-LOG<img class="home__leaf" src="/images/home/leaf.webp" alt="" width="107" height="94">
       </h1>
       <p class="home__intro">QR을 찍고 미션을 풀어 전시실 그림을 완성해 보세요</p>
-      <button type="button" class="home__login" id="home-login" aria-disabled="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
-        로그인<span class="visually-hidden"> (준비 중)</span>
-      </button>
+      <!-- 게스트: 로그인 화면으로 이동 / 로그인 후: 닉네임과 오른쪽 로그아웃 버튼을 함께 보여 줌 (home.js) -->
+      <div class="home__account">
+        <a class="home__login" id="home-login" href="/pages/login.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+          <span class="home__login-text" id="home-login-text">로그인</span>
+        </a>
+        <div class="home__account-menu" id="home-account-menu" hidden>
+          <button type="button" class="home__logout" id="home-logout">로그아웃</button>
+        </div>
+      </div>
     </header>
 
     <section class="home-progress" aria-labelledby="home-progress-label">

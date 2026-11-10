@@ -64,20 +64,23 @@
   font-family: var(--font-body);
   font-weight: 600;
   /* 머리말 그림: 위에 적은 층이 앞에 놓인다. 아래쪽 언덕은 수집 현황 카드 뒤까지 이어진다. */
+  /* 머리말 그림 전체를 --home-shift만큼 내린다 (왼쪽 위 나뭇가지와 로그인 버튼은 제자리). */
+  --home-shift: calc(44 * var(--u));
   background:
-    url("/images/home/hero-museum.webp") calc(287 * var(--u)) calc(123 * var(--u)) / calc(600 * var(--u)) auto no-repeat,
+    url("/images/home/hero-museum.webp") calc(287 * var(--u)) calc(123 * var(--u) + var(--home-shift)) / calc(600 * var(--u)) auto no-repeat,
     url("/images/home/hero-branch.webp") calc(-18 * var(--u)) calc(-15 * var(--u)) / calc(236 * var(--u)) auto no-repeat,
-    url("/images/home/cloud.webp") calc(8 * var(--u)) calc(115 * var(--u)) / calc(92 * var(--u)) auto no-repeat,
-    url("/images/home/cloud.webp") calc(470 * var(--u)) calc(78 * var(--u)) / calc(100 * var(--u)) auto no-repeat,
-    url("/images/home/hero-hills.webp") calc(-24 * var(--u)) calc(196 * var(--u)) / calc(900 * var(--u)) auto no-repeat,
-    linear-gradient(#FDF1DC, var(--home-bg) calc(320 * var(--u))) top / 100% calc(320 * var(--u)) no-repeat;
+    url("/images/home/cloud.webp") calc(8 * var(--u)) calc(115 * var(--u) + var(--home-shift)) / calc(92 * var(--u)) auto no-repeat,
+    url("/images/home/cloud.webp") calc(470 * var(--u)) calc(78 * var(--u) + var(--home-shift)) / calc(100 * var(--u)) auto no-repeat,
+    url("/images/home/hero-hills.webp") calc(-24 * var(--u)) calc(196 * var(--u) + var(--home-shift)) / calc(900 * var(--u)) auto no-repeat,
+    linear-gradient(#FDF1DC, var(--home-bg) calc(320 * var(--u) + var(--home-shift))) top / 100% calc(320 * var(--u) + var(--home-shift)) no-repeat;
 }
 
 /* 머리말: 그림 위에 제목과 로그인 버튼을 얹는다. */
 .home__header {
   position: relative;
-  height: calc(286 * var(--u));
-  padding: calc(72 * var(--u)) calc(92 * var(--u)) 0;
+  height: calc(286 * var(--u) + var(--home-shift));
+  /* 제목 글자는 그림보다 반 칸(22u) 덜 내린다. */
+  padding: calc(72 * var(--u) + var(--home-shift) - 22 * var(--u)) calc(92 * var(--u)) 0;
 }
 
 .home__eyebrow {
@@ -519,14 +522,32 @@
 }
 
 /* 목록 끝의 언덕과 꽃. 탭바가 아래쪽 일부를 덮는다. */
+/* 하단 언덕: 양쪽 언덕을 화면 끝까지 붙이고 가운데에서 겹치게 키운다.
+   언덕 그림 아래 투명한 줄 대신 같은 색 땅을 깔아, 탭바 둥근 모서리 뒤까지 빈틈 없이 이어지게 한다. */
 .home__ground {
-  height: calc(130 * var(--u));
+  height: calc(170 * var(--u));
   /* 남는 세로 공간을 위쪽에 두어 언덕을 화면 아래(탭바 위)로 민다. */
   margin-top: auto;
-  margin-bottom: calc(-38 * var(--u));
+  margin-bottom: calc(-22 * var(--u));
+  /* 언덕 그림은 양 끝 2px이 투명해서 화면 밖으로 조금 내보내 끝에 빈틈이 없게 한다.
+     그 아래 땅은 가운데가 살짝 낮은 곡선(SVG)으로 깔아, 언덕 사이에 일자 선이 보이지 않게 한다. */
   background:
-    url("/images/home/hill-left.webp") left bottom calc(21 * var(--u)) / calc(400 * var(--u)) auto no-repeat,
-    url("/images/home/hill-right.webp") right bottom calc(21 * var(--u)) / calc(410 * var(--u)) auto no-repeat;
+    url("/images/home/hill-left.webp") left -6px bottom calc(26 * var(--u)) / calc(58% + 6px) auto no-repeat,
+    url("/images/home/hill-right.webp") right -6px bottom calc(26 * var(--u)) / calc(60% + 6px) auto no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 64' preserveAspectRatio='none'%3E%3Cpath fill='%23D8D99D' d='M0 14C70 8 130 20 195 22S320 10 390 12V64H0Z'/%3E%3C/svg%3E") left bottom / 100% calc(64 * var(--u)) no-repeat;
+  position: relative;
+}
+
+/* 잔디를 탭바 뒤(화면 맨 아래)까지 이어 깔아, 탭바 둥근 모서리 옆에 배경색이 보이지 않게 한다. */
+.home__ground::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  /* 땅이 탭바 영역으로 내려간 만큼(22u)을 빼서 페이지가 더 길어지지 않게 한다. */
+  height: calc(max(48px, var(--tab-bar-height, 72px)) - 22 * var(--u));
+  background: #D8D99D;
 }
 
 /* 홈 화면 전용 탭바: 크림색 바탕, 둥근 윗모서리, 활성 탭 살구색 배경, 에셋 아이콘 */
@@ -602,3 +623,124 @@ body.page-home.has-tab-bar {
   white-space: nowrap;
   border: 0;
 }
+
+/* 로그인 버튼 (09 로그인 화면 연결): 게스트는 링크, 로그인 후에는 닉네임 + 바로 밑에 붙는 로그아웃 */
+.home__account {
+  position: absolute;
+  z-index: 2;
+  top: calc(52 * var(--u));
+  right: calc(58 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+
+/* 위치는 .home__account가 잡으므로 버튼 자체는 흐름 안에 둔다. */
+.home__account .home__login {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: auto;
+  min-width: calc(168 * var(--u));
+  max-width: 46vw;
+  padding: 0 calc(18 * var(--u));
+  text-decoration: none;
+}
+
+.home__login-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home__account-menu[hidden] { display: none !important; }
+
+/* 로그인한 회원: 알약 하나를 '이름 | 로그아웃' 두 칸으로 나눠 보여 준다. */
+.home__account--member {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  /* 로그인 후에는 조금 작게, 반 칸 아래로 */
+  margin-top: calc(10 * var(--u));
+  height: max(24px, calc(46 * var(--u)));
+  border: calc(2 * var(--u)) solid #F1E6D6;
+  border-radius: 999px;
+  background: #FFFDF9;
+  box-shadow: 0 calc(3 * var(--u)) calc(10 * var(--u)) rgba(140, 91, 55, 0.12);
+}
+
+/* 왼쪽 칸: 이름 (누를 수 없는 표시) */
+.home__account--member .home__login {
+  min-width: 0;
+  max-width: 22vw;
+  height: auto;
+  min-height: 0;
+  gap: calc(8 * var(--u));
+  padding: 0 calc(12 * var(--u)) 0 calc(16 * var(--u));
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-size: max(11px, calc(19 * var(--u)));
+  cursor: default;
+}
+
+.home__account--member .home__login::before { content: none; }
+.home__account--member .home__login svg { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+
+@media (min-width: 431px) {
+  .home__account--member .home__login { max-width: 92px; }
+}
+
+/* 오른쪽 칸: 세로 구분선 + 로그아웃 */
+.home__account-menu {
+  display: flex;
+  align-items: center;
+  padding: calc(10 * var(--u)) 0;
+}
+
+.home__account-menu::before {
+  content: "";
+  align-self: stretch;
+  width: 1px;
+  background: #EADBC8;
+}
+
+.home__logout {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 calc(16 * var(--u)) 0 calc(12 * var(--u));
+  border: 0;
+  border-radius: 0 999px 999px 0;
+  color: #8A7560;
+  background: none;
+  font-family: var(--font-label);
+  font-size: max(11px, calc(19 * var(--u)));
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* 누르는 영역은 알약 위아래로 넉넉하게 */
+.home__logout::after {
+  content: "";
+  position: absolute;
+  inset: -12px 0;
+}
+
+.home__logout:hover,
+.home__logout:focus-visible { color: #3E2814; }
+.home__logout:focus-visible { outline: 2px solid var(--home-orange); outline-offset: 2px; }
+
+/* 로그인 여부를 확인하는 동안(index.html의 auth-checking) 홈 내용을 가린다. */
+.auth-checking .home,
+.auth-checking .tab-bar {
+  visibility: hidden;
+  /* 스크립트가 실패해도 4초 뒤에는 화면이 보이게 한다. */
+  animation: home-auth-reveal 0s linear 4s forwards;
+}
+
+@keyframes home-auth-reveal { to { visibility: visible; } }

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <title>회원가입 | BU:LOG</title>
+  <!-- 홈 화면과 같은 글꼴: 로고 Baloo 2, 제목 티머니 둥근바람, 라벨·버튼 SUIT, 본문 Noto Sans KR (SUIT·티머니는 auth.css에서 불러옴) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
+  <link rel="stylesheet" href="/css/pages/auth.css">
+  <script type="module" src="/js/pages/signup.js"></script>
+</head>
+<body class="auth-page">
+  <main class="auth auth--signup">
+    <div class="auth-topbar">
+      <a class="auth-back" id="auth-back" href="/pages/terms.html" aria-label="약관 동의로 돌아가기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 5-7 7 7 7"/></svg>
+      </a>
+    </div>
+
+    <header class="auth-head">
+      <p class="auth-step"><span class="visually-hidden">회원가입 단계 </span>2 / 2</p>
+      <h1 class="auth-title">회원가입</h1>
+      <p class="auth-subtitle">나만의 탐험가를 만들어요</p>
+    </header>
+
+    <form class="auth-form" id="signup-form" novalidate>
+      <div class="auth-fields">
+        <div class="auth-field">
+          <label class="auth-label" for="signup-nickname">닉네임</label>
+          <div class="auth-input-row">
+            <div class="auth-input-wrap"><input class="auth-input" id="signup-nickname" name="nickname" type="text" autocomplete="nickname" placeholder="닉네임 (2~10자)" aria-describedby="signup-nickname-help" required minlength="2" maxlength="10" autocapitalize="off" spellcheck="false"></div>
+            <button class="auth-side-button" id="nickname-check" type="button">중복확인</button>
+          </div>
+          <p class="auth-help" id="signup-nickname-help" aria-live="polite"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="signup-email">이메일</label>
+          <div class="auth-input-wrap"><input class="auth-input" id="signup-email" name="email" type="email" autocomplete="email" placeholder="이메일 주소" aria-describedby="signup-email-help" required inputmode="email"></div>
+          <p class="auth-help" id="signup-email-help" aria-live="polite"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="signup-password">비밀번호</label>
+          <div class="auth-input-wrap"><input class="auth-input" id="signup-password" name="password" type="password" autocomplete="new-password" placeholder="비밀번호 (8자 이상)" aria-describedby="signup-password-help" required minlength="8" maxlength="64"></div>
+          <p class="auth-help" id="signup-password-help" aria-live="polite"></p>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label" for="signup-password-confirm">비밀번호 확인</label>
+          <div class="auth-input-wrap"><input class="auth-input" id="signup-password-confirm" name="password-confirm" type="password" autocomplete="new-password" placeholder="비밀번호 확인" aria-describedby="signup-password-confirm-help" required maxlength="64"></div>
+          <p class="auth-help" id="signup-password-confirm-help" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="auth-actions">
+        <p class="auth-alert" id="signup-alert" role="alert"></p>
+        <button class="auth-button" id="signup-submit" type="submit">가입하기</button>
+      </div>
+    </form>
+
+    <!-- 하단 박물관 언덕 그림 (꾸밈, 피그마 로그인 화면 "박물관 언덕" 2x 원본) -->
+    <div class="auth-scene" aria-hidden="true">
+      <img src="/images/auth/bottom-scene.webp" alt="" width="780" height="226">
+    </div>
+  </main>
+</body>
+</html>

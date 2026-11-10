@@ -5,6 +5,7 @@ import com.bulog.domain.member.dto.req.MemberLoginRequestDTO;
 import com.bulog.domain.member.dto.req.MemberSignupRequestDTO;
 import com.bulog.domain.member.dto.res.CsrfTokenResponseDTO;
 import com.bulog.domain.member.dto.res.MemberResponseDTO;
+import com.bulog.domain.member.dto.res.NicknameAvailabilityResponseDTO;
 import com.bulog.domain.member.exception.MemberException;
 import com.bulog.domain.member.exception.code.MemberErrorCode;
 import com.bulog.domain.member.exception.code.MemberSuccessCode;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -53,6 +55,15 @@ public class MemberController {
                 csrfToken.getParameterName(),
                 csrfToken.getToken()
         ));
+    }
+
+    @GetMapping("/nickname-availability")
+    public ApiResponse<NicknameAvailabilityResponseDTO> checkNickname(@RequestParam String nickname) {
+        boolean available = memberService.isNicknameAvailable(nickname);
+        return ApiResponse.of(
+                MemberSuccessCode.NICKNAME_CHECKED,
+                new NicknameAvailabilityResponseDTO(nickname.trim(), available)
+        );
     }
 
     @PostMapping("/signup")
