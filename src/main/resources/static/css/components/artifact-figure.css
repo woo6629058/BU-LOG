@@ -1,0 +1,31 @@
+/*
+ * 유물 그림 (js/common/artifact-figure.js): 진열장·유물 상세 화면.
+ * 실루엣은 배경 없는 유물 이미지에 필터를 걸어 만든다.
+ */
+.artifact-figure {
+  display: grid;
+  place-items: center;
+  width: var(--artifact-size, 56px);
+  height: var(--artifact-size, 56px);
+}
+
+.artifact-figure img,
+.artifact-figure__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.artifact-figure__placeholder {
+  fill: var(--color-artifact, #8A4F2E);
+}
+
+.artifact-figure__rim {
+  fill: var(--color-artifact-dark, #5E3B25);
+}
+
+.artifact-figure.is-silhouette img,
+.artifact-figure.is-silhouette .artifact-figure__placeholder {
+  filter: brightness(0);
+  opacity: 0.22;
+}

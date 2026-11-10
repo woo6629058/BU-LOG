@@ -3,40 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="부천시립박물관 전시실의 QR을 찍고 미션을 풀어 유물 카드를 모으는 BU:LOG">
-  <title>유물 카드 탐험 | BU:LOG</title>
+  <meta name="description" content="부천시립박물관 전시실의 QR을 찍고 미션을 풀어 전시실 그림을 완성하는 BU:LOG 유물 그림 도감">
+  <title>그림 도감 | BU:LOG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@600&display=swap">
   <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/pages/home.css">
   <script type="module" src="/js/pages/home.js"></script>
 </head>
-<body>
+<body class="page-home">
   <main class="home">
     <header class="home__header">
-      <p class="home__museum">부천시립박물관</p>
-      <h1 class="home__title">유물 카드 탐험</h1>
-      <p class="home__intro">전시실의 QR을 찍고 미션을 풀어 유물 카드를 모아보세요</p>
+      <p class="home__eyebrow">부천시립박물관 유물 그림 도감</p>
+      <h1 class="home__title">
+        BU-LOG<img class="home__leaf" src="/images/home/leaf.webp" alt="" width="107" height="94">
+      </h1>
+      <p class="home__intro">QR을 찍고 미션을 풀어 전시실 그림을 완성해 보세요</p>
+      <button type="button" class="home__login" id="home-login" aria-disabled="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+        로그인<span class="visually-hidden"> (준비 중)</span>
+      </button>
     </header>
 
     <section class="home-progress" aria-labelledby="home-progress-label">
-      <div class="home-progress__row">
-        <h2 class="home-progress__label" id="home-progress-label">수집한 유물 카드</h2>
-        <p class="home-progress__count">
-          <span aria-hidden="true"><strong id="home-acquired">0</strong> / <span id="home-total">0</span></span>
-          <span class="visually-hidden" id="home-count-label"></span>
-        </p>
+      <img class="home-progress__jars" src="/images/home/progress-jars.webp" alt="" width="204" height="144">
+      <img class="home-progress__sprig" src="/images/home/tuft.webp" alt="" width="89" height="47">
+      <div class="home-progress__body">
+        <div class="home-progress__row">
+          <h2 class="home-progress__label" id="home-progress-label">채운 유물</h2>
+          <p class="home-progress__count">
+            <span aria-hidden="true"><strong id="home-filled">0</strong> / <span id="home-total">0</span></span>
+            <span class="visually-hidden" id="home-count-label"></span>
+          </p>
+        </div>
+        <div class="home-progress__bar" aria-hidden="true"><span id="home-progress-fill"></span></div>
+        <p class="home-progress__hint" id="home-hint"></p>
       </div>
-      <div class="home-progress__bar" aria-hidden="true"><span id="home-progress-fill"></span></div>
-      <p class="home-progress__hint" id="home-hint"></p>
     </section>
 
     <section class="home__rooms" aria-labelledby="home-rooms-title">
       <div class="home__section-header">
-        <h2 class="home__section-title" id="home-rooms-title">전시실 세트</h2>
-        <p class="home__section-meta" id="home-rooms-meta"></p>
+        <h2 class="home__section-title" id="home-rooms-title">전시실</h2>
+        <p class="home__section-meta">원하는 곳부터 둘러봐요</p>
       </div>
-      <ul class="home__room-list" id="home-room-list"></ul>
+      <ol class="home__room-list" id="home-room-list"></ol>
     </section>
+
+    <div class="home__ground" aria-hidden="true"></div>
   </main>
 </body>
 </html>

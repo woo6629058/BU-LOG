@@ -10,7 +10,7 @@ body.has-tab-bar {
 }
 
 .tab-bar {
-  --tab-accent: var(--color-accent, #C0603A);
+  --tab-accent: var(--color-accent, #A8502F);
   --tab-subtle: var(--color-subtle, #A8998A);
   --tab-line: var(--color-line, #E4DACB);
   --tab-surface: var(--color-surface, #FFFFFF);
@@ -21,6 +21,8 @@ body.has-tab-bar {
   bottom: 0;
   left: 0;
   z-index: 20;
+  max-width: var(--layout-width);
+  margin-inline: auto;
   height: var(--tab-bar-height, 72px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-top: 1px solid var(--tab-line);
@@ -30,10 +32,9 @@ body.has-tab-bar {
 
 .tab-bar__list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  max-width: 390px;
+  grid-template-columns: repeat(5, 1fr);
   height: 100%;
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -82,7 +83,7 @@ body.has-tab-bar {
   bottom: calc(100% + 12px);
   left: 50%;
   width: max-content;
-  max-width: calc(100vw - 48px);
+  max-width: calc(100% - 48px);
   margin: 0;
   padding: 10px 14px;
   border-radius: 12px;
