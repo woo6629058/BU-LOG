@@ -318,67 +318,6 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* ---------- B. 숫자 세기 ---------- */
-.quiz-counter {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  padding: 28px 16px;
-  border: 1.5px solid var(--qz-line);
-  border-radius: 16px;
-  background: var(--qz-surface);
-  transition: border-color 0.2s, background-color 0.2s;
-}
-
-.quiz-counter.is-correct {
-  border-color: var(--qz-correct);
-  background: var(--qz-correct-bg);
-}
-
-.quiz-counter__button {
-  width: 52px;
-  height: 52px;
-  border: 1.5px solid var(--qz-line);
-  border-radius: 50%;
-  font: inherit;
-  font-size: 26px;
-  line-height: 1;
-  color: var(--qz-brown);
-  background: #fff;
-  cursor: pointer;
-}
-
-.quiz-counter__button:active:not(:disabled) { transform: scale(0.94); }
-.quiz-counter__button:disabled { opacity: 0.35; cursor: default; }
-
-.quiz-counter__display {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  min-width: 96px;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.quiz-counter__value {
-  display: inline-block;
-  font-family: "Gowun Batang", serif;
-  font-size: 56px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--qz-text);
-}
-
-.quiz-counter__unit { font-size: 15px; color: var(--qz-muted); }
-
-.quiz-counter__note {
-  margin: 10px 0 0;
-  font-size: 12px;
-  text-align: center;
-  color: var(--qz-muted);
-}
-
 /* ---------- E. 자물쇠 ---------- */
 .quiz-lock {
   display: flex;
@@ -563,10 +502,7 @@
 .quiz-feedback__title { font-weight: 400; font-size: 16px; }
 .quiz-feedback__message { font-size: 14px; }
 
-/* 숫자 세기, 자물쇠 글꼴도 Jua로 */
-.quiz-counter { border-color: #EFE2CC; border-radius: 22px; background: #FFFFFF; }
-.quiz-counter__button { border-color: #EFE2CC; color: #C0603A; }
-.quiz-counter__value,
+/* 자물쇠 글꼴도 Jua로 */
 .quiz-lock__number { font-family: "Jua", sans-serif; font-weight: 400; }
 .quiz-lock__label { font-weight: 400; }
 
@@ -584,3 +520,103 @@
   background: #F4BFA3;
 }
 .quiz-cta__button:disabled { color: #8A7B6E; background: #F1E3D3; }
+/* ---------- B. 도장 찍기 (숫자 세기) ---------- */
+.quiz-stamp {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 22px;
+  background: #F6EADB;
+  cursor: crosshair;
+  touch-action: manipulation; /* 빠르게 두 번 눌러도 화면이 확대되지 않게 */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s;
+}
+
+.quiz-stamp:focus-visible { outline: 3px solid rgba(192, 96, 58, 0.35); outline-offset: 2px; }
+.quiz-stamp.is-correct { border: 2px solid var(--qz-correct); }
+.quiz-stamp.is-locked { cursor: default; }
+
+.quiz-stamp__picture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* 빨간 낙관 도장 */
+.quiz-stamp__seal {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #fff3ea;
+  border-radius: 7px;
+  font-family: "Jua", sans-serif;
+  font-size: 17px;
+  line-height: 1;
+  color: #fff3ea;
+  background: rgba(192, 57, 43, 0.8);
+  box-shadow: 0 0 0 1.5px rgba(192, 57, 43, 0.8);
+  transform: rotate(var(--tilt, 0deg));
+  cursor: pointer;
+  animation: qz-stamp 0.22s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.quiz-stamp.is-locked .quiz-stamp__seal { cursor: default; }
+
+@keyframes qz-stamp {
+  from { transform: rotate(var(--tilt, 0deg)) scale(1.8); opacity: 0; }
+  to { transform: rotate(var(--tilt, 0deg)) scale(1); opacity: 1; }
+}
+
+.quiz-stamp__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.quiz-stamp__count { margin: 0; font-size: 15px; color: #4A2E1E; }
+.quiz-stamp__count strong { margin-right: 2px; font-size: 22px; font-weight: 400; color: #C0392B; }
+
+.quiz-stamp__clear {
+  padding: 6px 12px;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 99px;
+  font: inherit;
+  font-size: 13px;
+  color: #4A2E1E;
+  background: #fff;
+  cursor: pointer;
+}
+.quiz-stamp__clear:disabled { opacity: 0.4; cursor: default; }
+
+.quiz-stamp__note {
+  margin: 8px 0 0;
+  font-family: "Gaegu", cursive;
+  font-size: 15px;
+  font-weight: 700;
+  color: #5A3A26;
+}
+
+/* 질문에 맞는 스티커 (학, 손잡이 등): 흰 테두리가 있는 동그란 스티커 */
+.quiz-stamp__seal--sticker {
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  border: 2.5px solid #fff;
+  border-radius: 50%;
+  background: #FFF5E4 center / 82% no-repeat;
+  box-shadow: 0 2px 6px rgba(43, 33, 26, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-stamp__seal { animation: none; }
+}
