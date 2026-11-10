@@ -60,12 +60,16 @@
   /* 내용이 화면보다 짧아도 하단 언덕이 탭바 바로 위에 오도록 화면 높이(탭바 제외)만큼은 채운다. */
   min-height: calc(100vh - var(--tab-bar-height, 0px));
   min-height: calc(100dvh - var(--tab-bar-height, 0px));
+  /* 아이폰 사파리는 끝까지 내리면 주소창이 접혀 화면이 커진다. 그 큰 화면(lvh) 기준으로 채워
+     맨 아래까지 내렸을 때 언덕이 탭바 바로 위에 오게 한다. */
+  min-height: calc(100lvh - var(--tab-bar-height, 0px));
   color: var(--home-ink);
   font-family: var(--font-body);
   font-weight: 600;
   /* 머리말 그림: 위에 적은 층이 앞에 놓인다. 아래쪽 언덕은 수집 현황 카드 뒤까지 이어진다. */
   /* 머리말 그림 전체를 --home-shift만큼 내린다 (왼쪽 위 나뭇가지와 로그인 버튼은 제자리). */
-  --home-shift: calc(44 * var(--u));
+  /* 아이폰은 상태표시줄(노치·다이내믹 아일랜드) 높이만큼 더 내린다. 노트북에서는 env 값이 0이라 그대로. */
+  --home-shift: calc(44 * var(--u) + env(safe-area-inset-top, 0px));
   background:
     url("/images/home/hero-museum.webp") calc(287 * var(--u)) calc(123 * var(--u) + var(--home-shift)) / calc(600 * var(--u)) auto no-repeat,
     url("/images/home/hero-branch.webp") calc(-18 * var(--u)) calc(-15 * var(--u)) / calc(236 * var(--u)) auto no-repeat,
@@ -73,6 +77,7 @@
     url("/images/home/cloud.webp") calc(470 * var(--u)) calc(78 * var(--u) + var(--home-shift)) / calc(100 * var(--u)) auto no-repeat,
     url("/images/home/hero-hills.webp") calc(-24 * var(--u)) calc(196 * var(--u) + var(--home-shift)) / calc(900 * var(--u)) auto no-repeat,
     linear-gradient(#FDF1DC, var(--home-bg) calc(320 * var(--u) + var(--home-shift))) top / 100% calc(320 * var(--u) + var(--home-shift)) no-repeat;
+  background-color: var(--home-bg); /* 내용 영역은 크림색 (body는 잔디색) */
 }
 
 /* 머리말: 그림 위에 제목과 로그인 버튼을 얹는다. */
@@ -143,7 +148,7 @@
   background: #FFFDF9;
   box-shadow: 0 calc(3 * var(--u)) calc(10 * var(--u)) rgba(140, 91, 55, 0.12);
   font-family: var(--font-label);
-  font-size: max(12px, calc(24 * var(--u)));
+  font-size: max(11.5px, calc(22 * var(--u)));
   font-weight: 800;
   cursor: pointer;
 }
@@ -339,8 +344,10 @@
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-.home-room:hover {
-  border-color: var(--home-line-active);
+@media (hover: hover) {
+  .home-room:hover {
+    border-color: var(--home-line-active);
+  }
 }
 
 .home-room:active {
@@ -535,19 +542,20 @@
     url("/images/home/hill-left.webp") left -6px bottom calc(26 * var(--u)) / calc(58% + 6px) auto no-repeat,
     url("/images/home/hill-right.webp") right -6px bottom calc(26 * var(--u)) / calc(60% + 6px) auto no-repeat,
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 64' preserveAspectRatio='none'%3E%3Cpath fill='%23D8D99D' d='M0 14C70 8 130 20 195 22S320 10 390 12V64H0Z'/%3E%3C/svg%3E") left bottom / 100% calc(64 * var(--u)) no-repeat;
-  position: relative;
 }
 
-/* 잔디를 탭바 뒤(화면 맨 아래)까지 이어 깔아, 탭바 둥근 모서리 옆에 배경색이 보이지 않게 한다. */
-.home__ground::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  right: 0;
-  left: 0;
-  /* 땅이 탭바 영역으로 내려간 만큼(22u)을 빼서 페이지가 더 길어지지 않게 한다. */
-  height: calc(max(48px, var(--tab-bar-height, 72px)) - 22 * var(--u));
+/* 탭바 둥근 모서리 뒤로 보이는 곳은 잔디색이 되도록 body는 잔디색, 실제 내용(.home)은 크림색으로 칠한다.
+   위로 당길 때 보이는 html 바탕은 크림색으로 두고, 아래로 튕기는 동작은 꺼서 잔디 아래 빈 곳이 보이지 않게 한다. */
+html:has(body.page-home),
+body.page-home { overscroll-behavior-y: none; }
+
+body.page-home {
   background: #D8D99D;
+  -webkit-tap-highlight-color: transparent; /* 아이폰에서 누를 때 회색 상자가 번쩍이지 않게 */
+}
+
+@media (max-width: 430px) {
+  html:has(body.page-home) { background: var(--home-bg-outer, #FEF5E4); }
 }
 
 /* 홈 화면 전용 탭바: 크림색 바탕, 둥근 윗모서리, 활성 탭 살구색 배경, 에셋 아이콘 */
@@ -628,7 +636,7 @@ body.page-home.has-tab-bar {
 .home__account {
   position: absolute;
   z-index: 2;
-  top: calc(52 * var(--u));
+  top: calc(52 * var(--u) + env(safe-area-inset-top, 0px));
   right: calc(58 * var(--u));
   display: flex;
   flex-direction: column;
@@ -638,6 +646,9 @@ body.page-home.has-tab-bar {
 
 /* 위치는 .home__account가 잡으므로 버튼 자체는 흐름 안에 둔다. */
 .home__account .home__login {
+  /* 로그인 버튼과 '이름 | 로그아웃'을 같은 크기로, 시안보다 살짝 작게 */
+  height: calc(52 * var(--u));
+  min-height: 26px;
   position: relative;
   top: auto;
   right: auto;
@@ -663,7 +674,8 @@ body.page-home.has-tab-bar {
   gap: 0;
   /* 로그인 후에는 조금 작게, 반 칸 아래로 */
   margin-top: calc(10 * var(--u));
-  height: max(24px, calc(46 * var(--u)));
+  /* 로그인 전 '로그인' 버튼과 같은 높이·글자 크기 */
+  height: max(26px, calc(52 * var(--u)));
   border: calc(2 * var(--u)) solid #F1E6D6;
   border-radius: 999px;
   background: #FFFDF9;
@@ -677,20 +689,25 @@ body.page-home.has-tab-bar {
   height: auto;
   min-height: 0;
   gap: calc(8 * var(--u));
-  padding: 0 calc(12 * var(--u)) 0 calc(16 * var(--u));
+  padding: 0 calc(14 * var(--u)) 0 calc(18 * var(--u));
   border: 0;
   border-radius: 0;
   background: none;
   box-shadow: none;
-  font-size: max(11px, calc(19 * var(--u)));
+  font-size: max(11.5px, calc(22 * var(--u)));
   cursor: default;
 }
 
 .home__account--member .home__login::before { content: none; }
-.home__account--member .home__login svg { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+.home__account .home__login svg { width: calc(26 * var(--u)); height: calc(26 * var(--u)); }
 
 @media (min-width: 431px) {
   .home__account--member .home__login { max-width: 92px; }
+}
+
+/* 아주 좁은 폰(320px대)은 이름 알약이 왼쪽 제목에 닿으므로 제목 줄보다 위로 올린다. */
+@media (max-width: 359px) {
+  .home__account--member { top: calc(14 * var(--u) + env(safe-area-inset-top, 0px)); margin-top: 0; }
 }
 
 /* 오른쪽 칸: 세로 구분선 + 로그아웃 */
@@ -712,13 +729,13 @@ body.page-home.has-tab-bar {
   display: inline-flex;
   align-items: center;
   height: 100%;
-  padding: 0 calc(16 * var(--u)) 0 calc(12 * var(--u));
+  padding: 0 calc(18 * var(--u)) 0 calc(14 * var(--u));
   border: 0;
   border-radius: 0 999px 999px 0;
   color: #8A7560;
   background: none;
   font-family: var(--font-label);
-  font-size: max(11px, calc(19 * var(--u)));
+  font-size: max(11.5px, calc(22 * var(--u)));
   font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
@@ -731,7 +748,11 @@ body.page-home.has-tab-bar {
   inset: -12px 0;
 }
 
-.home__logout:hover,
+/* 손가락으로 누른 뒤 색이 남지 않도록 마우스가 있는 기기에서만 hover 색을 쓴다. */
+@media (hover: hover) {
+  .home__logout:hover { color: #3E2814; }
+}
+
 .home__logout:focus-visible { color: #3E2814; }
 .home__logout:focus-visible { outline: 2px solid var(--home-orange); outline-offset: 2px; }
 

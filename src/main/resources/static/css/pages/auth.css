@@ -21,6 +21,8 @@
 }
 
 .auth-page {
+  -webkit-text-size-adjust: 100%; /* 아이폰 가로 화면에서 글자가 멋대로 커지지 않게 */
+  -webkit-tap-highlight-color: transparent;
   /* 홈 화면 색 (home.css의 --home-* 값과 같은 계열) */
   --auth-bg: #FEF5E4;
   --auth-surface: #FFFDF9;
@@ -47,6 +49,11 @@
   font-family: var(--font-body);
   background: var(--auth-bg);
 }
+
+/* 아이폰 사파리에서 끝까지 내린 뒤 더 당기면 화면이 튕기며 하단 그림 아래 빈 바탕이 보인다.
+   이 화면들은 튕길 필요가 없으므로 튕김을 끈다. (스크롤 자체는 그대로 된다) */
+html:has(body.auth-page),
+body.auth-page { overscroll-behavior-y: none; }
 
 /* 화면 틀: 위에서부터 내용 → (빈 공간) → 버튼 → 하단 그림. 그림은 항상 화면 맨 아래에 붙는다. */
 .auth {
@@ -189,6 +196,9 @@
 }
 
 .auth-input {
+  /* 아이폰 사파리 기본 입력칸 모양(안쪽 그림자·둥근 모서리)을 없애 노트북과 같게 */
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 40px;
   padding: 0 14px;
@@ -206,6 +216,15 @@
 
 .auth-input[type="password"] { letter-spacing: 0.12em; }
 .auth-input[type="password"]::placeholder { letter-spacing: 0; }
+
+/* 자동완성 배경: 크롬은 파란색, 사파리는 노란색으로 칠하는데, 다른 칸과 같은 흰 바탕으로 맞춘다. */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--auth-ink);
+  box-shadow: 0 0 0 100px var(--auth-surface) inset;
+  caret-color: var(--auth-ink);
+}
 
 /* 자동완성 미리보기 글자도 같은 크기로 */
 .auth-input:-webkit-autofill::first-line {
@@ -242,6 +261,8 @@
 
 /* 중복확인처럼 입력칸 옆에 붙는 작은 버튼 */
 .auth-side-button {
+  -webkit-appearance: none;
+  appearance: none;
   flex: none;
   min-width: 72px;
   height: 40px;
@@ -269,6 +290,8 @@
 }
 
 .auth-button {
+  -webkit-appearance: none;
+  appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -399,6 +422,8 @@
 
 .login-tagline {
   margin: 10px 0 0;
+  word-break: keep-all; /* 좁은 폰에서 '보세/요'처럼 낱말 중간에서 끊기지 않게 */
+  text-wrap: balance;
   color: #4C3821;
   font-size: 13px;
   font-weight: 600;
@@ -748,8 +773,10 @@
   border: 0;
 }
 
-/* 키가 작은 화면에서는 위쪽 여백을 줄인다. */
-@media (max-height: 700px) {
+/* 정말 키가 작은 화면(아이폰 SE 가로 등)에서만 위쪽 여백을 줄인다.
+   아이폰 사파리는 주소창·상태표시줄을 빼면 보이는 높이가 700px 아래로 내려가서,
+   기준을 700px로 두면 일반 아이폰에서도 간격이 줄어 노트북과 달라 보였다. */
+@media (max-height: 560px) {
   .login-brand { margin-top: 64px; }
   .auth--login .auth-fields { margin-top: 28px; }
   .done { margin-top: 24px; }
@@ -862,3 +889,11 @@
 
 /* 가입 완료는 뒤로가기가 없어 위가 비므로 내용을 조금 내린다. */
 .auth--done > .done:first-child { margin-top: 60px; }
+
+/* 아이폰 사파리에서 실제로 보이는 높이(약 660px)에 가입 완료·게스트 화면이 스크롤 없이 들어가도록 간격을 조금 줄인다. */
+.auth--done .auth-actions { padding-top: 14px; padding-bottom: 10px; }
+.auth--done .done-notes { margin-top: 12px; }
+.auth--done .done-steps { margin-top: 14px; }
+.auth--done .done-start,
+.auth--done .done-steps + .done-start { margin-top: 12px; }
+.auth--done .done-notes { padding: 9px 14px; }
