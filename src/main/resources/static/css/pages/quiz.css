@@ -465,3 +465,122 @@
   .is-shaking, .is-rolling-up, .is-rolling-down { animation: none; }
   .quiz-lock__shackle { transition: none; }
 }
+/* =========================================================
+   새 피그마 스타일 (11/10 시안) - 위쪽 규칙을 덮어씀
+   글꼴: 제목·본문 Jua, 손글씨 안내 Gaegu
+   색: 배경 #FFF5E4, 버튼 #F4BFA3, 연살구 #F9D3BE, 글자 #2B211A / #4A2E1E
+   ========================================================= */
+
+.quiz-page {
+  --qz-bg: #FFF5E4;
+  --qz-text: #2B211A;
+  --qz-brown: #C0603A;
+  --qz-line: #EFE2CC;
+  --qz-surface: #FFFFFF;
+  --qz-selected-bg: #F9D3BE;
+  font-family: "Jua", "Noto Sans KR", system-ui, sans-serif;
+  background: var(--qz-bg);
+}
+
+/* 배경: 왼쪽 위 살구색 동그라미 + 오른쪽 아래 연두색 동그라미 */
+.quiz {
+  padding: 48px 24px 124px;
+  background:
+    /* 피그마 '배경 도형' 레이어 그대로 (왼쪽 위 살구 #FBE2D3 70%, 오른쪽 아래 연두 #EFF1DE 90%) */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-84 0 246 302'%3E%3Cpath opacity='0.7' fill='%23FBE2D3' d='M-60 58.8C-10 -21.2 110 -21.2 150 68.8C190 158.8 120 268.8 20 298.8C-80 328.8 -110 138.8 -60 58.8Z'/%3E%3C/svg%3E") -84px 61px / 246px 302px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 236 234'%3E%3Cpath opacity='0.9' fill='%23EFF1DE' d='M96 10C156 -20 236 20 236 100C236 180 176 250 96 230C16 210 -14 150 6 100C26 50 36 30 96 10Z'/%3E%3C/svg%3E") right -50px bottom -19px / 236px 234px no-repeat,
+    var(--qz-bg);
+}
+
+.quiz-close { color: #2B211A; }
+.quiz-chances { font-size: 12px; color: #8A7B6E; }
+
+.quiz-label { font-size: 13px; font-weight: 400; line-height: 16px; color: #C0603A; }
+
+.quiz-question {
+  margin-bottom: 14px;
+  font-family: "Jua", sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 140%;
+  color: #2B211A;
+}
+
+/* 연보라 안내 알약 */
+.quiz-notice {
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border-radius: 99px;
+  font-family: "Gaegu", cursive;
+  font-size: 15px;
+  font-weight: 700;
+  color: #5A3A26;
+  background: #E4DEF0;
+}
+
+/* 객관식 보기 */
+.quiz-options { gap: 10px; }
+
+.quiz-option {
+  min-height: 65px;
+  padding: 16px;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 22px;
+  font-size: 17px;
+  font-weight: 400;
+  color: #2B211A;
+  background: #FFFFFF;
+}
+.quiz-option:hover:not(:disabled) { border-color: #F2B79B; }
+
+.quiz-option__letter {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #4A2E1E;
+  background: #F6EADB;
+}
+
+.quiz-option.is-selected {
+  border: 2px solid #F2B79B;
+  background: #F9D3BE;
+}
+.quiz-option.is-selected .quiz-option__letter { color: #4A2E1E; background: #F2B79B; }
+
+/* 힌트: 전구 아이콘 + 테라코타 글자 */
+.quiz-hint { font-size: 13px; color: #C0603A; }
+.quiz-hint::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C0603A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* 채점 결과 상자 */
+.quiz-feedback { border-radius: 22px; }
+.quiz-feedback__title { font-weight: 400; font-size: 16px; }
+.quiz-feedback__message { font-size: 14px; }
+
+/* 숫자 세기, 자물쇠 글꼴도 Jua로 */
+.quiz-counter { border-color: #EFE2CC; border-radius: 22px; background: #FFFFFF; }
+.quiz-counter__button { border-color: #EFE2CC; color: #C0603A; }
+.quiz-counter__value,
+.quiz-lock__number { font-family: "Jua", sans-serif; font-weight: 400; }
+.quiz-lock__label { font-weight: 400; }
+
+/* 하단 버튼: 피치색 알약 */
+.quiz-cta {
+  padding: 12px 24px calc(34px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(255, 245, 228, 0) 0%, var(--qz-bg) 35%);
+}
+.quiz-cta__button {
+  min-height: 56px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #4A2E1E;
+  background: #F4BFA3;
+}
+.quiz-cta__button:disabled { color: #8A7B6E; background: #F1E3D3; }

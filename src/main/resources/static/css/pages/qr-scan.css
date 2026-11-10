@@ -450,3 +450,83 @@
   color: var(--qr-sub);
   word-break: keep-all;
 }
+/* =========================================================
+   새 피그마 스타일 (11/10 시안) - 위쪽 규칙을 덮어씀
+   글꼴: 제목·본문 Jua, 손글씨 안내 Gaegu
+   색: 배경 #FFF5E4, 버튼 #F4BFA3, 연살구 #F9D3BE, 글자 #2B211A / #4A2E1E
+   ========================================================= */
+
+.qr-page { font-family: "Jua", "Noto Sans KR", system-ui, sans-serif; }
+
+/* 위쪽 가운데 "QR 스캔" 알약 */
+.qr-title {
+  padding: 5px 16px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19px;
+  color: #4A2E1E;
+  background: #F9D3BE;
+}
+
+/* 안내 문구 */
+.qr-guide__title { font-size: 18px; font-weight: 400; color: #FFF5E4; }
+.qr-guide__sub {
+  font-family: "Gaegu", cursive;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #F9D3BE;
+}
+
+/* 아래 "번호로 입력", "컬렉션" 알약 */
+.qr-pill {
+  min-height: 42px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #4A2E1E;
+  background: rgba(255, 245, 228, 0.92);
+}
+
+/* 아래에서 올라오는 시트 */
+.qr-sheet {
+  padding: 14px 24px calc(34px + env(safe-area-inset-bottom));
+  border-radius: 32px 32px 0 0;
+  background: #FFF5E4;
+}
+
+.qr-sheet__title { font-size: 22px; font-weight: 400; }
+.qr-sheet__desc,
+.qr-result__desc {
+  font-family: "Gaegu", cursive;
+  font-size: 16px;
+  font-weight: 700;
+  color: #5A3A26;
+}
+
+.qr-result__thumb { border-radius: 16px; background: #F9D3BE; }
+.qr-result__meta { font-size: 12px; font-weight: 400; color: #C0603A; }
+.qr-result__title { font-family: "Jua", sans-serif; font-size: 22px; font-weight: 400; }
+
+.qr-input {
+  border-color: #EFE2CC;
+  border-radius: 16px;
+  background: #fff;
+}
+.qr-input:focus { border-color: #F2B79B; }
+
+/* 버튼: 피치색 알약 */
+.qr-button {
+  min-height: 56px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #4A2E1E;
+  background: #F4BFA3;
+}
+.qr-button--ghost {
+  border: 1.5px solid #EFE2CC;
+  color: #4A2E1E;
+  background: #fff;
+}

@@ -188,3 +188,95 @@
 
 /* common.css의 .button { display: inline-flex } 때문에 hidden이 안 먹어서 따로 지정 */
 #quiz-link[hidden] { display: none; }
+/* =========================================================
+   새 피그마 스타일 (11/10 시안) - 위쪽 규칙을 덮어씀
+   글꼴: 제목·본문 Jua, 손글씨 안내 Gaegu
+   색: 배경 #FFF5E4, 버튼 #F4BFA3, 연살구 #F9D3BE, 글자 #2B211A / #4A2E1E
+   ========================================================= */
+
+.exhibit-page {
+  --ex-bg: #FFF5E4;
+  font-family: "Jua", "Noto Sans KR", system-ui, sans-serif;
+  background: var(--ex-bg);
+}
+
+/* 배경: 왼쪽 위 살구색 동그라미 + 오른쪽 아래 연두색 동그라미 */
+.exhibit {
+  padding: 48px 24px 124px;
+  background:
+    /* 피그마 '배경 도형' 레이어 그대로 (왼쪽 위 살구 #FBE2D3 70%, 오른쪽 아래 연두 #EFF1DE 90%) */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-84 0 246 302'%3E%3Cpath opacity='0.7' fill='%23FBE2D3' d='M-60 58.8C-10 -21.2 110 -21.2 150 68.8C190 158.8 120 268.8 20 298.8C-80 328.8 -110 138.8 -60 58.8Z'/%3E%3C/svg%3E") -84px 61px / 246px 302px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 236 234'%3E%3Cpath opacity='0.9' fill='%23EFF1DE' d='M96 10C156 -20 236 20 236 100C236 180 176 250 96 230C16 210 -14 150 6 100C26 50 36 30 96 10Z'/%3E%3C/svg%3E") right -50px bottom -19px / 236px 234px no-repeat,
+    var(--ex-bg);
+}
+
+.exhibit-back { font-size: 16px; font-weight: 400; color: #2B211A; }
+
+.exhibit-badge {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #3E7B4E;
+  background: #E3F0E4;
+}
+
+.exhibit-photo { border-radius: 24px; }
+
+.exhibit-tag,
+.exhibit-tag--accent {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #4A3D33;
+  background: #E3EBD5;
+}
+
+.exhibit-name {
+  margin: 14px 0 10px;
+  font-family: "Jua", sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 38px;
+  color: #2B211A;
+}
+
+.exhibit-description {
+  font-size: 15px;
+  line-height: 165%;
+  color: #4A3D33;
+}
+
+/* 관찰 미션 박스: 테두리 없는 살구색 */
+.mission-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: 24px;
+  background: #F9D3BE;
+}
+.mission-box__label { margin: 0; font-size: 12px; font-weight: 400; color: #C0603A; }
+.mission-box__question { margin: 0; font-size: 16px; font-weight: 400; line-height: 1.55; color: #2B211A; }
+.mission-box__note {
+  font-family: "Gaegu", cursive;
+  font-size: 15px;
+  font-weight: 700;
+  color: #5A3A26;
+}
+
+/* 하단 버튼: 피치색 알약 */
+.exhibit-cta {
+  padding: 12px 24px calc(34px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(255, 245, 228, 0) 0%, var(--ex-bg) 35%);
+}
+.exhibit-cta__button {
+  min-height: 56px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #4A2E1E;
+  background: #F4BFA3;
+}
