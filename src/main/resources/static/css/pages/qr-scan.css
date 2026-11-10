@@ -472,10 +472,11 @@
 /* 안내 문구 */
 .qr-guide__title { font-size: 18px; font-weight: 400; color: #FFF5E4; }
 .qr-guide__sub {
-  font-family: "Gaegu", cursive;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  /* 홈 화면 본문과 같은 글꼴(Noto Sans KR 600) */
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
   color: #F9D3BE;
 }
 

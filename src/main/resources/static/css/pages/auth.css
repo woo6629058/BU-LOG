@@ -1,0 +1,864 @@
+/* =========================================================
+   09 로그인 · 약관 동의 · 회원가입 · 가입 완료 · 게스트 환영 (모바일 기준)
+   피그마 '회원가입 흐름' 시안의 분위기를 따르고, 색과 글꼴은 홈 화면(home.css)과 맞춘다.
+   글꼴(홈과 같음, 모두 상업적 사용 가능):
+     Baloo 2 750 — 로고 / 티머니 둥근바람 ExtraBold — 큰 제목
+     SUIT 800 — 라벨·버튼·배지 / Noto Sans KR — 입력·본문
+   이 파일은 login / terms / signup / signup-done / guest 다섯 화면이 함께 쓴다.
+   ========================================================= */
+@font-face {
+  font-family: "TmoneyRoundWind";
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindExtraBold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "SUIT";
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2.0.5/fonts/static/woff2/SUIT-ExtraBold.woff2") format("woff2");
+}
+
+.auth-page {
+  /* 홈 화면 색 (home.css의 --home-* 값과 같은 계열) */
+  --auth-bg: #FEF5E4;
+  --auth-surface: #FFFDF9;
+  --auth-ink: #34231A;
+  --auth-brown: #5C3B21;
+  --auth-text: #503C2B;
+  --auth-muted: #8A7560;
+  --auth-orange: #CD6B37;
+  --auth-card: #8C5B37;
+  --auth-line: #E9DAC6;
+  --auth-line-soft: #F1E6D6;
+  --auth-button: #F2BC9E;
+  --auth-peach: #FBE0CF;
+  --auth-green-bg: #EBEFD9;
+  --auth-green: #4F7A3C;
+  --auth-error: #C0442B;
+  --auth-ground: #D8D99D;
+  --font-logo: "Baloo 2", "SUIT", system-ui, sans-serif;
+  --font-title: "TmoneyRoundWind", "SUIT", system-ui, sans-serif;
+  --font-label: "SUIT", "Noto Sans KR", system-ui, sans-serif;
+  --font-body: "Noto Sans KR", system-ui, sans-serif;
+
+  color: var(--auth-ink);
+  font-family: var(--font-body);
+  background: var(--auth-bg);
+}
+
+/* 화면 틀: 위에서부터 내용 → (빈 공간) → 버튼 → 하단 그림. 그림은 항상 화면 맨 아래에 붙는다. */
+.auth {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: max(12px, env(safe-area-inset-top)) 22px 0;
+  overflow: hidden;
+  background:
+    /* 배경 도형: 왼쪽 위 살구색 (홈 머리말 색감) */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-84 0 246 302'%3E%3Cpath opacity='0.55' fill='%23FBE2D3' d='M-60 58.8C-10 -21.2 110 -21.2 150 68.8C190 158.8 120 268.8 20 298.8C-80 328.8 -110 138.8 -60 58.8Z'/%3E%3C/svg%3E") -110px 90px / 230px 282px no-repeat,
+    linear-gradient(#FDF1DC, var(--auth-bg) 260px) top / 100% 260px no-repeat,
+    var(--auth-bg);
+}
+
+.auth > * { position: relative; z-index: 1; }
+
+/* 오른쪽 위 구름 */
+.auth::after {
+  content: "";
+  position: absolute;
+  top: 44px;
+  right: 16px;
+  width: 58px;
+  height: 29px;
+  background: url("/images/home/cloud.webp") center / contain no-repeat;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* ---------- 상단 바: 뒤로가기는 홈의 로그인 버튼처럼 흰 동그라미 ---------- */
+.auth-topbar {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+.auth-back {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--auth-line-soft);
+  border-radius: 50%;
+  color: var(--auth-brown);
+  background: var(--auth-surface);
+  box-shadow: 0 2px 8px rgba(140, 91, 55, 0.12);
+  text-decoration: none;
+}
+
+/* 보이는 크기는 40px, 누르는 영역은 48px */
+.auth-back::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
+.auth-back svg { width: 20px; height: 20px; margin-left: -2px; }
+
+/* ---------- 머리말 ---------- */
+.auth-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.auth-step {
+  margin: 0;
+  padding: 3px 12px;
+  border-radius: 999px;
+  color: var(--auth-card);
+  background: var(--auth-peach);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.auth-title {
+  margin: 10px 0 0;
+  color: var(--auth-brown);
+  font-family: var(--font-title);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.auth-subtitle {
+  margin: 6px 0 0;
+  color: var(--auth-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* ---------- 입력칸 ---------- */
+.auth-form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.auth-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.auth-field { display: flex; flex-direction: column; gap: 5px; }
+
+.auth-label {
+  padding-left: 2px;
+  color: var(--auth-brown);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-input-row { display: flex; gap: 8px; }
+
+.auth-input-wrap { position: relative; flex: 1; min-width: 0; }
+
+.auth-input-wrap svg {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--auth-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.auth-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--auth-line);
+  border-radius: 11px;
+  color: var(--auth-ink);
+  background: var(--auth-surface);
+  font-family: var(--font-body);
+  /* 크롬 자동완성 미리보기처럼 작고 가는 글자. 아이폰은 16px 미만 입력칸을 누르면 확대하므로
+     auth 화면들의 viewport에 maximum-scale=1을 넣어 확대를 막는다(손가락 확대는 그대로 됨). */
+  font-size: 14px;
+  font-weight: 400;
+  transition: border-color 0.15s;
+}
+
+.auth-input[type="password"] { letter-spacing: 0.12em; }
+.auth-input[type="password"]::placeholder { letter-spacing: 0; }
+
+/* 자동완성 미리보기 글자도 같은 크기로 */
+.auth-input:-webkit-autofill::first-line {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.auth-input-wrap svg + .auth-input { padding-left: 38px; }
+
+.auth-input::placeholder { color: #B7A690; font-size: 13px; font-weight: 500; }
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--auth-orange);
+}
+
+.auth-field[data-state="error"] .auth-input { border-color: var(--auth-error); }
+.auth-field[data-state="success"] .auth-input { border-color: #A9C39A; }
+
+.auth-help {
+  margin: 0;
+  padding-left: 4px;
+  color: var(--auth-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.auth-help:empty { display: none; }
+.auth-help[data-state="error"] { color: var(--auth-error); }
+.auth-help[data-state="success"] { color: var(--auth-green); }
+.auth-help[data-state="success"]::before { content: "✓ "; }
+
+/* 중복확인처럼 입력칸 옆에 붙는 작은 버튼 */
+.auth-side-button {
+  flex: none;
+  min-width: 72px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid #D9E2C2;
+  border-radius: 11px;
+  color: var(--auth-green);
+  background: var(--auth-green-bg);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.auth-side-button:disabled { opacity: 0.6; cursor: default; }
+
+/* ---------- 버튼 ---------- */
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: auto;
+  padding: 20px 0 16px;
+}
+
+.auth-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--auth-ink);
+  background: var(--auth-button);
+  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.auth-button:disabled,
+.auth-button[aria-disabled="true"] {
+  opacity: 0.5;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* 버튼 아래 작은 글자 링크 (게스트 화면의 '회원가입하고 시작하기') */
+.auth-text-link {
+  align-self: center;
+  padding: 8px 6px;
+  color: var(--auth-text);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-button:focus-visible,
+.auth-side-button:focus-visible,
+.auth-back:focus-visible,
+.auth-links a:focus-visible,
+.auth-text-link:focus-visible,
+.auth-check:has(input:focus-visible),
+.auth-term__toggle:focus-visible {
+  outline: 3px solid rgba(205, 107, 55, 0.5);
+  outline-offset: 2px;
+}
+
+/* 폼 전체 오류 (로그인 실패 등) */
+.auth-alert {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: var(--auth-error);
+  background: #FBE6DD;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.auth-alert:empty { display: none; }
+
+/* ---------- 하단 그림: 피그마 로그인의 '박물관 언덕' 그림 한 장을 화면 폭에 꽉 채워 맨 아래에 붙인다 ----------
+   하늘 부분은 투명하게 만들어 화면 배경색과 자연스럽게 이어진다. */
+.auth-scene {
+  flex: none;
+  margin: auto -22px 0; /* 좌우 여백을 없애 화면 양 끝까지 채움, 남는 공간 아래로 밀착 */
+  pointer-events: none;
+}
+
+.auth-scene img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 가입 완료·게스트: '탐험 시작하기'를 추천 출발 장소 바로 밑에 두고, 남는 공간은 그림 위로 보낸다. */
+.auth--done .auth-actions { margin-top: 0; padding-top: 22px; }
+
+/* =========================================================
+   09-0 로그인
+   ========================================================= */
+/* 왼쪽 위 나뭇가지 (홈 머리말과 같은 그림) */
+.auth--login::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -10px;
+  width: 150px;
+  height: 84px;
+  background: url("/images/home/hero-branch.webp") left top / contain no-repeat;
+  pointer-events: none;
+}
+
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 112px;
+  text-align: center;
+}
+
+.login-eyebrow {
+  margin: 0;
+  color: #47280A;
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  color: var(--auth-brown);
+  font-family: var(--font-logo);
+  font-size: 46px;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.login-logo img { width: 22px; height: auto; margin-top: 12px; }
+
+.login-tagline {
+  margin: 10px 0 0;
+  color: #4C3821;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.auth--login .auth-fields { margin-top: 56px; gap: 8px; }
+
+.auth--login .auth-actions { margin-top: 14px; padding-top: 0; }
+
+.auth-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.auth-links li + li::before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 11px;
+  margin-right: 12px;
+  background: #D9C2A7;
+  vertical-align: -1px;
+}
+
+.auth-links a {
+  display: inline-block;
+  padding: 10px 2px;
+  color: var(--auth-muted);
+  text-decoration: none;
+}
+
+.auth-links a strong { color: var(--auth-brown); font-weight: 800; }
+
+/* =========================================================
+   09-1 약관 동의
+   ========================================================= */
+.terms-all {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  margin-top: 22px;
+  padding: 0 14px;
+  border-radius: 14px;
+  color: var(--auth-brown);
+  background: var(--auth-green-bg);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.terms-list {
+  margin: 10px 0 0;
+  padding: 4px 0;
+  border: 1.5px solid var(--auth-line);
+  border-radius: 16px;
+  background: var(--auth-surface);
+  list-style: none;
+}
+
+.auth-term + .auth-term { border-top: 1px solid #F3E8DA; }
+
+.auth-term__row { display: flex; align-items: center; }
+
+.auth-check {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 0 0 14px;
+  border-radius: 12px;
+  color: var(--auth-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* 체크 원: 실제 checkbox는 숨기고 동그라미로 그린다 */
+.auth-check input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.auth-check__mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #D9C2A7;
+  border-radius: 50%;
+  color: transparent;
+  background: #FFFFFF;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.auth-check__mark svg { width: 12px; height: 12px; }
+
+.auth-check input:checked + .auth-check__mark {
+  border-color: var(--auth-card);
+  color: #FFFFFF;
+  background: var(--auth-card);
+}
+
+/* .auth-check의 flex: 1이 세로로 늘어나지 않게 '모두 동의' 상자는 내용 높이만 쓴다. */
+.auth-check.terms-all { flex: none; padding-right: 14px; }
+
+.terms-all .auth-check__mark { border-color: #C6D0AE; }
+.terms-all input:checked + .auth-check__mark { border-color: var(--auth-green); background: var(--auth-green); }
+
+.auth-term__badge { color: var(--auth-orange); font-family: var(--font-label); font-weight: 800; }
+.auth-term__badge--optional { color: var(--auth-muted); }
+
+.auth-term__toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--auth-muted);
+  background: none;
+  cursor: pointer;
+}
+
+.auth-term__toggle svg { width: 16px; height: 16px; transition: transform 0.2s; }
+.auth-term__toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+
+.auth-term__body {
+  max-height: 200px;
+  margin: 0 12px 10px 16px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  border-radius: 10px;
+  color: var(--auth-text);
+  background: #FAF1E4;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.auth-term__body h3 {
+  margin: 10px 0 2px;
+  color: var(--auth-brown);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.auth-term__body h3:first-child { margin-top: 0; }
+
+/* 약관 동의·회원가입: 버튼을 화면 아래로 밀지 않고 안내 문구·입력칸 바로 밑에 둔다.
+   (약관을 펼치면 버튼도 함께 아래로 내려간다) */
+.auth--terms .auth-actions,
+.auth--signup .auth-actions { margin-top: 0; padding-top: 20px; }
+.auth-term__body p,
+.auth-term__body ul { margin: 0; }
+.auth-term__body ul { padding-left: 16px; }
+
+/* 약관 목록 바로 밑 안내 문구 */
+.terms-note {
+  margin: 10px 4px 0;
+  color: var(--auth-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+/* =========================================================
+   09-3 가입 완료 · 09-4 게스트 환영
+   ========================================================= */
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 56px;
+  text-align: center;
+}
+
+.auth--done .auth-topbar + .done { margin-top: 8px; }
+
+.done-emblem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 132px;
+  border: 4px solid #FFFFFF;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #FFF8EC, #F8E4C8 78%);
+  box-shadow: 0 0 0 12px rgba(251, 224, 207, 0.45), 0 8px 20px rgba(140, 91, 55, 0.14);
+}
+
+.done-emblem__art { width: 98px; height: auto; margin-top: 10px; }
+
+/* 오른쪽 아래에 걸친 작은 표시 (가입 완료: 금색 체크 / 게스트: 잎사귀) */
+.done-emblem__badge {
+  position: absolute;
+  right: -2px;
+  bottom: 4px;
+  width: 36px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(140, 91, 55, 0.2));
+}
+
+.done-emblem__badge--leaf { right: -6px; bottom: 10px; width: 34px; }
+
+.done-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 24px 0 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: var(--auth-green);
+  background: var(--auth-green-bg);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.done-badge--guest { color: var(--auth-card); background: var(--auth-peach); }
+
+.done-title {
+  margin: 12px 0 0;
+  color: var(--auth-brown);
+  font-family: var(--font-title);
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.done-title strong { color: var(--auth-orange); font-weight: 800; }
+
+/* common.css의 전역 'h1 span' 규칙(작은 주황 글자)을 이 제목에서는 쓰지 않는다. */
+.done-title span {
+  color: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+}
+
+.done-text {
+  margin: 10px 0 0;
+  color: var(--auth-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.done-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 18px 0 0;
+  padding: 12px 16px;
+  border: 1.5px solid var(--auth-line);
+  border-radius: 14px;
+  color: var(--auth-text);
+  background: var(--auth-surface);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  list-style: none;
+  text-align: left;
+}
+
+.done-notes li { position: relative; padding-left: 12px; }
+
+.done-notes li::before {
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--auth-orange);
+}
+
+.done-start {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 10px 20px 10px 12px;
+  border-radius: 16px;
+  background: var(--auth-peach);
+  text-align: left;
+}
+
+.done-start__number {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #FFFFFF;
+  background: var(--auth-card);
+  font-family: var(--font-logo);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.done-start__label { display: block; color: #8A6A55; font-size: 11px; font-weight: 600; }
+
+.done-start__room {
+  display: block;
+  color: var(--auth-ink);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* 화면 낭독기 전용 글자 */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 키가 작은 화면에서는 위쪽 여백을 줄인다. */
+@media (max-height: 700px) {
+  .login-brand { margin-top: 64px; }
+  .auth--login .auth-fields { margin-top: 28px; }
+  .done { margin-top: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-button,
+  .auth-input,
+  .auth-check__mark,
+  .auth-term__toggle svg { transition: none; }
+}
+
+/* ---------- 가입 완료 · 게스트 환영: 여백을 넉넉히, 요소는 조금씩 작게 ---------- */
+.auth--done .done { margin-top: 36px; }
+.auth--done .auth-topbar + .done { margin-top: 0; }
+
+.done-emblem { width: 108px; height: 108px; border-width: 3px; box-shadow: 0 0 0 10px rgba(251, 224, 207, 0.45), 0 6px 16px rgba(140, 91, 55, 0.12); }
+.done-emblem__art { width: 80px; margin-top: 8px; }
+.done-emblem__badge { width: 30px; }
+.done-emblem__badge--leaf { width: 28px; }
+
+.done-badge { margin-top: 20px; padding: 3px 10px; font-size: 11px; }
+.done-title { margin-top: 10px; font-size: 20px; }
+.done-text { margin-top: 8px; font-size: 13px; line-height: 1.55; }
+
+.done-notes {
+  max-width: 280px;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-width: 1px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  word-break: keep-all;
+}
+
+.done-start { margin-top: 14px; padding: 8px 16px 8px 10px; border-radius: 14px; gap: 8px; }
+.done-start__number { width: 24px; height: 24px; font-size: 13px; }
+.done-start__label { font-size: 10.5px; }
+.done-start__room { font-size: 13px; }
+
+/* 버튼도 내용 폭에 맞춰 좁게 */
+.auth--done .auth-actions {
+  width: 100%;
+  max-width: 280px;
+  align-self: center;
+  padding-top: 20px;
+}
+
+.auth--done .auth-button { min-height: 44px; font-size: 14px; }
+.auth--done .auth-text-link { padding: 6px; font-size: 12px; }
+
+/* 가입 완료: 탐험 순서 (QR 찍기 → 관찰 미션 → 그림 채우기) */
+.done-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  max-width: 280px;
+  margin: 20px 0 0;
+  padding: 12px 6px;
+  border: 1px solid var(--auth-line);
+  border-radius: 14px;
+  background: var(--auth-surface);
+  list-style: none;
+}
+
+.done-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 단계 사이 화살표 */
+.done-step + .done-step::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: -4px;
+  width: 6px;
+  height: 6px;
+  border-top: 1.5px solid #CDB89F;
+  border-right: 1.5px solid #CDB89F;
+  transform: rotate(45deg);
+}
+
+.done-step__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--auth-peach);
+}
+
+.done-step__icon img,
+.done-step__icon svg { width: 18px; height: auto; }
+
+.done-step__label {
+  color: var(--auth-text);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 순서 안내가 들어간 만큼 아래 카드와 간격을 맞춘다 */
+.done-steps + .done-start { margin-top: 16px; }
+
+/* 가입 완료는 뒤로가기가 없어 위가 비므로 내용을 조금 내린다. */
+.auth--done > .done:first-child { margin-top: 60px; }

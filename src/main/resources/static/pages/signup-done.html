@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <title>가입 완료 | BU:LOG</title>
+  <!-- 홈 화면과 같은 글꼴: 로고 Baloo 2, 제목 티머니 둥근바람, 라벨·버튼 SUIT, 본문 Noto Sans KR (SUIT·티머니는 auth.css에서 불러옴) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
+  <link rel="stylesheet" href="/css/pages/auth.css">
+  <script type="module" src="/js/pages/signup-done.js"></script>
+</head>
+<body class="auth-page">
+  <main class="auth auth--done">
+    <section class="done" aria-labelledby="done-title">
+      <!-- 홈 수집 현황 카드와 같은 옹기 그림 + 완료 표시 -->
+      <div class="done-emblem" aria-hidden="true">
+        <img class="done-emblem__art" src="/images/home/progress-jars.webp" alt="" width="204" height="144">
+        <img class="done-emblem__badge" src="/images/home/check.webp" alt="" width="117" height="117">
+      </div>
+      <p class="done-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>가입 완료</p>
+      <h1 class="done-title" id="done-title">환영해요,<span id="done-nickname-wrap" hidden> <strong id="done-nickname"></strong></span> 탐험가!</h1>
+      <p class="done-text">이제 전시실의 QR을 찍고<br>첫 번째 유물로 그림을 채워 보세요</p>
+      <!-- 탐험 순서 안내 -->
+      <ol class="done-steps" aria-label="탐험 순서">
+        <li class="done-step"><span class="done-step__icon"><img src="/images/home/icon-qr.webp" alt="" width="107" height="98"></span><span class="done-step__label">QR 찍기</span></li>
+        <li class="done-step"><span class="done-step__icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6B4A2E" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></svg></span><span class="done-step__label">관찰 미션</span></li>
+        <li class="done-step"><span class="done-step__icon"><img src="/images/home/icon-picture-book.webp" alt="" width="107" height="98"></span><span class="done-step__label">그림 채우기</span></li>
+      </ol>
+      <p class="done-start">
+        <span class="done-start__number" aria-hidden="true">1</span>
+        <span>
+          <span class="done-start__label">추천 출발 장소</span>
+          <span class="done-start__room" id="done-room">옹기1전시실부터 둘러봐요</span>
+        </span>
+      </p>
+    </section>
+
+    <div class="auth-actions">
+      <a class="auth-button" id="done-start" href="/">탐험 시작하기</a>
+    </div>
+
+    <!-- 하단 박물관 언덕 그림 (꾸밈, 피그마 로그인 화면 "박물관 언덕" 2x 원본) -->
+    <div class="auth-scene" aria-hidden="true">
+      <img src="/images/auth/bottom-scene.webp" alt="" width="780" height="226">
+    </div>
+  </main>
+</body>
+</html>

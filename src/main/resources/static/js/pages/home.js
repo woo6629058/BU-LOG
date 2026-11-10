@@ -1,3 +1,5 @@
+import { getMe, logout } from '../api/auth-api.js';
+import { clearGuestChoice, hasChosenGuest } from '../common/auth-flow.js';
 import { mountTabBar } from '../common/tab-bar.js';
 import {
   ROOMS,
@@ -9,8 +11,49 @@ import {
   summarizeRoom,
 } from '../common/collection-data.js';
 
-const showNotice = mountTabBar({ active: 'home' });
-document.querySelector('#home-login').addEventListener('click', showNotice);
+mountTabBar({ active: 'home' });
+
+// 로그인 버튼: 게스트는 로그인 화면으로 이동하고, 로그인한 회원은 닉네임과 로그아웃 버튼을 함께 본다.
+const account = document.querySelector('.home__account');
+const loginLink = document.querySelector('#home-login');
+const loginText = document.querySelector('#home-login-text');
+const accountMenu = document.querySelector('#home-account-menu');
+const logoutButton = document.querySelector('#home-logout');
+
+function showMember(member) {
+  account.classList.add('home__account--member');
+  loginText.textContent = member.nickname;
+  // 이름은 누를 수 없는 표시로 바꾼다 (href가 없는 a는 링크·포커스 대상이 아님).
+  loginLink.removeAttribute('href');
+  accountMenu.hidden = false;
+}
+
+logoutButton.addEventListener('click', async () => {
+  logoutButton.disabled = true;
+  try {
+    await logout();
+  } finally {
+    // 로그아웃하면 다시 로그인 화면부터 보여 준다.
+    clearGuestChoice();
+    window.location.replace('/pages/login.html');
+  }
+});
+
+// 처음 열었을 때: 로그인하지 않았고 게스트로 로그인한 적도 없으면 로그인 화면으로 보낸다.
+// (index.html 머리말의 짧은 스크립트가 확인이 끝날 때까지 화면을 가려 깜빡임을 막는다.)
+function revealHome() {
+  document.documentElement.classList.remove('auth-checking');
+}
+
+getMe().then((member) => {
+  if (member) {
+    showMember(member);
+  } else if (!hasChosenGuest()) {
+    window.location.replace('/pages/login.html');
+    return;
+  }
+  revealHome();
+}).catch(revealHome);
 
 // 전시실 목록의 대표 그림. 홈 화면에서만 쓴다.
 const ROOM_THUMBS = {
