@@ -9,13 +9,12 @@ const MAX_CHANCES = 2;
 
 // 1. 주소에서 정보 꺼내기
 //   ?exhibitId=PS01...  → 서버의 진짜 퀴즈
-//   ?demo=choice | count | lock → 서버 없이 체험해 보는 가짜 문제 (회의·시연용)
+//   ?demo=choice | count | handle | lock → 서버 없이 체험해 보는 가짜 문제 (회의·시연용)
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
 const demoKey = params.get('demo');
 const exhibitPageUrl = exhibitId ? `/pages/exhibit.html?id=${encodeURIComponent(exhibitId)}` : '/';
 
-// 정답이면 진영 님의 04 그림 채우기 화면으로 감 (이미 채운 유물이면 &new=0)
 function fillResultUrl(id, newlyAcquired) {
   const again = newlyAcquired === false ? '&new=0' : '';
   return `/pages/fill-result.html?exhibitId=${encodeURIComponent(id)}${again}`;
@@ -53,6 +52,19 @@ const DEMO_QUIZZES = {
     },
     answerOptionId: 13,
     explanation: '체험용 예시 정답이에요. 실제 문제와 정답은 현장에서 관찰해서 정해요.',
+  },
+  handle: {
+    exhibit: { name: '소줏고리', exhibitionRoom: '옹기2전시실' },
+    quiz: {
+      question: '소줏고리에 달린 손잡이는 모두 몇 개일까요?',
+      options: [
+        { id: 31, content: '1' }, { id: 32, content: '2' },
+        { id: 33, content: '3' }, { id: 34, content: '4' },
+      ],
+      hint: '앞뒤로 돌아가며 옆면을 살펴보세요.',
+    },
+    answerOptionId: 32,
+    explanation: '체험용 예시 정답(2개)이에요. 실제 문제와 정답은 현장에서 관찰해서 정해요.',
   },
   lock: {
     exhibit: { name: '소줏고리', exhibitionRoom: '옹기2전시실' },
@@ -127,7 +139,7 @@ function shake(target) {
 // 게임 종류 고르기
 // 서버가 type을 보내주면 그대로 쓰고, 아직 안 보내면 보기 모양으로 짐작함
 //   보기가 전부 3자리 이상 같은 길이 숫자 → 자물쇠 (예: "122")
-//   보기가 전부 1~2자리 숫자          → 숫자 세기 (예: "5")
+//   보기가 전부 1~2자리 숫자          → 도장 찍기 (예: "5")
 //   그 밖                             → 객관식
 // 서버 쪽은 지금 구조(질문 + 보기 + 고른 보기 id 제출) 그대로라 변경 없음
 // ---------------------------------------------------------
@@ -137,7 +149,7 @@ function detectGameType(quiz) {
   if (contents.length === 0) return 'MULTIPLE_CHOICE';
   const length = contents[0].length;
   if (length >= 3 && contents.every((text) => /^\d+$/.test(text) && text.length === length)) return 'LOCK';
-  if (contents.every((text) => /^\d{1,2}$/.test(text))) return 'COUNT';
+  if (contents.every((text) => /^\d{1,2}$/.test(text))) return 'COUNT'; // 도장 찍기
   return 'MULTIPLE_CHOICE';
 }
 
@@ -153,7 +165,7 @@ function detectGameType(quiz) {
 // ---------------------------------------------------------
 const GAME_RENDERERS = {
   MULTIPLE_CHOICE: renderMultipleChoice,
-  COUNT: renderCount,
+  COUNT: renderStamp, // 숫자 세기 = 도장 찍기
   LOCK: renderLock,
 };
 
@@ -211,63 +223,211 @@ function renderMultipleChoice(quiz, container, onChange) {
   };
 }
 
-// B. 숫자 세기: − / + 로 숫자를 골라 제출
-// 보기 범위를 그대로 보여주면 답이 좁혀지니까, 범위를 넉넉하게 잡음
-function renderCount(quiz, container, onChange) {
+// B. 도장 찍기 (숫자 세기): 유물 그림 위를 누를 때마다 그 자리에 스티커(또는 도장)가 붙음
+// 질문이 "학"이면 학, "손잡이"면 손잡이 스티커. 붙인 개수가 답. 붙인 걸 다시 누르면 떼어짐
+// 서버는 그대로: 보기가 "4", "5"처럼 숫자면 찍은 개수와 같은 보기를 골라 제출
+const STAMP_SIZE = 34; // 도장 크기(px)
+
+// 사진이 없을 때 쓰는 기본 그림: 항아리 + 학 여섯 마리 (체험 모드용 예시)
+const SAMPLE_PICTURE = `data:image/svg+xml,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <rect width="320" height="240" fill="#F6EADB"/>
+  <path d="M135 30h50v14c38 18 62 52 62 92 0 50-38 84-87 84s-87-34-87-84c0-40 24-74 62-92z" fill="#C9D7C3" stroke="#8FA58A" stroke-width="3"/>
+  <g fill="none" stroke="#56684F" stroke-width="4" stroke-linecap="round">
+    <path d="M100 90q11-12 22 0q11-12 22 0"/>
+    <path d="M168 72q11-12 22 0q11-12 22 0"/>
+    <path d="M198 128q11-12 22 0q11-12 22 0"/>
+    <path d="M86 146q11-12 22 0q11-12 22 0"/>
+    <path d="M140 184q11-12 22 0q11-12 22 0"/>
+    <path d="M140 120q11-12 22 0q11-12 22 0"/>
+  </g>
+</svg>`)}`;
+
+
+// 스티커: 질문 글자에서 낱말을 찾아 무엇을 붙일지 정함 (서버가 sticker를 보내주면 그걸 먼저 씀)
+const svgUrl = (body) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">${body}</svg>`)}`;
+const STICKERS = {
+  crane: {
+    words: ['학', '두루미'],
+    label: '학',
+    image: svgUrl(`
+      <path d="M9 30c6-1 11-5 15-11l3 10c-6 6-12 6-18 1z" fill="#2B211A"/>
+      <path d="M8 31c4-14 15-20 26-17-3 9-11 16-26 17z" fill="#fff" stroke="#2B211A" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30 15c2-4 5-7 9-7" fill="none" stroke="#2B211A" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="40" cy="8" r="3" fill="#2B211A"/><circle cx="40.5" cy="6.6" r="1.6" fill="#D9412B"/>
+      <path d="M43 8.5l4 1.5" stroke="#8A7B6E" stroke-width="2" stroke-linecap="round"/>
+      <path d="M20 31l-2 9M24 30l1 9" stroke="#8A7B6E" stroke-width="2" stroke-linecap="round"/>`),
+  },
+  handle: {
+    words: ['손잡이', '귀때', '고리'],
+    label: '손잡이',
+    image: svgUrl(`
+      <path d="M12 34V22a12 12 0 0 1 24 0v12" fill="none" stroke="#7A4A2E" stroke-width="7" stroke-linecap="round"/>
+      <path d="M12 34V22a12 12 0 0 1 24 0v12" fill="none" stroke="#B9774F" stroke-width="2.5" stroke-linecap="round"/>`),
+  },
+  spout: {
+    words: ['꼭지', '주둥이'],
+    label: '꼭지',
+    image: svgUrl(`
+      <path d="M8 30h22l10-12 3 3-9 13H8z" fill="#9C603E" stroke="#5C3B21" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M41 24c0 3 2 5 2 7a2 2 0 0 1-4 0c0-2 2-4 2-7z" fill="#7FB3D5"/>`),
+  },
+  flower: {
+    words: ['연꽃', '꽃', '국화', '모란'],
+    label: '꽃',
+    image: svgUrl(`
+      <g fill="#F4A6A0" stroke="#C0603A" stroke-width="1.5">
+        <ellipse cx="24" cy="12" rx="6" ry="10"/><ellipse cx="24" cy="12" rx="6" ry="10" transform="rotate(72 24 24)"/>
+        <ellipse cx="24" cy="12" rx="6" ry="10" transform="rotate(144 24 24)"/><ellipse cx="24" cy="12" rx="6" ry="10" transform="rotate(216 24 24)"/>
+        <ellipse cx="24" cy="12" rx="6" ry="10" transform="rotate(288 24 24)"/>
+      </g><circle cx="24" cy="24" r="5" fill="#E0AF39"/>`),
+  },
+  fish: {
+    words: ['물고기', '고기'],
+    label: '물고기',
+    image: svgUrl(`
+      <path d="M6 24c6-9 20-11 30 0-10 11-24 9-30 0z" fill="#6C9BC2" stroke="#2F5B80" stroke-width="2"/>
+      <path d="M36 24l8-7v14z" fill="#6C9BC2" stroke="#2F5B80" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="14" cy="22" r="2" fill="#1F2D3A"/>`),
+  },
+  hole: {
+    words: ['구멍'],
+    label: '구멍',
+    image: svgUrl(`<circle cx="24" cy="24" r="13" fill="#3A2A20" stroke="#B9A48C" stroke-width="4"/>`),
+  },
+};
+
+function pickSticker(quiz) {
+  if (quiz.sticker && STICKERS[quiz.sticker]) return STICKERS[quiz.sticker];
+  const question = quiz.question ?? '';
+  return Object.values(STICKERS).find((sticker) => sticker.words.some((word) => question.includes(word))) ?? null;
+}
+
+function renderStamp(quiz, container, onChange) {
   const numbers = quiz.options.map((option) => Number(option.content));
-  const max = Math.max(9, Math.ceil(Math.max(...numbers) * 1.5));
-  const tried = new Set(); // 이미 틀린 숫자
-  let value = 0;
-  let touched = false;
+  const max = Math.max(9, Math.ceil(Math.max(...numbers) * 1.5)); // 너무 많이 찍지 않게
+  const unit = quiz.unit ?? '개';
+  const tried = new Set(); // 이미 틀린 개수
+  let stamps = []; // { x, y, node } (x, y는 그림 안의 % 위치)
+  let locked = false;
+  const sticker = pickSticker(quiz); // null이면 빨간 "관" 도장
 
-  const box = element('div', 'quiz-counter');
-  const minus = element('button', 'quiz-counter__button', '−');
-  const plus = element('button', 'quiz-counter__button', '+');
-  minus.type = 'button';
-  plus.type = 'button';
-  minus.setAttribute('aria-label', '하나 빼기');
-  plus.setAttribute('aria-label', '하나 더하기');
+  // 그림 판: 키보드로도 쓸 수 있게 tabindex를 줌 (Enter/Space 찍기, Backspace 떼기)
+  const board = element('div', 'quiz-stamp');
+  board.tabIndex = 0;
+  board.setAttribute('role', 'button');
+  board.setAttribute('aria-label', `유물 그림. 누를 때마다 도장이 찍혀요. 지금 0${unit}`);
+  const picture = element('img', 'quiz-stamp__picture');
+  picture.alt = '';
+  picture.src = quiz.imageUrl || SAMPLE_PICTURE;
+  picture.draggable = false;
+  picture.addEventListener('error', () => { picture.src = SAMPLE_PICTURE; }, { once: true });
+  board.append(picture);
 
-  const display = element('div', 'quiz-counter__display');
-  const valueEl = element('span', 'quiz-counter__value', '0');
-  valueEl.setAttribute('aria-live', 'polite');
-  display.append(valueEl, element('span', 'quiz-counter__unit', quiz.unit ?? '개'));
-  box.append(minus, display, plus);
+  const footer = element('div', 'quiz-stamp__footer');
+  const countEl = element('p', 'quiz-stamp__count');
+  countEl.setAttribute('aria-live', 'polite');
+  const clear = element('button', 'quiz-stamp__clear', '모두 지우기');
+  clear.type = 'button';
+  footer.append(countEl, clear);
 
-  const note = element('p', 'quiz-counter__note', '실물을 보며 하나씩 세어 보세요');
-  container.replaceChildren(box, note);
+  const guide = sticker
+    ? `실물을 보며 ${sticker.label}${/[가-힣]/.test(sticker.label) && (sticker.label.charCodeAt(sticker.label.length - 1) - 0xac00) % 28 ? '을' : '를'} 찾은 자리마다 붙여 보세요`
+    : '실물을 보며 찾은 자리를 콕콕 눌러 도장을 찍어 보세요';
+  const note = element('p', 'quiz-stamp__note', guide);
+  container.replaceChildren(board, footer, note);
 
-  function setValue(next, direction) {
-    value = Math.min(max, Math.max(0, next));
-    touched = true;
-    valueEl.textContent = String(value);
-    minus.disabled = value === 0;
-    plus.disabled = value === max;
-    if (!prefersReducedMotion) {
-      valueEl.classList.remove('is-rolling-up', 'is-rolling-down');
-      void valueEl.offsetWidth;
-      valueEl.classList.add(direction > 0 ? 'is-rolling-up' : 'is-rolling-down');
-    }
-    note.textContent = tried.has(value) ? `${value}${quiz.unit ?? '개'}는 이미 틀렸어요` : '실물을 보며 하나씩 세어 보세요';
+  function update() {
+    countEl.textContent = '';
+    countEl.append(element('strong', null, String(stamps.length)), `${unit} ${sticker ? '붙였어요' : '찍었어요'}`);
+    board.setAttribute('aria-label', `유물 그림. 누를 때마다 도장이 찍혀요. 지금 ${stamps.length}${unit}`);
+    clear.disabled = locked || stamps.length === 0;
+    note.textContent = tried.has(stamps.length)
+      ? `${stamps.length}${unit}는 이미 틀렸어요. 다시 찾아보세요`
+      : guide;
     onChange();
   }
 
-  minus.disabled = true;
-  minus.addEventListener('click', () => setValue(value - 1, -1));
-  plus.addEventListener('click', () => setValue(value + 1, 1));
+  function addStamp(x, y) {
+    if (locked) return;
+    if (stamps.length >= max) {
+      shake(board);
+      return;
+    }
+    const node = sticker
+      ? element('span', 'quiz-stamp__seal quiz-stamp__seal--sticker')
+      : element('span', 'quiz-stamp__seal', '관');
+    if (sticker) node.style.backgroundImage = `url("${sticker.image}")`;
+    node.setAttribute('aria-hidden', 'true');
+    node.style.left = `${x}%`;
+    node.style.top = `${y}%`;
+    node.style.setProperty('--tilt', `${Math.round(Math.random() * 24 - 12)}deg`);
+    const stamp = { x, y, node };
+    node.addEventListener('pointerdown', (event) => {
+      event.stopPropagation(); // 판에 또 찍히지 않게
+      if (locked) return;
+      removeStamp(stamp);
+    });
+    board.append(node);
+    stamps.push(stamp);
+    navigator.vibrate?.(15);
+    update();
+  }
+
+  function removeStamp(stamp) {
+    stamp.node.remove();
+    stamps = stamps.filter((item) => item !== stamp);
+    update();
+  }
+
+  // 누른 자리(%)에 도장 찍기
+  board.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return;
+    const rect = board.getBoundingClientRect();
+    const half = (STAMP_SIZE / 2 / rect.width) * 100;
+    const halfY = (STAMP_SIZE / 2 / rect.height) * 100;
+    const x = Math.min(100 - half, Math.max(half, ((event.clientX - rect.left) / rect.width) * 100));
+    const y = Math.min(100 - halfY, Math.max(halfY, ((event.clientY - rect.top) / rect.height) * 100));
+    addStamp(x, y);
+  });
+
+  // 키보드: Enter/Space는 줄 맞춰 찍고, Backspace/Delete는 마지막 도장을 뗌
+  board.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      const index = stamps.length;
+      addStamp(15 + (index % 5) * 17.5, 22 + Math.floor(index / 5) * 28);
+    } else if ((event.key === 'Backspace' || event.key === 'Delete') && stamps.length > 0) {
+      event.preventDefault();
+      if (!locked) removeStamp(stamps[stamps.length - 1]);
+    }
+  });
+
+  clear.addEventListener('click', () => {
+    stamps.forEach((stamp) => stamp.node.remove());
+    stamps = [];
+    update();
+  });
+
+  update();
 
   return {
     getAnswer: () => ({
-      ready: touched && !tried.has(value),
-      optionId: quiz.options[numbers.indexOf(value)]?.id ?? null,
+      ready: stamps.length > 0 && !tried.has(stamps.length),
+      optionId: quiz.options[numbers.indexOf(stamps.length)]?.id ?? null,
     }),
     markWrong() {
-      tried.add(value);
-      note.textContent = `${value}${quiz.unit ?? '개'}는 아니에요. 다시 세어 보세요`;
-      shake(box);
+      tried.add(stamps.length);
+      note.textContent = `${stamps.length}${unit}는 아니에요. 다시 찾아보세요`;
+      shake(board);
     },
-    markCorrect() { box.classList.add('is-correct'); },
-    disable() { minus.disabled = true; plus.disabled = true; },
+    markCorrect() { board.classList.add('is-correct'); },
+    disable() {
+      locked = true;
+      board.classList.add('is-locked');
+      board.tabIndex = -1;
+      clear.disabled = true;
+    },
   };
 }
 
@@ -441,7 +601,6 @@ async function grade(optionId) {
     return { correct, explanation: demo.explanation };
   }
   // 숫자 세기·자물쇠에서 보기에 없는 답을 고르면 서버에 보낼 id가 없어서 바로 오답
-  // TODO(조장과 확인): 이 경우도 서버에 시도 기록을 남길지
   if (optionId === null) return { correct: false };
   return unwrap(await submitQuizAnswer(state.quiz.quizId, optionId));
 }
@@ -484,7 +643,6 @@ els.submit.addEventListener('click', handleSubmit);
 // ---------------------------------------------------------
 // 힌트 (서버가 hint를 보내줄 때만 보임. 체험 모드에는 있음)
 // 힌트를 쓰면 정답이어도 일반 유물
-// TODO(조장과 확인): 힌트를 썼다는 사실을 서버에 어떻게 알릴지
 // ---------------------------------------------------------
 els.hint.addEventListener('click', () => {
   if (!state.quiz?.hint) return;
@@ -534,8 +692,10 @@ async function renderQuiz() {
       getExhibitQuiz(exhibitId),
       getExhibit(exhibitId).catch(() => null),
     ]);
-    renderLabel(exhibitResponse ? unwrap(exhibitResponse) : null);
-    startGame(unwrap(quizResponse));
+    const exhibit = exhibitResponse ? unwrap(exhibitResponse) : null;
+    renderLabel(exhibit);
+    // 도장 찍기는 유물 사진 위에 찍음 (사진이 없으면 기본 그림)
+    startGame({ ...unwrap(quizResponse), imageUrl: exhibit?.imageUrl });
   } catch (error) {
     if (error.status === 404) {
       showLoadError('이 전시물의 퀴즈를 찾을 수 없어요.');
