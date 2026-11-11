@@ -50,11 +50,6 @@
   background: var(--auth-bg);
 }
 
-/* 아이폰 사파리에서 끝까지 내린 뒤 더 당기면 화면이 튕기며 하단 그림 아래 빈 바탕이 보인다.
-   이 화면들은 튕길 필요가 없으므로 튕김을 끈다. (스크롤 자체는 그대로 된다) */
-html:has(body.auth-page),
-body.auth-page { overscroll-behavior-y: none; }
-
 /* 화면 틀: 위에서부터 내용 → (빈 공간) → 버튼 → 하단 그림. 그림은 항상 화면 맨 아래에 붙는다. */
 .auth {
   position: relative;
@@ -356,11 +351,16 @@ body.auth-page { overscroll-behavior-y: none; }
 
 .auth-alert:empty { display: none; }
 
-/* ---------- 하단 그림: 피그마 로그인의 '박물관 언덕' 그림 한 장을 화면 폭에 꽉 채워 맨 아래에 붙인다 ----------
-   하늘 부분은 투명하게 만들어 화면 배경색과 자연스럽게 이어진다. */
-.auth-scene {
-  flex: none;
-  margin: auto -22px 0; /* 좌우 여백을 없애 화면 양 끝까지 채움, 남는 공간 아래로 밀착 */
+/* ---------- 하단 그림: 홈처럼 화면 아래에 고정하고, 내용은 그 위로 스크롤된다 ----------
+   피그마 로그인의 '박물관 언덕' 그림(780×226)을 화면 폭에 맞춰 깐다. 하늘 부분은 투명하다. */
+.auth > .auth-scene {
+  position: fixed;
+  z-index: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--layout-width, 100%);
+  margin: 0;
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
@@ -370,8 +370,9 @@ body.auth-page { overscroll-behavior-y: none; }
   height: auto;
 }
 
-/* 가입 완료·게스트: '탐험 시작하기'를 추천 출발 장소 바로 밑에 두고, 남는 공간은 그림 위로 보낸다. */
-.auth--done .auth-actions { margin-top: 0; padding-top: 22px; }
+/* 맨 아래까지 내렸을 때 마지막 버튼·링크가 그림 꼭대기(나무 끝)에 딱 닿도록 그림 높이만큼 아래 여백을 둔다.
+   padding의 %는 폭 기준이라 그림 비율(226 / 780 ≈ 29%)을 그대로 쓸 수 있다. */
+.auth { padding-bottom: 29%; }
 
 /* =========================================================
    09-0 로그인
