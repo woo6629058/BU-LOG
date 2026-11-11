@@ -60,9 +60,6 @@
   /* 내용이 화면보다 짧아도 하단 언덕이 탭바 바로 위에 오도록 화면 높이(탭바 제외)만큼은 채운다. */
   min-height: calc(100vh - var(--tab-bar-height, 0px));
   min-height: calc(100dvh - var(--tab-bar-height, 0px));
-  /* 아이폰 사파리는 끝까지 내리면 주소창이 접혀 화면이 커진다. 그 큰 화면(lvh) 기준으로 채워
-     맨 아래까지 내렸을 때 언덕이 탭바 바로 위에 오게 한다. */
-  min-height: calc(100lvh - var(--tab-bar-height, 0px));
   color: var(--home-ink);
   font-family: var(--font-body);
   font-weight: 600;
@@ -77,7 +74,7 @@
     url("/images/home/cloud.webp") calc(470 * var(--u)) calc(78 * var(--u) + var(--home-shift)) / calc(100 * var(--u)) auto no-repeat,
     url("/images/home/hero-hills.webp") calc(-24 * var(--u)) calc(196 * var(--u) + var(--home-shift)) / calc(900 * var(--u)) auto no-repeat,
     linear-gradient(#FDF1DC, var(--home-bg) calc(320 * var(--u) + var(--home-shift))) top / 100% calc(320 * var(--u) + var(--home-shift)) no-repeat;
-  background-color: var(--home-bg); /* 내용 영역은 크림색 (body는 잔디색) */
+  background-color: var(--home-bg);
 }
 
 /* 머리말: 그림 위에 제목과 로그인 버튼을 얹는다. */
@@ -279,6 +276,18 @@
 .home__rooms {
   margin-top: calc(34 * var(--u));
 }
+
+/* 고정된 언덕보다 앞에 보이도록 내용 영역을 한 층 위로 올린다. */
+.home__header,
+.home-progress,
+.home__rooms {
+  position: relative;
+  z-index: 2;
+}
+
+/* 맨 아래까지 내리면 마지막 전시실 카드 아래쪽이 언덕 꼭대기(꽃 끝)에 딱 닿도록 맞춘 여백.
+   언덕 그림 높이(폭의 58% × 93/439 ≈ 104u) + 바닥 띄움(26u) − 탭바 뒤로 들어간 만큼(22u) − 살짝 겹침(2u) */
+.home { padding-bottom: calc(106 * var(--u)); }
 
 .home__section-header {
   display: flex;
@@ -531,11 +540,17 @@
 /* 목록 끝의 언덕과 꽃. 탭바가 아래쪽 일부를 덮는다. */
 /* 하단 언덕: 양쪽 언덕을 화면 끝까지 붙이고 가운데에서 겹치게 키운다.
    언덕 그림 아래 투명한 줄 대신 같은 색 땅을 깔아, 탭바 둥근 모서리 뒤까지 빈틈 없이 이어지게 한다. */
+/* 하단 언덕은 탭바처럼 화면 아래에 고정하고, 전시실 목록이 그 위로 스크롤된다.
+   (언덕은 카드 뒤에 깔리고, 맨 아래까지 내리면 마지막 카드가 언덕 위에 오도록 .home에 아래 여백을 둔다) */
 .home__ground {
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: calc(max(48px, var(--tab-bar-height, 72px)) - 22 * var(--u));
+  width: var(--layout-width, 100%);
   height: calc(170 * var(--u));
-  /* 남는 세로 공간을 위쪽에 두어 언덕을 화면 아래(탭바 위)로 민다. */
-  margin-top: auto;
-  margin-bottom: calc(-22 * var(--u));
+  transform: translateX(-50%);
+  pointer-events: none;
   /* 언덕 그림은 양 끝 2px이 투명해서 화면 밖으로 조금 내보내 끝에 빈틈이 없게 한다.
      그 아래 땅은 가운데가 살짝 낮은 곡선(SVG)으로 깔아, 언덕 사이에 일자 선이 보이지 않게 한다. */
   background:
@@ -544,18 +559,20 @@
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 64' preserveAspectRatio='none'%3E%3Cpath fill='%23D8D99D' d='M0 14C70 8 130 20 195 22S320 10 390 12V64H0Z'/%3E%3C/svg%3E") left bottom / 100% calc(64 * var(--u)) no-repeat;
 }
 
-/* 탭바 둥근 모서리 뒤로 보이는 곳은 잔디색이 되도록 body는 잔디색, 실제 내용(.home)은 크림색으로 칠한다.
-   위로 당길 때 보이는 html 바탕은 크림색으로 두고, 아래로 튕기는 동작은 꺼서 잔디 아래 빈 곳이 보이지 않게 한다. */
-html:has(body.page-home),
-body.page-home { overscroll-behavior-y: none; }
-
-body.page-home {
+/* 탭바 둥근 모서리 옆이 비어 보이지 않게, 잔디를 모서리 높이만큼만 탭바 뒤로 더 깐다.
+   (body 전체를 잔디색으로 칠하면 사파리에서 위로 당길 때 위쪽까지 초록색이 되어서 이렇게 한다) */
+.home__ground::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: calc(24 * var(--u));
   background: #D8D99D;
-  -webkit-tap-highlight-color: transparent; /* 아이폰에서 누를 때 회색 상자가 번쩍이지 않게 */
 }
 
-@media (max-width: 430px) {
-  html:has(body.page-home) { background: var(--home-bg-outer, #FEF5E4); }
+body.page-home {
+  -webkit-tap-highlight-color: transparent; /* 아이폰에서 누를 때 회색 상자가 번쩍이지 않게 */
 }
 
 /* 홈 화면 전용 탭바: 크림색 바탕, 둥근 윗모서리, 활성 탭 살구색 배경, 에셋 아이콘 */
