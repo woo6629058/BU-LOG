@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="미션을 풀어 모은 유물을 전시실별 선반에 보여 주는 BU:LOG 진열장">
   <title>진열장 | BU:LOG</title>
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
   <!-- 홈과 같은 글꼴: 숫자 Baloo 2, 본문 Noto Sans KR (티머니 둥근바람·SUIT는 art-theme.css에서 불러옴) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +16,13 @@
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/components/art-theme.css">
-  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
-  <script src="/js/common/page-transition.js"></script>
   <link rel="stylesheet" href="/css/components/artifact-figure.css">
   <link rel="stylesheet" href="/css/pages/showcase.css">
+  <!-- 아래 모듈이 가져오는 모듈을 한 번에 미리 받는다 (가져오기 단계마다 기다리지 않게) -->
+  <link rel="modulepreload" href="/js/common/tab-bar.js">
+  <link rel="modulepreload" href="/js/common/motion.js">
+  <link rel="modulepreload" href="/js/common/collection-data.js">
+  <link rel="modulepreload" href="/js/common/artifact-figure.js">
   <!-- 화면 전환 때 이어질 그림이 먼저 만들어지도록, 이 스크립트가 끝난 뒤에 화면을 그린다 -->
   <script type="module" src="/js/pages/showcase.js" blocking="render"></script>
 </head>
@@ -31,7 +36,14 @@
       <h1 class="showcase__title">진열장</h1>
       <p class="showcase__intro">회색 유물은 전시실에서 QR을 찾아 미션을 풀면 진열돼요</p>
     </header>
+    <!-- 전시실 칩: 누르면 그 전시실 진열장으로 스크롤, 스크롤하면 지금 보이는 전시실 칩이 골라진다 -->
+    <nav class="showcase__rooms" aria-label="전시실 바로 가기">
+      <ul class="art-chips" id="showcase-chips"></ul>
+    </nav>
     <div class="showcase__halls" id="showcase-halls"></div>
   </main>
+  <!-- 아직 모으지 않은 칸을 눌렀을 때 뜨는 짧은 알림 (보이는 알림 + 스크린리더용 알림) -->
+  <p class="showcase__toast" id="showcase-toast" aria-hidden="true"></p>
+  <p class="visually-hidden" id="showcase-status" role="status"></p>
 </body>
 </html>

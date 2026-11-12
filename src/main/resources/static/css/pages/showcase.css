@@ -9,8 +9,6 @@
   gap: 24px;
   min-height: calc(100dvh - var(--tab-bar-height, 0px));
   padding: max(56px, calc(44px + env(safe-area-inset-top, 0px))) 20px 28px;
-  color: var(--art-ink);
-  font-family: var(--font-body);
   font-weight: 600;
 }
 
@@ -48,6 +46,51 @@
   display: flex;
   flex-direction: column;
   gap: 26px;
+}
+
+/* 전시실 칩 줄: 스크롤해도 화면 위(아이폰은 상태표시줄 아래)에 붙어 있다. 칩 줄(.art-chips)은 화면 양옆 끝까지 넘긴다.
+   제자리에 있을 때는 바탕 없이 뒤 배경 도형이 그대로 보이고, 위에 붙으면(is-stuck, showcase.js)
+   진열장이 칩 밑으로 지나가므로 반투명 크림색 바탕과 흐림을 깐다. */
+.showcase__rooms {
+  position: sticky;
+  z-index: 5;
+  top: env(safe-area-inset-top, 0px);
+  margin: -8px -20px -10px;
+  padding-top: 4px;
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.showcase__rooms.is-stuck,
+.showcase__rooms.is-stuck::before {
+  background-color: rgba(254, 245, 228, 0.86);
+  /* 흐림은 스크롤하는 동안 매 장면 다시 그리므로 약하게 */
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.showcase__rooms.is-stuck {
+  box-shadow: 0 8px 12px -10px rgba(140, 91, 55, 0.35);
+}
+
+/* 아이폰 상태표시줄 자리도 같은 바탕으로 덮는다 (노트북은 높이 0). */
+.showcase__rooms.is-stuck::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: env(safe-area-inset-top, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase__rooms {
+    transition: none;
+  }
+}
+
+/* 칩을 눌러 이동했을 때 전시실 이름이 칩 줄에 가리지 않게 */
+.showcase__hall {
+  scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px));
 }
 
 .showcase__hall-header {
@@ -147,12 +190,21 @@
   }
 }
 
-a.showcase__item:focus-visible {
+.showcase__item:focus-visible {
   outline: 3px solid var(--art-gold-bar);
   outline-offset: 2px;
 }
 
 /* 아직 모으지 않은 유물: 살구빛 반투명 칸 */
+/* 아직 모으지 않은 칸은 누르면 알림이 뜨는 버튼이다. */
+button.showcase__item {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .showcase__item.is-missing {
   background: rgba(251, 224, 207, 0.55);
 }
@@ -173,4 +225,45 @@ a.showcase__item:focus-visible {
   font-size: 13px;
   font-weight: 750;
   letter-spacing: 0.1em;
+}
+
+/* 짧은 알림: 탭바 바로 위 가운데에 잠깐 떴다가 사라진다. */
+.showcase__toast {
+  position: fixed;
+  z-index: 25;
+  bottom: calc(var(--tab-bar-height, 72px) + 12px);
+  left: 50%;
+  width: max-content;
+  max-width: min(340px, calc(100% - 48px));
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  color: #FFF8EE;
+  background: var(--art-brown);
+  box-shadow: 0 6px 16px rgba(92, 59, 33, 0.24);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+  word-break: keep-all;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 10px);
+  transition: opacity 180ms ease, transform 180ms var(--ease-in), visibility 0s 180ms;
+}
+
+.showcase__toast.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition: opacity 200ms ease, transform var(--motion-release) var(--ease-spring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase__toast,
+  .showcase__toast.is-shown {
+    transform: translate(-50%, 0);
+    transition: none;
+  }
 }

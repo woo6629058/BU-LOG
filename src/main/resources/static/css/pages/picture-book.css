@@ -8,8 +8,6 @@
   gap: 16px;
   min-height: calc(100dvh - var(--tab-bar-height, 0px));
   padding: max(56px, calc(44px + env(safe-area-inset-top, 0px))) 20px 28px;
-  color: var(--art-ink);
-  font-family: var(--font-body);
   font-weight: 600;
 }
 
@@ -171,52 +169,14 @@
 }
 
 .book__frame:focus-visible,
-.book__chip:focus-visible,
 .book__region:focus-visible {
   outline: 3px solid var(--art-orange);
   outline-offset: 2px;
 }
 
-/* 전시실 칩: 줄바꿈 대신 가로로 넘긴다. 고른 칩은 로그인 버튼과 같은 살구색 */
+/* 전시실 칩(.art-chips, art-theme.css)은 화면 양옆 끝까지 넘긴다. */
 .book__rooms {
   margin-inline: -20px;
-}
-
-.book__chips {
-  display: flex;
-  gap: 8px;
-  margin: 0;
-  padding: 4px 20px 8px;
-  overflow-x: auto;
-  list-style: none;
-  scrollbar-width: none;
-}
-
-.book__chips::-webkit-scrollbar {
-  display: none;
-}
-
-.book__chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 18px;
-  border: 1.5px solid var(--art-line);
-  border-radius: 999px;
-  color: var(--art-text);
-  background: var(--art-surface);
-  font-family: var(--font-label);
-  font-size: 14px;
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.book__chip[aria-current="page"] {
-  border-color: var(--art-button);
-  color: var(--art-ink);
-  background: var(--art-button);
-  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
 }
 
 /* 전시실 그림 */

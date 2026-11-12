@@ -9,12 +9,10 @@
   min-height: 100vh;
   min-height: 100dvh;
   padding-top: max(24px, calc(12px + env(safe-area-inset-top, 0px)));
-  color: var(--art-ink);
-  font-family: var(--font-body);
   font-weight: 600;
 }
 
-.detail__close {
+.detail__back {
   position: absolute;
   z-index: 1;
   top: max(16px, calc(8px + env(safe-area-inset-top, 0px)));

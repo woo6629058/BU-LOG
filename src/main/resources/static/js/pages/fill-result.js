@@ -17,7 +17,7 @@ function element(tag, className, text) {
 }
 
 function linkButton(text, href, variant) {
-  const link = element('a', `result__button result__button--${variant} art-button art-pressable${variant === 'secondary' ? ' art-button--secondary' : ''}`, text);
+  const link = element('a', `art-button${variant === 'secondary' ? ' art-button--secondary' : ''}`, text);
   link.href = href;
   return link;
 }
@@ -97,11 +97,11 @@ function renderResult({ room, region }) {
   );
 
   document.title = `${region.artifactName} 채움 | BU:LOG`;
-  const celebration = isNew ? renderCelebration() : null;
   root.replaceChildren(eyebrow, title, scene, info, status, actions);
-  if (celebration) root.append(celebration);
 
   if (isNew) {
+    const celebration = renderCelebration();
+    root.append(celebration);
     // 드러날 그림을 받고 화면이 그려진 뒤 연출을 시작하고, 끝나면 축하 연출을 보여 주고 스크린리더에 알린다.
     Promise.all([loadScene(room), new Promise((resolve) => setTimeout(resolve, 300))])
       .then(() => playFill(scene, exhibitId))

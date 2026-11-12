@@ -2,7 +2,8 @@
 // 목록 등장·누름 반응·막대 채우기는 CSS 클래스(art-rise·art-pressable·art-fill, css/components/art-theme.css)로 하고,
 // 여기서는 CSS로 할 수 없는 숫자 올라가기만 맡는다.
 
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// 움직임 줄이기 설정 (화면 스크립트도 함께 쓴다)
+export const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // 홈은 로그인 확인이 끝날 때까지(html.auth-checking) 화면을 가린다. 화면이 보인 뒤에 callback을 부른다.
 function afterReveal(callback) {

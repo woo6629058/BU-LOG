@@ -82,14 +82,14 @@ function renderOverview() {
 function renderChips() {
   const chips = ROOMS.map((item) => {
     const li = element('li');
-    const link = element('a', 'book__chip art-pressable', item.shortName);
+    const link = element('a', 'art-chip', item.shortName);
     link.href = roomUrl(item.id);
     if (item.id === room.id) link.setAttribute('aria-current', 'page');
     li.append(link);
     return li;
   });
   document.querySelector('#book-chips').replaceChildren(...chips);
-  document.querySelector('.book__chip[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  document.querySelector('#book-chips .art-chip[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
 
 function renderRegion(item, message) {

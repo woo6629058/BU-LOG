@@ -8,14 +8,10 @@
  *   SUIT 800 — 작은 제목·버튼·배지·탭 이름 / Noto Sans KR 600 — 본문
  *   Baloo 2 와 Noto Sans KR 는 index.html 의 Google Fonts 링크로 불러온다.
  *   티머니 둥근바람·SUIT 불러오기와 홈 탭바 디자인은 components/art-theme.css 에 있다 (그림 도감·진열장과 함께 씀).
+ * 시안 픽셀 단위 --u(넓은 화면은 390px 열 기준)와 글꼴 변수 --font-* 도 art-theme.css(.page-art)에서 정한다.
  */
 
 .page-home {
-  --u: calc(100vw / 851);
-  --font-logo: "Baloo 2", "SUIT", system-ui, sans-serif;
-  --font-title: "TmoneyRoundWind", "SUIT", system-ui, sans-serif;
-  --font-label: "SUIT", "Noto Sans KR", system-ui, sans-serif;
-  --font-body: "Noto Sans KR", system-ui, sans-serif;
   --home-bg: #FEF5E4;
   --home-surface: #FEF9EF;
   --home-ink: #34231A;
@@ -33,13 +29,6 @@
   --home-line-active: #B46C3E;
 
   background: var(--home-bg);
-}
-
-/* 넓은 화면에서는 390px 열(mobile-layout.css)에 맞춘다. */
-@media (min-width: 431px) {
-  .page-home {
-    --u: calc(390px / 851);
-  }
 }
 
 .home {
@@ -554,23 +543,7 @@
   background: #D8D99D;
 }
 
-body.page-home {
-  -webkit-tap-highlight-color: transparent; /* 아이폰에서 누를 때 회색 상자가 번쩍이지 않게 */
-}
-
-/* 홈 탭바 디자인은 components/art-theme.css (.page-art .tab-bar) 에 있다. */
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
+/* 홈 탭바 디자인, 탭 하이라이트 없애기, .visually-hidden 은 components/art-theme.css 에 있다. */
 
 /* 로그인 버튼 (09 로그인 화면 연결): 게스트는 링크, 로그인 후에는 닉네임 + 바로 밑에 붙는 로그아웃 */
 .home__account {

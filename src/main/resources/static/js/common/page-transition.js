@@ -8,6 +8,7 @@
   if (!('onpagereveal' in window)) return;
 
   var FROM_KEY = 'bulog.page.from';
+  var NAME_KEY = 'bulog.page.shared'; // 떠나는 화면이 정한, 이어 보일 그림 이름
   // 하단 탭 순서 (탭바와 같음). QR 스캔 화면은 화면 전환을 쓰지 않지만 순서 계산에는 넣는다.
   var TABS = ['/', '/pages/qr-scan.html', '/pages/picture-book.html', '/pages/showcase.html'];
 
@@ -46,50 +47,56 @@
     return null;
   }
 
-  function sharedNames(aHref, bHref) {
+  function sharedName(aHref, bHref) {
     var a = new URL(aHref, window.location.href);
     var b = new URL(bHref, window.location.href);
-    var name = pairName(a, b) || pairName(b, a);
-    return name ? [name] : [];
+    return pairName(a, b) || pairName(b, a);
   }
 
-  // data-vt-name 을 단 그림 가운데 이번 이동에서 짝이 맞는 것만 이름을 붙이고 나머지는 뗀다.
-  function nameShared(names) {
+  // data-vt-name 을 단 그림 가운데 name 과 같은 것에만 이름을 붙이고 나머지는 뗀다.
+  function nameShared(name) {
     var nodes = document.querySelectorAll('[data-vt-name]');
     for (var i = 0; i < nodes.length; i += 1) {
-      var name = nodes[i].getAttribute('data-vt-name');
-      nodes[i].style.viewTransitionName = names.indexOf(name) >= 0 ? name : 'none';
+      nodes[i].style.viewTransitionName = name && nodes[i].getAttribute('data-vt-name') === name ? name : 'none';
     }
+  }
+
+  // 저장소를 쓸 수 없는 환경(사생활 보호 모드 등)에서는 기본 전환으로 동작한다.
+  function read(key) {
+    try { return window.sessionStorage.getItem(key); } catch (error) { return null; }
+  }
+
+  function write(key, value) {
+    try { window.sessionStorage.setItem(key, value); } catch (error) { /* 기본 전환 */ }
   }
 
   // 떠나는 화면의 주소를 남긴다 (navigation.activation 을 모르는 브라우저용).
   window.addEventListener('pagehide', function () {
-    try { window.sessionStorage.setItem(FROM_KEY, window.location.href); } catch (error) { /* 저장 불가: 기본 전환 */ }
+    write(FROM_KEY, window.location.href);
   });
 
-  // 떠나는 화면: 화면을 찍기 직전에 갈 곳과 짝이 맞는 그림에만 이름을 붙인다.
+  // 떠나는 화면: 화면을 찍기 직전에 갈 곳과 짝이 맞는 그림에만 이름을 붙이고, 그 이름을 새 화면에 넘긴다.
+  // 이름은 떠나는 화면 한쪽에서만 정하므로 두 화면이 서로 다른 그림에 이름을 붙이는 일이 없다.
   window.addEventListener('pageswap', function (event) {
-    if (!event.viewTransition) return;
-    var toHref = event.activation && event.activation.entry ? event.activation.entry.url : null;
-    nameShared(toHref ? sharedNames(window.location.href, toHref) : []);
+    var toHref = event.viewTransition && event.activation && event.activation.entry ? event.activation.entry.url : null;
+    var name = toHref ? sharedName(window.location.href, toHref) : null;
+    if (event.viewTransition) nameShared(name);
+    write(NAME_KEY, name || '');
   });
 
   window.addEventListener('pagereveal', function (event) {
     var transition = event.viewTransition;
     if (!transition) return;
 
+    // 떠나는 화면이 넘긴 이름을 쓰고 비운다 (다음 이동에 남지 않게).
+    nameShared(read(NAME_KEY));
+    write(NAME_KEY, '');
+
     var fromHref = window.navigation && window.navigation.activation && window.navigation.activation.from
       ? window.navigation.activation.from.url
-      : null;
-    if (!fromHref) {
-      try { fromHref = window.sessionStorage.getItem(FROM_KEY); } catch (error) { fromHref = null; }
-    }
-    if (!fromHref) {
-      nameShared([]);
-      return;
-    }
+      : read(FROM_KEY);
+    if (!fromHref) return;
 
-    nameShared(sharedNames(fromHref, window.location.href));
     if (transition.types) transition.types.add(direction(fromHref, window.location.href));
     // 전환으로 들어온 화면은 목록 등장 애니메이션을 건너뛴다 (전환 자체가 등장).
     // 전환이 끝난 뒤에 지우면 그때 등장 애니메이션이 다시 시작되므로 그대로 둔다.
