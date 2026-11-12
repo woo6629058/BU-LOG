@@ -1,5 +1,6 @@
 import { mountTabBar } from '../common/tab-bar.js';
 import { renderScene } from '../common/scene.js';
+import { countUp, rise } from '../common/motion.js';
 import {
   ROOMS,
   SAMPLE_RECORDS,
@@ -32,21 +33,27 @@ function element(tag, className, text) {
 
 function renderTotal() {
   const { filled, total } = summarizeAll(ROOMS, acquired);
-  document.querySelector('#book-filled').textContent = filled;
+  countUp(document.querySelector('#book-filled'), filled);
   document.querySelector('#book-total').textContent = total;
   document.querySelector('#book-count-label').textContent = `전체 ${total}칸 중 ${filled}칸 채움`;
 }
 
+// 전체 보기의 액자 그림과 전시실 보기의 큰 그림에 같은 이름 후보를 달아, 화면이 바뀔 때 그림이 커지며 이어지게 한다.
+// 실제 이름은 이동할 때 짝이 맞는 그림에만 붙는다 (js/common/page-transition.js).
+const sceneTransitionName = (roomId) => `scene-${roomId}`;
+
 /* 전체 보기 */
 
-function renderFrame(item) {
+function renderFrame(item, index) {
   const { filled, total, complete } = summarizeRoom(item, acquired);
   const li = element('li');
-  const link = element('a', `book__frame${complete ? ' is-complete' : ''}`);
+  const state = complete ? ' is-complete' : filled > 0 ? ' is-active' : '';
+  const link = element('a', `book__frame art-pressable${state}`);
   link.href = roomUrl(item.id);
 
   const scene = renderScene(item, acquired);
   scene.setAttribute('aria-hidden', 'true');
+  scene.dataset.vtName = sceneTransitionName(item.id);
 
   const meta = element('span', 'book__frame-meta');
   meta.append(
@@ -62,7 +69,7 @@ function renderFrame(item) {
     element('span', 'visually-hidden', complete ? ', 그림 완성' : `, ${total}칸 중 ${filled}칸 채움`),
   );
   li.append(link);
-  return li;
+  return rise(li, index);
 }
 
 function renderOverview() {
@@ -75,20 +82,20 @@ function renderOverview() {
 function renderChips() {
   const chips = ROOMS.map((item) => {
     const li = element('li');
-    const link = element('a', 'book__chip', item.shortName);
+    const link = element('a', 'art-chip', item.shortName);
     link.href = roomUrl(item.id);
     if (item.id === room.id) link.setAttribute('aria-current', 'page');
     li.append(link);
     return li;
   });
   document.querySelector('#book-chips').replaceChildren(...chips);
-  document.querySelector('.book__chip[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  document.querySelector('#book-chips .art-chip[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
 }
 
 function renderRegion(item, message) {
   const li = element('li');
   const done = acquired.has(item.exhibitId);
-  const control = done ? element('a', 'book__region is-done') : element('button', 'book__region');
+  const control = done ? element('a', 'book__region art-pressable is-done') : element('button', 'book__region art-pressable');
   const order = element('span', 'book__region-order', String(item.order));
   order.setAttribute('aria-hidden', 'true');
   control.append(order, element('span', 'visually-hidden', `${item.order}번 `), element('span', 'book__region-title', item.title));
@@ -114,17 +121,21 @@ function renderHall() {
   const focusExhibitId = room.regions.some((item) => item.exhibitId === focus) ? focus : null;
 
   document.title = `${room.shortName} 그림 도감 | BU:LOG`;
+  // 뒤로가기 버튼 자리와 겹치지 않게 나뭇가지 장식을 뗀다.
+  document.querySelector('#book').classList.replace('art-sky--branch', 'is-hall');
   document.querySelector('#book-back').hidden = false;
   document.querySelector('#book-room-name').textContent = room.name;
   document.querySelector('#book-scene-title').textContent = room.sceneTitle;
   document.querySelector('#book-scene-count').textContent = complete ? '완성' : `${filled} / ${total}`;
-  document.querySelector('#book-scene').replaceChildren(renderScene(room, acquired, { focusExhibitId, regionHref: demoFillUrl }));
+  const scene = renderScene(room, acquired, { focusExhibitId, regionHref: demoFillUrl });
+  scene.dataset.vtName = sceneTransitionName(room.id);
+  document.querySelector('#book-scene').replaceChildren(scene);
   document.querySelector('#book-demo-hint').hidden = complete;
 
   const message = document.querySelector('#book-message');
   message.textContent = complete ? `${room.sceneTitle} 그림 완성!` : '';
   message.classList.toggle('is-complete', complete);
-  document.querySelector('#book-regions').replaceChildren(...room.regions.map((item) => renderRegion(item, message)));
+  document.querySelector('#book-regions').replaceChildren(...room.regions.map((item, index) => rise(renderRegion(item, message), index)));
 
   renderChips();
   document.querySelector('#book-hall').hidden = false;

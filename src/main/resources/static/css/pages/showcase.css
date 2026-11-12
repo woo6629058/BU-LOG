@@ -1,119 +1,156 @@
 /*
- * 진열장: 전시실마다 나무 진열장 하나(3열 선반)를 위에서 아래로 쌓는다 (시안 A).
- * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ * 진열장: 전시실마다 나무 진열장 하나(3열 선반)를 위에서 아래로 쌓는다.
+ * 로그인 화면의 배경 장식·카드를 따르고, 진열장 나무색은 홈 수집 현황 카드의 갈색을 쓴다.
+ * 글꼴과 색은 components/art-theme.css 를 쓴다.
  */
 .showcase {
-  --showcase-ink: var(--color-ink, #2B211A);
-  --showcase-muted: var(--color-muted, #6F6155);
-  --showcase-accent: var(--color-accent, #A8502F);
-  --showcase-track: var(--color-track, #E6DCCD);
-  --showcase-wood: var(--color-wood, #8A5A3B);
-  --showcase-wood-light: var(--color-wood-light, #A06E4C);
-  --showcase-wood-dark: var(--color-wood-dark, #4D2E1B);
-  --showcase-slot: var(--color-slot, #FFF8EC);
-
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding: 28px 20px 32px;
-  color: var(--showcase-ink);
-  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+  gap: 24px;
+  min-height: calc(100dvh - var(--tab-bar-height, 0px));
+  padding: max(56px, calc(44px + env(safe-area-inset-top, 0px))) 20px 28px;
+  font-weight: 600;
 }
 
+/* 머리말: 로그인 화면처럼 가운데 정렬. 모은 수 알약(.art-total, art-theme.css) → 제목 → 안내 문장 */
 .showcase__header {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
 }
 
-.showcase__title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
 .showcase__title {
   margin: 0;
-  font-family: var(--font-serif, "Gowun Batang", serif);
+  color: var(--art-brown);
+  font-family: var(--font-title);
   font-size: 26px;
+  font-weight: 800;
   line-height: 1.3;
   letter-spacing: 0;
+  text-align: center;
 }
 
-.showcase__count {
-  margin: 0;
-  color: var(--showcase-muted);
-  font-size: 15px;
-}
-
-.showcase__count strong {
-  color: var(--showcase-accent);
-  font-size: 20px;
-}
-
-.showcase__bar {
-  height: 6px;
-  overflow: hidden;
-  border-radius: 99px;
-  background: var(--showcase-track);
-}
-
-.showcase__bar span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--showcase-accent);
-}
-
+/* 제목 밑 안내 문장 (로그인 화면 소개 문구와 같은 자리·느낌) */
 .showcase__intro {
   margin: 0;
-  color: var(--showcase-muted);
+  color: var(--art-text);
   font-size: 13px;
+  line-height: 1.45;
+  word-break: keep-all;
 }
 
 .showcase__halls {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 26px;
+}
+
+/* 전시실 칩 줄: 스크롤해도 화면 위(아이폰은 상태표시줄 아래)에 붙어 있다. 칩 줄(.art-chips)은 화면 양옆 끝까지 넘긴다.
+   제자리에 있을 때는 바탕 없이 뒤 배경 도형이 그대로 보이고, 위에 붙으면(is-stuck, showcase.js)
+   진열장이 칩 밑으로 지나가므로 반투명 크림색 바탕과 흐림을 깐다. */
+.showcase__rooms {
+  position: sticky;
+  z-index: 5;
+  top: env(safe-area-inset-top, 0px);
+  margin: -8px -20px -10px;
+  padding-top: 4px;
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+
+.showcase__rooms.is-stuck,
+.showcase__rooms.is-stuck::before {
+  background-color: rgba(254, 245, 228, 0.86);
+  /* 흐림은 스크롤하는 동안 매 장면 다시 그리므로 약하게 */
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.showcase__rooms.is-stuck {
+  box-shadow: 0 8px 12px -10px rgba(140, 91, 55, 0.35);
+}
+
+/* 아이폰 상태표시줄 자리도 같은 바탕으로 덮는다 (노트북은 높이 0). */
+.showcase__rooms.is-stuck::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: env(safe-area-inset-top, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase__rooms {
+    transition: none;
+  }
+}
+
+/* 칩을 눌러 이동했을 때 전시실 이름이 칩 줄에 가리지 않게 */
+.showcase__hall {
+  scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px));
 }
 
 .showcase__hall-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
+  align-items: flex-end;
+  margin: 0 4px 10px;
 }
 
 .showcase__hall-title {
   margin: 0;
-  font-size: 16px;
+  color: var(--art-ink);
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .showcase__hall-count {
-  margin: 0;
-  color: var(--showcase-muted);
-  font-size: 13px;
-  font-weight: 700;
+  margin: 0 0 2px;
+  color: var(--art-muted);
+  font-family: var(--font-logo);
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1;
 }
 
-/* 나무 진열장 */
+/* 나무 진열장: 홈 수집 현황 카드와 같은 갈색, 둥근 모서리 */
 .showcase__cabinet {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 8px 4px;
-  border-radius: 14px;
-  background: linear-gradient(var(--showcase-wood-light), var(--showcase-wood));
-  box-shadow: inset 0 0 0 2px var(--showcase-wood-dark), 0 6px 14px rgba(43, 33, 26, 0.18);
+  gap: 6px;
+  padding: 10px 10px 4px;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
+    var(--art-wood);
+  box-shadow: 0 6px 14px rgba(140, 91, 55, 0.22);
+}
+
+/* 진열장 위 오른쪽 모서리에 앉은 덤불 (홈 에셋) */
+.showcase__cabinet::before {
+  content: "";
+  position: absolute;
+  top: -17px;
+  right: 14px;
+  width: 52px;
+  height: 22px;
+  background: url("/images/home/bush.webp") center bottom / contain no-repeat;
+  pointer-events: none;
 }
 
 .showcase__shelf {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
   margin: 0;
-  padding: 6px 4px 14px;
+  padding: 4px 4px 16px;
   list-style: none;
 }
 
@@ -122,70 +159,111 @@
   content: "";
   position: absolute;
   right: -4px;
-  bottom: 2px;
+  bottom: 3px;
   left: -4px;
   height: 8px;
-  border-radius: 2px;
-  background: linear-gradient(#6B4229, var(--showcase-wood-dark));
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  background: var(--art-wood-dark);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .showcase__item {
-  --artifact-size: 52px;
+  --artifact-size: 54px;
 
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  gap: 4px;
-  min-height: 96px;
-  padding: 8px 4px 6px;
-  border-radius: 8px;
-  color: var(--showcase-ink);
-  background: var(--showcase-slot);
+  gap: 6px;
+  height: 100%;
+  min-height: 100px;
+  padding: 10px 4px 8px;
+  border-radius: 14px;
+  color: var(--art-ink);
+  background: var(--art-surface);
   text-decoration: none;
-  transition: transform 0.15s ease;
 }
 
-a.showcase__item:hover {
-  transform: translateY(-2px);
+@media (hover: hover) {
+  a.showcase__item:hover {
+    transform: translateY(-2px);
+  }
 }
 
-a.showcase__item:focus-visible {
-  outline: 3px solid #FFD98A;
+.showcase__item:focus-visible {
+  outline: 3px solid var(--art-gold-bar);
   outline-offset: 2px;
 }
 
+/* 아직 모으지 않은 유물: 살구빛 반투명 칸 */
+/* 아직 모으지 않은 칸은 누르면 알림이 뜨는 버튼이다. */
+button.showcase__item {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .showcase__item.is-missing {
-  background: color-mix(in srgb, var(--showcase-slot) 60%, transparent);
+  background: rgba(251, 224, 207, 0.55);
 }
 
 .showcase__name {
+  color: var(--art-ink);
+  font-family: var(--font-label);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1.25;
   text-align: center;
   word-break: keep-all;
 }
 
 .showcase__item.is-missing .showcase__name {
-  color: #5B4C40;
+  color: var(--art-brown);
+  font-family: var(--font-logo);
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
+/* 짧은 알림: 탭바 바로 위 가운데에 잠깐 떴다가 사라진다. */
+.showcase__toast {
+  position: fixed;
+  z-index: 25;
+  bottom: calc(var(--tab-bar-height, 72px) + 12px);
+  left: 50%;
+  width: max-content;
+  max-width: min(340px, calc(100% - 48px));
+  margin: 0;
+  padding: 10px 18px;
+  border-radius: 999px;
+  color: #FFF8EE;
+  background: var(--art-brown);
+  box-shadow: 0 6px 16px rgba(92, 59, 33, 0.24);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+  word-break: keep-all;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 10px);
+  transition: opacity 180ms ease, transform 180ms var(--ease-in), visibility 0s 180ms;
+}
+
+.showcase__toast.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition: opacity 200ms ease, transform var(--motion-release) var(--ease-spring);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .showcase__item {
+  .showcase__toast,
+  .showcase__toast.is-shown {
+    transform: translate(-50%, 0);
     transition: none;
   }
 }

@@ -18,7 +18,7 @@ function element(tag, className, text) {
 }
 
 function linkButton(text, href, variant) {
-  const link = element('a', `detail__button detail__button--${variant}`, text);
+  const link = element('a', `detail__button--${variant} art-button${variant === 'ghost' ? ' art-button--secondary' : ''}`, text);
   link.href = href;
   return link;
 }
@@ -26,11 +26,13 @@ function linkButton(text, href, variant) {
 // 2026-11-06T10:14:00 → 2026.11.06
 const formatDate = (value) => value.slice(0, 10).replaceAll('-', '.');
 
-function closeButton() {
-  const button = element('button', 'detail__close');
+// 유물 상세는 옆에서 밀려 들어오는 다음 화면이라 왼쪽 위에 뒤로가기를 둔다 (그림 도감 전시실 보기와 같은 모양).
+// 온 곳(진열장·그림 도감)으로 돌아가고, 바로 열어서 돌아갈 곳이 없으면 진열장으로 간다.
+function backButton() {
+  const button = element('button', 'detail__back art-round-button');
   button.type = 'button';
-  button.setAttribute('aria-label', '닫기');
-  button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  button.setAttribute('aria-label', '뒤로 가기');
+  button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>';
   button.addEventListener('click', () => {
     if (window.history.length > 1) window.history.back();
     else window.location.href = SHOWCASE_URL;
@@ -41,30 +43,34 @@ function closeButton() {
 function renderNotice(title, text, action) {
   const box = element('section', 'detail__notice');
   box.append(element('h1', 'detail__notice-title', title), element('p', 'detail__notice-text', text), action);
-  root.replaceChildren(closeButton(), box);
+  root.replaceChildren(backButton(), box);
 }
 
 function renderDetail({ room, region }) {
   document.title = `${region.artifactName} | BU:LOG`;
 
   const header = element('header', 'detail__header');
-  header.append(element('h1', 'detail__name', region.artifactName), element('p', 'detail__room', room.name));
+  header.append(element('p', 'art-badge', room.name), element('h1', 'detail__name', region.artifactName));
 
   const stage = element('div', 'detail__stage');
-  stage.append(artifactFigure(region));
+  // 진열장의 유물 그림과 같은 이름 후보: 진열장에서 누르면 유물이 무대로 이어진다 (page-transition.js).
+  const figure = artifactFigure(region);
+  figure.dataset.vtName = `artifact-${region.exhibitId}`;
+  stage.append(figure);
 
   const place = element('p', 'detail__place', `${room.shortName} 그림 · ${region.title}`);
   const locate = linkButton('그림에서 위치 보기', pictureBookUrl(room.id, region.exhibitId), 'ghost');
 
-  const info = element('section', 'detail__info');
+  // 정보 시트는 아래에서 올라온다.
+  const info = element('section', 'detail__info art-rise');
   info.setAttribute('aria-labelledby', 'detail-story');
-  const storyTitle = element('h2', 'detail__label', '유물 이야기');
+  const storyTitle = element('h2', 'detail__label art-badge', '유물 이야기');
   storyTitle.id = 'detail-story';
   const facts = element('dl', 'detail__facts');
   facts.append(element('dt', '', '획득일'), element('dd', '', formatDate(record.acquiredAt)));
-  info.append(storyTitle, element('p', 'detail__story', region.description), facts, linkButton('진열장으로 가기', SHOWCASE_URL, 'primary'));
+  info.append(storyTitle, element('p', 'detail__story', region.description), facts);
 
-  root.replaceChildren(closeButton(), header, stage, place, locate, info);
+  root.replaceChildren(backButton(), header, stage, place, locate, info);
 }
 
 if (!hit) {

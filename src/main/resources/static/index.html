@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="부천시립박물관 전시실의 QR을 찍고 미션을 풀어 전시실 그림을 완성하는 BU:LOG 유물 그림 도감">
   <title>그림 도감 | BU:LOG</title>
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -12,6 +14,7 @@
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
+  <link rel="stylesheet" href="/css/components/art-theme.css">
   <link rel="stylesheet" href="/css/pages/home.css">
   <!-- 로그인 여부를 확인하는 동안 홈을 가린다 (게스트로 둘러보기를 고른 브라우저는 바로 보여 준다). home.js가 해제한다. -->
   <script>
@@ -21,9 +24,17 @@
       document.documentElement.classList.add('auth-checking');
     }
   </script>
-  <script type="module" src="/js/pages/home.js"></script>
+  <!-- 아래 모듈이 가져오는 모듈을 한 번에 미리 받는다 (가져오기 단계마다 기다리지 않게) -->
+  <link rel="modulepreload" href="/js/common/tab-bar.js">
+  <link rel="modulepreload" href="/js/common/motion.js">
+  <link rel="modulepreload" href="/js/common/collection-data.js">
+  <link rel="modulepreload" href="/js/common/auth-flow.js">
+  <link rel="modulepreload" href="/js/api/auth-api.js">
+  <link rel="modulepreload" href="/js/api/api-client.js">
+  <!-- 화면 전환 때 탭바가 제자리에 남도록, 탭바를 만드는 이 스크립트가 끝난 뒤에 화면을 그린다 -->
+  <script type="module" src="/js/pages/home.js" blocking="render"></script>
 </head>
-<body class="page-home">
+<body class="page-home page-art">
   <main class="home">
     <header class="home__header">
       <p class="home__eyebrow">부천시립박물관 유물 그림 도감</p>
@@ -54,7 +65,7 @@
             <span class="visually-hidden" id="home-count-label"></span>
           </p>
         </div>
-        <div class="home-progress__bar" aria-hidden="true"><span id="home-progress-fill"></span></div>
+        <div class="home-progress__bar" aria-hidden="true"><span class="art-fill" id="home-progress-fill"></span></div>
         <p class="home-progress__hint" id="home-hint"></p>
       </div>
     </section>

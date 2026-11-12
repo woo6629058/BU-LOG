@@ -17,11 +17,11 @@
 }
 
 .artifact-figure__placeholder {
-  fill: var(--color-artifact, #8A4F2E);
+  fill: var(--color-artifact, #C27B4E); /* 그림책 에셋의 옹기 색 */
 }
 
 .artifact-figure__rim {
-  fill: var(--color-artifact-dark, #5E3B25);
+  fill: var(--color-artifact-dark, #9E5A34);
 }
 
 .artifact-figure.is-silhouette img,

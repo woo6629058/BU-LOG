@@ -5,42 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="전시실 그림이 얼마나 채워졌는지 보는 BU:LOG 그림 도감">
   <title>그림 도감 | BU:LOG</title>
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
+  <!-- 홈과 같은 글꼴: 숫자 Baloo 2, 본문 Noto Sans KR (티머니 둥근바람·SUIT는 art-theme.css에서 불러옴) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@600&display=swap">
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
+  <link rel="stylesheet" href="/css/components/art-theme.css">
   <link rel="stylesheet" href="/css/components/scene.css">
   <link rel="stylesheet" href="/css/pages/picture-book.css">
-  <script type="module" src="/js/pages/picture-book.js"></script>
+  <!-- 아래 모듈이 가져오는 모듈을 한 번에 미리 받는다 (가져오기 단계마다 기다리지 않게) -->
+  <link rel="modulepreload" href="/js/common/tab-bar.js">
+  <link rel="modulepreload" href="/js/common/motion.js">
+  <link rel="modulepreload" href="/js/common/collection-data.js">
+  <link rel="modulepreload" href="/js/common/scene.js">
+  <!-- 화면 전환 때 이어질 그림이 먼저 만들어지도록, 이 스크립트가 끝난 뒤에 화면을 그린다 -->
+  <script type="module" src="/js/pages/picture-book.js" blocking="render"></script>
 </head>
-<body>
-  <main class="book">
+<body class="page-art">
+  <main class="book art-sky art-sky--branch" id="book">
     <header class="book__header">
-      <a class="book__back" id="book-back" href="/pages/picture-book.html" aria-label="전체 그림 보기" hidden>
+      <a class="book__back art-round-button" id="book-back" href="/pages/picture-book.html" aria-label="전체 그림 보기" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
       </a>
-      <h1 class="book__title">그림 도감</h1>
-      <p class="book__count">
+      <!-- 채운 칸 수 알약과 안내 문장은 전체 보기에서만 보인다 (전시실 보기에서는 CSS로 숨김) -->
+      <p class="book__total art-total">
         <span aria-hidden="true"><strong id="book-filled">0</strong> / <span id="book-total">0</span></span>
         <span class="visually-hidden" id="book-count-label"></span>
       </p>
+      <h1 class="book__title">그림 도감</h1>
+      <p class="book__intro">액자를 누르면 전시실 그림을 크게 볼 수 있어요</p>
     </header>
 
     <!-- 전체 보기: 전시실 6곳의 그림을 한 화면에 -->
     <section class="book__overview" id="book-overview" aria-label="전시실 그림 모음" hidden>
-      <p class="book__intro">액자를 누르면 전시실 그림을 크게 볼 수 있어요</p>
       <ul class="book__grid" id="book-grid"></ul>
     </section>
 
     <!-- 전시실 보기: ?room=… -->
     <div class="book__hall" id="book-hall" hidden>
       <nav class="book__rooms" aria-label="전시실">
-        <ul class="book__chips" id="book-chips"></ul>
+        <ul class="art-chips" id="book-chips"></ul>
       </nav>
 
       <section class="book__scene" aria-labelledby="book-scene-title">
         <div class="book__scene-header">
           <div>
-            <p class="book__room-name" id="book-room-name"></p>
+            <p class="art-badge" id="book-room-name"></p>
             <h2 class="book__scene-title" id="book-scene-title"></h2>
           </div>
           <p class="book__scene-count" id="book-scene-count"></p>

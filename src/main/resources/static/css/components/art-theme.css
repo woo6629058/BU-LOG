@@ -1,0 +1,518 @@
+/*
+ * 그림책 테마: 홈·그림 도감·진열장·유물 상세·그림 채우기 결과가 함께 쓰는 글꼴, 색, 배경 장식, 탭바.
+ * 색과 배경 장식은 로그인 화면(auth.css), 탭바는 홈 화면 디자인을 따른다.
+ * body에 page-art 클래스를 붙인 화면에 적용된다.
+ * 글꼴(홈과 같은 4종, 모두 상업적 사용 가능):
+ *   Baloo 2 750 — 로고와 숫자 / 티머니 둥근바람 ExtraBold — 큰 한글 제목
+ *   SUIT 800 — 작은 제목·버튼·배지·탭 이름 / Noto Sans KR 600 — 본문
+ *   Baloo 2 와 Noto Sans KR 는 각 화면 HTML 의 Google Fonts 링크로 불러온다.
+ */
+@font-face {
+  font-family: "TmoneyRoundWind";
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindExtraBold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "SUIT";
+  font-weight: 800;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2.0.5/fonts/static/woff2/SUIT-ExtraBold.woff2") format("woff2");
+}
+
+.page-art {
+  /* 홈 시안 픽셀 단위: 화면 폭 / 851 (넓은 화면은 390px 열 기준). 탭바가 쓴다. */
+  --u: calc(100vw / 851);
+  --font-logo: "Baloo 2", "SUIT", system-ui, sans-serif;
+  --font-title: "TmoneyRoundWind", "SUIT", system-ui, sans-serif;
+  --font-label: "SUIT", "Noto Sans KR", system-ui, sans-serif;
+  --font-body: "Noto Sans KR", system-ui, sans-serif;
+  /* 로그인·홈 화면과 같은 색 */
+  --art-bg: #FEF5E4;
+  --art-bg-top: #FDF1DC;
+  --art-surface: #FFFDF9;
+  --art-ink: #34231A;
+  --art-brown: #5C3B21;
+  --art-text: #503C2B;
+  --art-muted: #735E48;
+  --art-orange: #CD6B37;
+  --art-orange-text: #B0552A; /* 작은 글자용: 흰 바탕 대비 4.5:1 이상 */
+  --art-gold: #E0AF39;
+  --art-gold-bar: #EFBE46;
+  --art-wood: #8C5B37;
+  --art-wood-dark: #6A4026;
+  --art-line: #E9DAC6;
+  --art-line-soft: #F1E6D6;
+  --art-line-done: #DCDDA9;
+  --art-button: #F2BC9E;
+  --art-peach: #FBE0CF;
+  --art-green-bg: #EBEFD9;
+  --art-green: #4F7A3C;
+  --art-shadow: rgba(140, 91, 55, 0.12);
+
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--art-ink);
+  background: var(--art-bg);
+  font-family: var(--font-body);
+}
+
+@media (min-width: 431px) {
+  .page-art {
+    --u: calc(390px / 851);
+  }
+}
+
+/* ---------- 배경 장식 (로그인 화면과 같음): 위쪽 크림 그라데이션, 왼쪽 살구색 도형, 오른쪽 위 구름 ---------- */
+.art-sky {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-84 0 246 302'%3E%3Cpath opacity='0.55' fill='%23FBE2D3' d='M-60 58.8C-10 -21.2 110 -21.2 150 68.8C190 158.8 120 268.8 20 298.8C-80 328.8 -110 138.8 -60 58.8Z'/%3E%3C/svg%3E") -110px 90px / 230px 282px no-repeat,
+    linear-gradient(var(--art-bg-top), var(--art-bg) 260px) top / 100% 260px no-repeat;
+}
+
+.art-sky::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 44px;
+  right: 16px;
+  width: 58px;
+  height: 29px;
+  background: url("/images/home/cloud.webp") center / contain no-repeat;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* 왼쪽 위 나뭇가지: 뒤로가기 버튼이 없는 첫 화면에만 붙인다. */
+.art-sky--branch::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -8px;
+  left: -10px;
+  width: 150px;
+  height: 84px;
+  background: url("/images/home/hero-branch.webp") left top / contain no-repeat;
+  pointer-events: none;
+}
+
+/* ---------- 공통 부품 ---------- */
+/* 뒤로가기·닫기: 흰 동그라미 (로그인 흐름의 뒤로가기와 같음). 보이는 크기 40px, 누르는 영역 48px */
+.art-round-button {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid var(--art-line-soft);
+  border-radius: 50%;
+  color: var(--art-brown);
+  background: var(--art-surface);
+  box-shadow: 0 2px 8px var(--art-shadow);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.art-round-button::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+
+.art-round-button svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 알약 버튼: 주 버튼은 살구색, 보조 버튼은 흰 바탕 (로그인 화면 버튼과 같음) */
+.art-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--art-ink);
+  background: var(--art-button);
+  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.art-button--secondary {
+  border: 1.5px solid var(--art-line);
+  color: var(--art-brown);
+  background: var(--art-surface);
+  box-shadow: 0 2px 8px var(--art-shadow);
+}
+
+/* 그림책 테마 부품의 키보드 초점 표시 */
+.art-round-button:focus-visible,
+.art-button:focus-visible,
+.art-chip:focus-visible {
+  outline: 3px solid var(--art-orange);
+  outline-offset: 2px;
+}
+
+/* 작은 배지 (로그인 흐름의 단계 표시와 같음) */
+.art-badge {
+  display: inline-block;
+  margin: 0;
+  padding: 3px 12px;
+  border-radius: 999px;
+  color: var(--art-wood);
+  background: var(--art-peach);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+/* 전시실 칩 (그림 도감 전시실 보기, 진열장): 줄바꿈 대신 가로로 넘긴다. 고른 칩은 로그인 버튼과 같은 살구색 */
+.art-chips {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 4px 20px 8px;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.art-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.art-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid var(--art-line);
+  border-radius: 999px;
+  color: var(--art-text);
+  background: var(--art-surface);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.art-chip[aria-current] {
+  border-color: var(--art-button);
+  color: var(--art-ink);
+  background: var(--art-button);
+  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
+}
+
+/* 모은 수 / 전체 알약 (그림 도감·진열장 제목 위): 홈 로그인 버튼처럼 흰 알약, 숫자는 Baloo 2 */
+.art-total {
+  display: inline-flex;
+  align-items: baseline;
+  margin: 0 0 2px;
+  padding: 5px 14px 3px;
+  border: 1.5px solid var(--art-line-soft);
+  border-radius: 999px;
+  color: var(--art-muted);
+  background: var(--art-surface);
+  box-shadow: 0 2px 8px var(--art-shadow);
+  font-family: var(--font-logo);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.art-total strong {
+  margin-right: 1px;
+  color: var(--art-orange-text);
+  font-size: 18px;
+  font-weight: 750;
+}
+
+/* =========================================================
+   모션: 모바일 앱처럼 누름 반응, 목록 등장, 막대 채우기, 화면 전환
+   길이·곡선은 아래 토큰 하나로 맞춘다. 움직임 줄이기 설정이면 모두 끈다.
+   ========================================================= */
+:root {
+  --motion-press: 90ms;
+  --motion-release: 320ms;
+  --motion-enter: 420ms;
+  --motion-page: 340ms;
+  --motion-page-exit: 220ms; /* 나가는 화면은 들어오는 화면의 약 65% */
+  --motion-stagger: 40ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 누름 반응: 누르는 동안 살짝 작아지고(--press-scale), 손을 떼면 통통 튀며 돌아온다.
+   테마 버튼·칩·탭은 원래 누름 반응이 있고, 그 밖의 카드는 art-pressable 을 붙인다. */
+.art-pressable,
+.art-button,
+.art-round-button,
+.art-chip,
+.page-art .tab-bar__link {
+  transition:
+    transform var(--motion-release) var(--ease-spring),
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.art-pressable:active,
+.art-button:active,
+.art-round-button:active,
+.art-chip:active,
+.page-art .tab-bar__link:active {
+  transform: scale(var(--press-scale, 0.96));
+  transition-duration: var(--motion-press), 150ms, 150ms, 150ms;
+  transition-timing-function: ease-out;
+}
+
+/* 목록 등장: 아래에서 살짝 올라오며 나타난다. 순서(--i)마다 40ms씩 늦게.
+   홈은 로그인 확인(auth-checking)이 끝나 화면이 보일 때 시작한다.
+   화면 전환 애니메이션으로 들어온 화면(is-vt)은 전환 자체가 등장이라 건너뛴다. */
+html:not(.auth-checking):not(.is-vt) .art-rise {
+  animation: art-rise var(--motion-enter) var(--ease-out) calc(var(--i, 0) * var(--motion-stagger)) backwards;
+}
+
+@keyframes art-rise {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+/* 진행 막대 채우기: 막대 안의 채움이 왼쪽에서 밀려 들어온다 (막대는 overflow: hidden). */
+html:not(.auth-checking) .art-fill {
+  animation: art-fill 800ms var(--ease-out) 120ms backwards;
+}
+
+@keyframes art-fill {
+  from { transform: translateX(-100%); }
+}
+
+/* 화면 전환 (js/common/page-transition.js 가 이동 방향을 정함)
+   push: 더 깊은 화면으로 — 새 화면이 오른쪽에서 밀려 들어옴 / pop: 뒤로 — 반대
+   tab-next·tab-prev: 탭 사이 — 옆으로 살짝 밀리며 바뀜 / 그 밖: 부드럽게 겹쳐 바뀜 */
+@view-transition {
+  navigation: auto;
+}
+
+/* 탭바는 화면이 바뀌어도 제자리에 남는다. */
+.page-art .tab-bar {
+  view-transition-name: tab-bar;
+}
+
+::view-transition-old(tab-bar) {
+  display: none;
+}
+
+::view-transition-new(tab-bar) {
+  animation: none;
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--motion-page);
+  animation-timing-function: var(--ease-out);
+}
+
+/* 탭바가 없는 화면(유물 상세 등)과 오갈 때는 탭바도 화면과 함께 밀려 나가고 들어온다.
+   (:only-child = 한쪽 화면에만 탭바가 있음) */
+html:active-view-transition-type(push)::view-transition-old(root),
+html:active-view-transition-type(push)::view-transition-old(tab-bar):only-child {
+  display: block;
+  animation: art-page-out-left var(--motion-page-exit) var(--ease-in) both;
+}
+
+html:active-view-transition-type(push)::view-transition-new(root) {
+  animation: art-page-in-right var(--motion-page) var(--ease-out) both;
+}
+
+html:active-view-transition-type(pop)::view-transition-old(root) {
+  z-index: 1;
+  animation: art-page-out-right var(--motion-page-exit) var(--ease-in) both;
+}
+
+html:active-view-transition-type(pop)::view-transition-new(root),
+html:active-view-transition-type(pop)::view-transition-new(tab-bar):only-child {
+  animation: art-page-in-left var(--motion-page) var(--ease-out) both;
+}
+
+/* 탭 사이: 다음 탭(오른쪽)이면 --tab-dir 1, 이전 탭이면 -1 방향으로 밀린다. */
+html:active-view-transition-type(tab-next) {
+  --tab-dir: 1;
+}
+
+html:active-view-transition-type(tab-prev) {
+  --tab-dir: -1;
+}
+
+html:active-view-transition-type(tab-next, tab-prev)::view-transition-old(root) {
+  animation: art-tab-out var(--motion-page-exit) var(--ease-in) both;
+}
+
+html:active-view-transition-type(tab-next, tab-prev)::view-transition-new(root) {
+  animation: art-tab-in var(--motion-page) var(--ease-out) both;
+}
+
+@keyframes art-page-in-right {
+  from { transform: translateX(100%); }
+}
+
+@keyframes art-page-out-left {
+  to { opacity: 0.6; transform: translateX(-28%); }
+}
+
+@keyframes art-page-in-left {
+  from { opacity: 0.6; transform: translateX(-28%); }
+}
+
+@keyframes art-page-out-right {
+  to { transform: translateX(100%); }
+}
+
+@keyframes art-tab-in {
+  from { opacity: 0; transform: translateX(calc(var(--tab-dir, 1) * 24px)); }
+}
+
+@keyframes art-tab-out {
+  to { opacity: 0; transform: translateX(calc(var(--tab-dir, 1) * -24px)); }
+}
+
+/* ---------- 탭바: 홈 화면 디자인 (크림색 바탕, 둥근 윗모서리, 활성 탭 살구색 배경, 에셋 아이콘) ---------- */
+body.page-art.has-tab-bar {
+  --tab-bar-height: calc(113 * var(--u) + env(safe-area-inset-bottom, 0px));
+}
+
+.page-art .tab-bar {
+  --tab-accent: #CA6830;
+  --tab-subtle: #594431;
+
+  height: max(48px, var(--tab-bar-height));
+  padding: calc(4 * var(--u)) calc(22 * var(--u)) env(safe-area-inset-bottom, 0px) calc(19 * var(--u));
+  border-top: 0;
+  border-radius: calc(44 * var(--u)) calc(44 * var(--u)) 0 0;
+  background: #FEF9EF;
+  box-shadow: 0 calc(-4 * var(--u)) calc(14 * var(--u)) rgba(140, 91, 55, 0.1);
+}
+
+/* 누름 반응은 위 모션 규칙과 같고, 탭은 조금 더 작아진다(--press-scale). */
+.page-art .tab-bar__link {
+  --press-scale: 0.92;
+
+  gap: calc(8 * var(--u));
+  margin: 0 auto;
+  width: auto;
+  min-width: max(48px, calc(120 * var(--u)));
+  padding: calc(6 * var(--u)) 4px 0;
+  height: calc(91 * var(--u));
+  min-height: 44px;
+  border-radius: calc(26 * var(--u));
+  color: var(--tab-subtle);
+  font-family: var(--font-body);
+  font-size: max(12px, calc(21 * var(--u)));
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 선택된 탭: 살구색 바탕이 번지며 아이콘이 통통 튄다. */
+.page-art .tab-bar__link[aria-current="page"] {
+  color: var(--tab-accent);
+  background: #FDEBD1;
+  animation: art-tab-pill 360ms var(--ease-out) both;
+}
+
+.page-art .tab-bar__link[aria-current="page"]::before {
+  animation: art-tab-icon 520ms var(--ease-spring) 60ms both;
+}
+
+@keyframes art-tab-pill {
+  from { background-color: transparent; }
+}
+
+@keyframes art-tab-icon {
+  0% { transform: scale(0.7); }
+  60% { transform: scale(1.12); }
+}
+
+.page-art .tab-bar__list li {
+  display: flex;
+  align-items: center;
+}
+
+/* 선으로 그린 기본 아이콘 대신 에셋 아이콘을 보여 준다. */
+.page-art .tab-bar__icon {
+  display: none;
+}
+
+.page-art .tab-bar__link::before {
+  content: "";
+  flex-shrink: 0;
+  width: calc(44 * var(--u));
+  height: calc(42 * var(--u));
+  background: center / contain no-repeat;
+}
+
+.page-art .tab-bar__link[data-tab="home"]::before { background-image: url("/images/home/icon-home.webp"); }
+.page-art .tab-bar__link[data-tab="qr"]::before { background-image: url("/images/home/icon-qr.webp"); }
+.page-art .tab-bar__link[data-tab="picture-book"]::before { background-image: url("/images/home/icon-picture-book.webp"); }
+.page-art .tab-bar__link[data-tab="showcase"]::before { background-image: url("/images/home/icon-showcase.webp"); }
+.page-art .tab-bar__link[data-tab="ranking"]::before { background-image: url("/images/home/icon-ranking.webp"); }
+
+/* 움직임 줄이기: 이 파일의 모든 움직임을 끈다. */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  .art-pressable,
+  .art-button,
+  .art-round-button,
+  .art-chip,
+  .page-art .tab-bar__link {
+    transition: none;
+  }
+
+  .art-pressable:active,
+  .art-button:active,
+  .art-round-button:active,
+  .art-chip:active,
+  .page-art .tab-bar__link:active {
+    transform: none;
+  }
+
+  html .art-rise,
+  html .art-fill,
+  .page-art .tab-bar__link[aria-current="page"],
+  .page-art .tab-bar__link[aria-current="page"]::before {
+    animation: none;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

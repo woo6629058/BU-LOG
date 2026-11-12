@@ -7,27 +7,11 @@
  *   Baloo 2 750 — 로고와 숫자 / 티머니 둥근바람 ExtraBold — 큰 한글 제목
  *   SUIT 800 — 작은 제목·버튼·배지·탭 이름 / Noto Sans KR 600 — 본문
  *   Baloo 2 와 Noto Sans KR 는 index.html 의 Google Fonts 링크로 불러온다.
+ *   티머니 둥근바람·SUIT 불러오기와 홈 탭바 디자인은 components/art-theme.css 에 있다 (그림 도감·진열장과 함께 씀).
+ * 시안 픽셀 단위 --u(넓은 화면은 390px 열 기준)와 글꼴 변수 --font-* 도 art-theme.css(.page-art)에서 정한다.
  */
-@font-face {
-  font-family: "TmoneyRoundWind";
-  font-weight: 800;
-  font-display: swap;
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindExtraBold.woff") format("woff");
-}
-
-@font-face {
-  font-family: "SUIT";
-  font-weight: 800;
-  font-display: swap;
-  src: url("https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2.0.5/fonts/static/woff2/SUIT-ExtraBold.woff2") format("woff2");
-}
 
 .page-home {
-  --u: calc(100vw / 851);
-  --font-logo: "Baloo 2", "SUIT", system-ui, sans-serif;
-  --font-title: "TmoneyRoundWind", "SUIT", system-ui, sans-serif;
-  --font-label: "SUIT", "Noto Sans KR", system-ui, sans-serif;
-  --font-body: "Noto Sans KR", system-ui, sans-serif;
   --home-bg: #FEF5E4;
   --home-surface: #FEF9EF;
   --home-ink: #34231A;
@@ -45,13 +29,6 @@
   --home-line-active: #B46C3E;
 
   background: var(--home-bg);
-}
-
-/* 넓은 화면에서는 390px 열(mobile-layout.css)에 맞춘다. */
-@media (min-width: 431px) {
-  .page-home {
-    --u: calc(390px / 851);
-  }
 }
 
 .home {
@@ -350,17 +327,12 @@
   color: inherit;
   background: var(--home-surface);
   text-decoration: none;
-  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 @media (hover: hover) {
   .home-room:hover {
     border-color: var(--home-line-active);
   }
-}
-
-.home-room:active {
-  transform: scale(0.99);
 }
 
 /* 시안처럼 완료·진행 중 카드는 조금 더 높다. */
@@ -571,83 +543,7 @@
   background: #D8D99D;
 }
 
-body.page-home {
-  -webkit-tap-highlight-color: transparent; /* 아이폰에서 누를 때 회색 상자가 번쩍이지 않게 */
-}
-
-/* 홈 화면 전용 탭바: 크림색 바탕, 둥근 윗모서리, 활성 탭 살구색 배경, 에셋 아이콘 */
-body.page-home.has-tab-bar {
-  --tab-bar-height: calc(113 * var(--u) + env(safe-area-inset-bottom, 0px));
-}
-
-.page-home .tab-bar {
-  --tab-accent: #CA6830;
-  --tab-subtle: #594431;
-
-  height: max(48px, var(--tab-bar-height));
-  padding: calc(4 * var(--u)) calc(22 * var(--u)) env(safe-area-inset-bottom, 0px) calc(19 * var(--u));
-  border-top: 0;
-  border-radius: calc(44 * var(--u)) calc(44 * var(--u)) 0 0;
-  background: var(--home-surface);
-  box-shadow: 0 calc(-4 * var(--u)) calc(14 * var(--u)) rgba(140, 91, 55, 0.1);
-}
-
-.page-home .tab-bar__link {
-  gap: calc(8 * var(--u));
-  margin: 0 auto;
-  width: auto;
-  min-width: max(48px, calc(120 * var(--u)));
-  padding: calc(6 * var(--u)) 4px 0;
-  height: calc(91 * var(--u));
-  min-height: 44px;
-  border-radius: calc(26 * var(--u));
-  color: var(--tab-subtle);
-  font-family: var(--font-body);
-  font-size: max(12px, calc(21 * var(--u)));
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.page-home .tab-bar__link[aria-current="page"] {
-  color: var(--tab-accent);
-  background: #FDEBD1;
-}
-
-.page-home .tab-bar__list li {
-  display: flex;
-  align-items: center;
-}
-
-/* 선으로 그린 기본 아이콘 대신 에셋 아이콘을 보여 준다. */
-.page-home .tab-bar__icon {
-  display: none;
-}
-
-.page-home .tab-bar__link::before {
-  content: "";
-  flex-shrink: 0;
-  width: calc(44 * var(--u));
-  height: calc(42 * var(--u));
-  background: center / contain no-repeat;
-}
-
-.page-home .tab-bar__link[data-tab="home"]::before { background-image: url("/images/home/icon-home.webp"); }
-.page-home .tab-bar__link[data-tab="qr"]::before { background-image: url("/images/home/icon-qr.webp"); }
-.page-home .tab-bar__link[data-tab="picture-book"]::before { background-image: url("/images/home/icon-picture-book.webp"); }
-.page-home .tab-bar__link[data-tab="showcase"]::before { background-image: url("/images/home/icon-showcase.webp"); }
-.page-home .tab-bar__link[data-tab="ranking"]::before { background-image: url("/images/home/icon-ranking.webp"); }
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
+/* 홈 탭바 디자인, 탭 하이라이트 없애기, .visually-hidden 은 components/art-theme.css 에 있다. */
 
 /* 로그인 버튼 (09 로그인 화면 연결): 게스트는 링크, 로그인 후에는 닉네임 + 바로 밑에 붙는 로그아웃 */
 .home__account {
@@ -773,9 +669,10 @@ body.page-home.has-tab-bar {
 .home__logout:focus-visible { color: #3E2814; }
 .home__logout:focus-visible { outline: 2px solid var(--home-orange); outline-offset: 2px; }
 
-/* 로그인 여부를 확인하는 동안(index.html의 auth-checking) 홈 내용을 가린다. */
+/* 로그인 여부를 확인하는 동안(index.html의 auth-checking) 홈 내용을 가린다.
+   다른 탭에서 화면 전환으로 들어올 때(is-vt)는 탭바가 제자리에 남아야 하므로 탭바는 가리지 않는다. */
 .auth-checking .home,
-.auth-checking .tab-bar {
+.auth-checking:not(.is-vt) .tab-bar {
   visibility: hidden;
   /* 스크립트가 실패해도 4초 뒤에는 화면이 보이게 한다. */
   animation: home-auth-reveal 0s linear 4s forwards;
