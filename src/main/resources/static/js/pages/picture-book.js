@@ -34,15 +34,15 @@ function renderTotal() {
   const { filled, total } = summarizeAll(ROOMS, acquired);
   document.querySelector('#book-filled').textContent = filled;
   document.querySelector('#book-total').textContent = total;
-  document.querySelector('#book-count-label').textContent = `전체 ${total}칸 중 ${filled}칸 채움`;
-}
+  document.querySelector('#book-count-label').textContent = `전체 ${total}칸 중 ${filled}칸 채움`;}
 
 /* 전체 보기 */
 
 function renderFrame(item) {
   const { filled, total, complete } = summarizeRoom(item, acquired);
   const li = element('li');
-  const link = element('a', `book__frame${complete ? ' is-complete' : ''}`);
+  const state = complete ? ' is-complete' : filled > 0 ? ' is-active' : '';
+  const link = element('a', `book__frame${state}`);
   link.href = roomUrl(item.id);
 
   const scene = renderScene(item, acquired);
@@ -114,6 +114,8 @@ function renderHall() {
   const focusExhibitId = room.regions.some((item) => item.exhibitId === focus) ? focus : null;
 
   document.title = `${room.shortName} 그림 도감 | BU:LOG`;
+  // 뒤로가기 버튼 자리와 겹치지 않게 나뭇가지 장식을 뗀다.
+  document.querySelector('#book').classList.replace('art-sky--branch', 'is-hall');
   document.querySelector('#book-back').hidden = false;
   document.querySelector('#book-room-name').textContent = room.name;
   document.querySelector('#book-scene-title').textContent = room.sceneTitle;

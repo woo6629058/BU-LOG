@@ -1,130 +1,99 @@
 /*
- * 유물 상세: 어두운 무대 위 유물 그림, 아래 밝은 정보 시트. Figma 06 유물 상세의 요소를 참고했다.
- * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ * 유물 상세: 위에는 동그란 무대 위 유물 그림, 아래는 흰 정보 시트. Figma 06 유물 상세의 요소를 참고했다.
+ * 로그인 화면의 배경 장식·버튼을 따르고, 글꼴과 색은 components/art-theme.css 를 쓴다.
  */
-body.detail-page {
-  background: var(--color-stage, #241A14);
-}
-
 .detail {
-  --detail-ink: var(--color-ink, #2B211A);
-  --detail-muted: var(--color-muted, #6F6155);
-  --detail-accent: var(--color-accent, #A8502F);
-  --detail-sheet: var(--color-sheet, #F6EFE3);
-  --detail-surface: var(--color-surface, #FFFFFF);
-  --detail-glow: var(--color-glow, #FFD98A);
-  --detail-on-stage: #F6EFE3;
-  --detail-on-stage-muted: #CDBFAE;
-
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  padding-top: 24px;
-  color: var(--detail-on-stage);
-  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+  min-height: 100dvh;
+  padding-top: max(24px, calc(12px + env(safe-area-inset-top, 0px)));
+  color: var(--art-ink);
+  font-family: var(--font-body);
+  font-weight: 600;
 }
 
 .detail__close {
   position: absolute;
-  top: 16px;
-  left: 12px;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-}
-
-.detail__close svg {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.detail__close:focus-visible,
-.detail__button:focus-visible {
-  outline: 3px solid var(--detail-glow);
-  outline-offset: 2px;
+  z-index: 1;
+  top: max(16px, calc(8px + env(safe-area-inset-top, 0px)));
+  left: 16px;
 }
 
 .detail__header {
-  padding: 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 64px 0;
   text-align: center;
 }
 
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
 .detail__name {
   margin: 0;
-  font-family: var(--font-serif, "Gowun Batang", serif);
-  font-size: 24px;
-  line-height: 1.35;
+  color: var(--art-brown);
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
   letter-spacing: 0;
+  word-break: keep-all;
 }
 
-.detail__room {
-  margin: 2px 0 0;
-  color: var(--detail-on-stage-muted);
-  font-size: 13px;
-}
-
+/* 유물 무대: 크림색 동그라미, 아래 양쪽에 풀 (홈 에셋) */
 .detail__stage {
-  --artifact-size: 150px;
+  --artifact-size: 140px;
 
+  position: relative;
   display: grid;
   place-items: center;
-  width: 220px;
-  height: 220px;
-  margin-top: 24px;
-  border: 2px dashed color-mix(in srgb, var(--detail-glow) 70%, transparent);
+  width: 210px;
+  height: 210px;
+  margin-top: 22px;
+  border: 2px dashed var(--art-button);
   border-radius: 50%;
-  background: radial-gradient(circle, #F6EFE3 0 62%, #E9DCC6 100%);
-  box-shadow: 0 0 48px rgba(255, 217, 138, 0.25);
+  background: radial-gradient(circle, var(--art-surface) 0 58%, var(--art-peach) 100%);
+  box-shadow: 0 6px 18px var(--art-shadow);
 }
 
+.detail__stage::before,
+.detail__stage::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  width: 54px;
+  height: 34px;
+  background: url("/images/home/tuft.webp") center bottom / contain no-repeat;
+  pointer-events: none;
+}
+
+.detail__stage::before { left: -14px; }
+.detail__stage::after { right: -14px; transform: scaleX(-1); }
+
+/* 그림 속 자리: 로그인 흐름의 연두색 버튼과 같은 알약 */
 .detail__place {
-  margin: 16px 0 0;
-  padding: 6px 14px;
+  margin: 18px 0 0;
+  padding: 5px 14px;
+  border: 1.5px solid #D9E2C2;
   border-radius: 999px;
-  color: var(--detail-glow);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--art-green);
+  background: var(--art-green-bg);
+  font-family: var(--font-label);
   font-size: 13px;
-  font-weight: 600;
-}
-
-.detail__button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 48px;
-  padding: 0 20px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  text-decoration: none;
+  font-weight: 800;
 }
 
 .detail__button--ghost {
   margin: 14px 0 24px;
-  border: 1px solid rgba(246, 239, 227, 0.4);
-  color: var(--detail-on-stage);
 }
 
 .detail__button--primary {
   width: 100%;
-  color: #FFFFFF;
-  background: var(--detail-accent);
 }
 
-/* 밝은 정보 시트 */
+/* 흰 정보 시트 */
 .detail__info {
   display: flex;
   flex: 1;
@@ -132,45 +101,47 @@ body.detail-page {
   gap: 14px;
   align-self: stretch;
   padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px));
-  border-radius: 24px 24px 0 0;
-  color: var(--detail-ink);
-  background: var(--detail-sheet);
+  border: 1.5px solid var(--art-line);
+  border-bottom: 0;
+  border-radius: 28px 28px 0 0;
+  color: var(--art-ink);
+  background: var(--art-surface);
+  box-shadow: 0 -4px 14px rgba(140, 91, 55, 0.08);
 }
 
 .detail__label {
   align-self: flex-start;
-  margin: 0;
-  padding: 4px 10px;
-  border-radius: 999px;
-  color: #FFFFFF;
-  background: #6B3E24;
-  font-size: 12px;
-  font-weight: 700;
 }
 
 .detail__story {
   margin: 0;
+  color: var(--art-text);
   font-size: 15px;
   line-height: 1.7;
+  word-break: keep-all;
 }
 
 .detail__facts {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin: 0;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: var(--detail-surface);
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--art-bg);
   font-size: 14px;
 }
 
 .detail__facts dt {
-  color: var(--detail-muted);
+  color: var(--art-muted);
 }
 
 .detail__facts dd {
   margin: 0;
-  font-weight: 700;
+  color: var(--art-ink);
+  font-family: var(--font-logo);
+  font-size: 16px;
+  font-weight: 750;
 }
 
 /* 찾을 수 없음 · 아직 모으지 않음 */
@@ -181,21 +152,28 @@ body.detail-page {
   align-self: stretch;
   margin: 120px 20px 0;
   padding: 28px 20px;
-  border-radius: 20px;
-  color: var(--detail-ink);
-  background: var(--detail-sheet);
+  border: 1.5px solid var(--art-line);
+  border-radius: 24px;
+  color: var(--art-ink);
+  background: var(--art-surface);
+  box-shadow: 0 2px 10px var(--art-shadow);
   text-align: center;
 }
 
 .detail__notice-title {
   margin: 0;
+  color: var(--art-brown);
+  font-family: var(--font-title);
   font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
   letter-spacing: 0;
 }
 
 .detail__notice-text {
   margin: 0 0 8px;
-  color: var(--detail-muted);
+  color: var(--art-muted);
   font-size: 14px;
   line-height: 1.6;
+  word-break: keep-all;
 }

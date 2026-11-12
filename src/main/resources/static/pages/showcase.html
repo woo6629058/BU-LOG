@@ -5,24 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="미션을 풀어 모은 유물을 전시실별 선반에 보여 주는 BU:LOG 진열장">
   <title>진열장 | BU:LOG</title>
+  <!-- 홈과 같은 글꼴: 숫자 Baloo 2, 본문 Noto Sans KR (티머니 둥근바람·SUIT는 art-theme.css에서 불러옴) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@600&display=swap">
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
+  <link rel="stylesheet" href="/css/components/art-theme.css">
   <link rel="stylesheet" href="/css/components/artifact-figure.css">
   <link rel="stylesheet" href="/css/pages/showcase.css">
   <script type="module" src="/js/pages/showcase.js"></script>
 </head>
-<body>
-  <main class="showcase">
+<body class="page-art">
+  <main class="showcase art-sky art-sky--branch">
     <header class="showcase__header">
-      <div class="showcase__title-row">
-        <h1 class="showcase__title">진열장</h1>
-        <p class="showcase__count">
-          <span aria-hidden="true"><strong id="showcase-filled">0</strong> / <span id="showcase-total">0</span></span>
-          <span class="visually-hidden" id="showcase-count-label"></span>
-        </p>
-      </div>
-      <div class="showcase__bar" aria-hidden="true"><span id="showcase-progress"></span></div>
+      <p class="art-total">
+        <span aria-hidden="true"><strong id="showcase-filled">0</strong> / <span id="showcase-total">0</span></span>
+        <span class="visually-hidden" id="showcase-count-label"></span>
+      </p>
+      <h1 class="showcase__title">진열장</h1>
       <p class="showcase__intro">회색 유물은 전시실에서 QR을 찾아 미션을 풀면 진열돼요</p>
     </header>
     <div class="showcase__halls" id="showcase-halls"></div>

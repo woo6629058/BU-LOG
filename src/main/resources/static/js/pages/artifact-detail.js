@@ -18,7 +18,7 @@ function element(tag, className, text) {
 }
 
 function linkButton(text, href, variant) {
-  const link = element('a', `detail__button detail__button--${variant}`, text);
+  const link = element('a', `detail__button detail__button--${variant} art-button${variant === 'ghost' ? ' art-button--secondary' : ''}`, text);
   link.href = href;
   return link;
 }
@@ -27,7 +27,7 @@ function linkButton(text, href, variant) {
 const formatDate = (value) => value.slice(0, 10).replaceAll('-', '.');
 
 function closeButton() {
-  const button = element('button', 'detail__close');
+  const button = element('button', 'detail__close art-round-button');
   button.type = 'button';
   button.setAttribute('aria-label', '닫기');
   button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
@@ -48,7 +48,7 @@ function renderDetail({ room, region }) {
   document.title = `${region.artifactName} | BU:LOG`;
 
   const header = element('header', 'detail__header');
-  header.append(element('h1', 'detail__name', region.artifactName), element('p', 'detail__room', room.name));
+  header.append(element('p', 'detail__room art-badge', room.name), element('h1', 'detail__name', region.artifactName));
 
   const stage = element('div', 'detail__stage');
   stage.append(artifactFigure(region));
@@ -58,7 +58,7 @@ function renderDetail({ room, region }) {
 
   const info = element('section', 'detail__info');
   info.setAttribute('aria-labelledby', 'detail-story');
-  const storyTitle = element('h2', 'detail__label', '유물 이야기');
+  const storyTitle = element('h2', 'detail__label art-badge', '유물 이야기');
   storyTitle.id = 'detail-story';
   const facts = element('dl', 'detail__facts');
   facts.append(element('dt', '', '획득일'), element('dd', '', formatDate(record.acquiredAt)));

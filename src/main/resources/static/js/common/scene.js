@@ -160,6 +160,11 @@ export function playFill(sceneEl, exhibitId) {
   });
 }
 
+// 구역이 화면에서 차지하는 영역 (그림 채우기 축하 연출의 출발점). 없는 구역이면 null.
+export function regionRect(sceneEl, exhibitId) {
+  return outlineTarget(sceneEl, exhibitId)?.getBoundingClientRect() ?? null;
+}
+
 // 구역 윤곽을 잠깐 강조한다 (그림에서 위치 보기, 채우기 연출).
 export function highlightRegion(sceneEl, exhibitId) {
   const target = outlineTarget(sceneEl, exhibitId);

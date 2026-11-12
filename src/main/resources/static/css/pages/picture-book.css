@@ -1,21 +1,16 @@
 /*
- * 그림 도감: 전시실 칩으로 고른 전시실의 그림과 구역 목록.
- * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ * 그림 도감: 전체 보기(전시실 6곳 액자)와 전시실 보기(칩으로 고른 전시실의 그림과 구역 목록).
+ * 로그인 화면의 배경 장식·카드·버튼을 따르고, 글꼴과 색은 components/art-theme.css 를 쓴다.
  */
 .book {
-  --book-ink: var(--color-ink, #2B211A);
-  --book-muted: var(--color-muted, #6F6155);
-  --book-accent: var(--color-accent, #A8502F);
-  --book-line: var(--color-line-soft, #E4DACB);
-  --book-surface: var(--color-surface, #FFFFFF);
-  --book-done: var(--color-done-line, #C9A27A);
-
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 28px 20px 32px;
-  color: var(--book-ink);
-  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+  gap: 16px;
+  min-height: calc(100dvh - var(--tab-bar-height, 0px));
+  padding: max(56px, calc(44px + env(safe-area-inset-top, 0px))) 20px 28px;
+  color: var(--art-ink);
+  font-family: var(--font-body);
+  font-weight: 600;
 }
 
 /* 아래 display 규칙이 hidden 속성을 덮어쓰지 않게 한다 */
@@ -23,53 +18,68 @@
   display: none;
 }
 
+/* 머리말: 로그인 화면처럼 가운데 정렬. 전체 보기는 채운 칸 알약 → 제목 → 안내 문장,
+   전시실 보기는 제목만 두고 왼쪽에 뒤로가기 */
 .book__header {
+  position: relative;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  min-height: 44px;
+  text-align: center;
 }
 
-/* 전시실 보기 → 전체 보기 */
+/* 채운 칸 수 알약(.art-total)은 art-theme.css 에 있다. */
+.book.is-hall .book__total,
+.book.is-hall .book__intro {
+  display: none;
+}
+
+.book.is-hall {
+  padding-top: max(16px, calc(8px + env(safe-area-inset-top, 0px)));
+}
+
 .book__back {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-left: -12px;
-  border-radius: 50%;
-  color: var(--book-ink);
+  position: absolute;
+  top: 2px;
+  left: 0;
 }
 
-.book__back svg {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
+.book__title {
+  margin: 0;
+  color: var(--art-brown);
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
-.book__back:focus-visible,
-.book__frame:focus-visible {
-  outline: 3px solid var(--book-accent);
-  outline-offset: 2px;
+.book.is-hall .book__title {
+  font-size: 20px;
 }
 
-/* 전체 보기: 전시실 6곳을 2열 액자로 */
+/* 전체 보기 */
 .book__overview,
 .book__hall {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
+/* 제목 밑 안내 문장 (로그인 화면 소개 문구와 같은 자리·느낌) */
 .book__intro {
-  margin: -6px 0 0;
-  color: var(--book-muted);
+  margin: 0;
+  color: var(--art-text);
   font-size: 13px;
+  line-height: 1.45;
+  word-break: keep-all;
 }
 
+/* 전시실 6곳을 2열 액자로 */
 .book__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -82,19 +92,22 @@
 .book__frame {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   height: 100%;
-  padding: 8px 8px 10px;
-  border: 1px solid var(--book-line);
-  border-radius: 14px;
-  color: var(--book-ink);
-  background: var(--book-surface);
+  padding: 8px 8px 12px;
+  border: 1.5px solid var(--art-line);
+  border-radius: 18px;
+  color: var(--art-ink);
+  background: var(--art-surface);
+  box-shadow: 0 2px 10px var(--art-shadow);
   text-decoration: none;
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-.book__frame:hover {
-  border-color: var(--book-accent);
+@media (hover: hover) {
+  .book__frame:hover {
+    border-color: var(--art-orange);
+  }
 }
 
 .book__frame:active {
@@ -102,81 +115,74 @@
 }
 
 .book__frame.is-complete {
-  border: 1.5px solid var(--color-gold, #C9A13B);
+  border-color: var(--art-line-done);
 }
 
 .book__frame .scene {
-  margin-bottom: 6px;
-  border-radius: 8px;
-  box-shadow: 0 0 0 2px var(--scene-frame);
+  margin-bottom: 7px;
+  border-radius: 12px;
+  box-shadow: none;
 }
 
 .book__frame-meta {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
+  padding: 0 4px;
 }
 
 .book__frame-name {
-  font-size: 15px;
-  font-weight: 700;
+  overflow: hidden;
+  color: var(--art-ink);
+  font-family: var(--font-title);
+  font-size: 16px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
+/* 아직 시작하지 않은 전시실은 갈색, 채우는 중은 주황, 완성은 금색 배지 */
 .book__frame-count {
   flex-shrink: 0;
-  color: var(--book-accent);
-  font-size: 13px;
-  font-weight: 700;
+  color: var(--art-muted);
+  font-family: var(--font-logo);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.book__frame.is-active .book__frame-count {
+  color: var(--art-orange-text);
 }
 
 .book__frame.is-complete .book__frame-count {
-  color: var(--color-gold-text, #8A6516);
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: var(--art-gold);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .book__frame-title {
   overflow: hidden;
-  color: var(--book-muted);
+  padding: 0 4px;
+  color: var(--art-muted);
   font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.book__demo-hint {
-  margin: -4px 0 0;
-  padding: 8px 12px;
-  border: 1px dashed var(--book-line);
-  border-radius: 10px;
-  color: var(--book-muted);
-  font-size: 12px;
+.book__frame:focus-visible,
+.book__chip:focus-visible,
+.book__region:focus-visible {
+  outline: 3px solid var(--art-orange);
+  outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .book__frame {
-    transition: none;
-  }
-}
-
-.book__title {
-  margin: 0;
-  font-family: var(--font-serif, "Gowun Batang", serif);
-  font-size: 26px;
-  line-height: 1.3;
-  letter-spacing: 0;
-}
-
-.book__count {
-  margin: 0 0 0 auto;
-  color: var(--book-muted);
-  font-size: 15px;
-}
-
-.book__count strong {
-  color: var(--book-accent);
-  font-size: 20px;
-}
-
-/* 전시실 칩: 줄바꿈 대신 가로로 넘긴다 */
+/* 전시실 칩: 줄바꿈 대신 가로로 넘긴다. 고른 칩은 로그인 버튼과 같은 살구색 */
 .book__rooms {
   margin-inline: -20px;
 }
@@ -185,7 +191,7 @@
   display: flex;
   gap: 8px;
   margin: 0;
-  padding: 2px 20px 6px;
+  padding: 4px 20px 8px;
   overflow-x: auto;
   list-style: none;
   scrollbar-width: none;
@@ -199,29 +205,26 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid var(--book-line);
+  padding: 0 18px;
+  border: 1.5px solid var(--art-line);
   border-radius: 999px;
-  color: var(--book-ink);
-  background: var(--book-surface);
+  color: var(--art-text);
+  background: var(--art-surface);
+  font-family: var(--font-label);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
   white-space: nowrap;
 }
 
 .book__chip[aria-current="page"] {
-  border-color: var(--book-ink);
-  color: #FFFFFF;
-  background: var(--book-ink);
+  border-color: var(--art-button);
+  color: var(--art-ink);
+  background: var(--art-button);
+  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
 }
 
-.book__chip:focus-visible,
-.book__region:focus-visible {
-  outline: 3px solid var(--book-accent);
-  outline-offset: 2px;
-}
-
+/* 전시실 그림 */
 .book__scene {
   display: flex;
   flex-direction: column;
@@ -235,44 +238,57 @@
   gap: 12px;
 }
 
-.book__room-name {
-  margin: 0 0 2px;
-  color: var(--book-accent);
-  font-size: 13px;
-  font-weight: 700;
-}
-
 .book__scene-title {
-  margin: 0;
-  font-size: 19px;
+  margin: 8px 0 0;
+  color: var(--art-brown);
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 800;
   line-height: 1.35;
+  word-break: keep-all;
 }
 
 .book__scene-count {
   flex-shrink: 0;
-  margin: 0;
-  color: var(--book-muted);
-  font-size: 15px;
-  font-weight: 700;
+  margin: 0 0 3px;
+  color: var(--art-orange-text);
+  font-family: var(--font-logo);
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.book__demo-hint {
+  margin: -2px 0 0;
+  padding: 9px 14px;
+  border: 1.5px dashed var(--art-line);
+  border-radius: 14px;
+  color: var(--art-muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .book__message {
   min-height: 1.5em;
   margin: 0;
-  color: var(--book-muted);
+  color: var(--art-muted);
   font-size: 13px;
   line-height: 1.5;
 }
 
+/* 그림 완성: 로그인 흐름의 확인 버튼과 같은 연두색 */
 .book__message.is-complete {
-  padding: 12px 14px;
-  border-radius: 12px;
-  color: var(--book-ink);
-  background: var(--color-note, #FBF1DF);
-  font-weight: 600;
+  padding: 12px 16px;
+  border: 1.5px solid #D9E2C2;
+  border-radius: 14px;
+  color: var(--art-green);
+  background: var(--art-green-bg);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
 }
 
-/* 구역 목록: 2열 */
+/* 구역 목록: 2열 흰 카드 */
 .book__regions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -287,52 +303,51 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 48px;
+  height: 100%;
+  min-height: 52px;
   padding: 8px 10px;
-  border: 1px solid var(--book-line);
-  border-radius: 12px;
-  color: var(--book-muted);
-  background: var(--book-surface);
-  font: inherit;
+  border: 1.5px solid var(--art-line);
+  border-radius: 14px;
+  color: var(--art-muted);
+  background: var(--art-surface);
+  font-family: var(--font-body);
   font-size: 13px;
+  font-weight: 600;
   line-height: 1.35;
   text-align: left;
   text-decoration: none;
+  word-break: keep-all;
   cursor: pointer;
 }
 
 .book__region.is-done {
-  border-color: var(--book-done);
-  color: var(--book-ink);
-  font-weight: 600;
+  border-color: var(--art-line-done);
+  color: var(--art-ink);
 }
 
 .book__region-order {
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: 1.5px dashed currentColor;
   border-radius: 50%;
-  font-size: 12px;
-  font-weight: 800;
+  font-family: var(--font-logo);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1;
 }
 
+/* 채운 구역 번호는 홈 전시실 번호처럼 주황 동그라미 */
 .book__region.is-done .book__region-order {
   border: 0;
   color: #FFFFFF;
-  background: var(--book-accent);
+  background: var(--art-orange);
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
+@media (prefers-reduced-motion: reduce) {
+  .book__frame {
+    transition: none;
+  }
 }

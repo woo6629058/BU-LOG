@@ -4,7 +4,6 @@ import {
   ROOMS,
   SAMPLE_RECORDS,
   acquiredSet,
-  progressPercent,
   summarizeAll,
   summarizeRoom,
 } from '../common/collection-data.js';
@@ -26,7 +25,6 @@ function renderTotal() {
   document.querySelector('#showcase-filled').textContent = filled;
   document.querySelector('#showcase-total').textContent = total;
   document.querySelector('#showcase-count-label').textContent = `${total}개 중 ${filled}개 모음`;
-  document.querySelector('#showcase-progress').style.width = `${progressPercent(filled, total)}%`;
 }
 
 function renderItem(item) {

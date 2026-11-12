@@ -1,49 +1,118 @@
 /*
- * 그림 채우기 성공: 어두운 배경 위 전시실 그림과 결과. Figma 04 그림 채우기 성공의 요소를 참고했다.
- * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ * 그림 채우기 성공: 전시실 그림과 결과. Figma 04 그림 채우기 성공의 요소를 참고했다.
+ * 로그인 화면의 배경 장식·버튼을 따르고, 글꼴과 색은 components/art-theme.css 를 쓴다.
  */
-body.result-page {
-  background: var(--color-stage, #241A14);
-}
-
 .result {
-  --result-on-stage: #F6EFE3;
-  --result-on-stage-muted: #CDBFAE;
-  --result-gold: var(--color-glow, #FFD98A);
-  --result-accent: var(--color-accent, #A8502F);
-  --result-sheet: var(--color-sheet, #F6EFE3);
-  --result-ink: var(--color-ink, #2B211A);
-
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   min-height: 100vh;
-  padding: 44px 20px calc(28px + env(safe-area-inset-bottom, 0px));
-  color: var(--result-on-stage);
-  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+  min-height: 100dvh;
+  padding: max(44px, calc(32px + env(safe-area-inset-top, 0px))) 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  color: var(--art-ink);
+  font-family: var(--font-body);
+  font-weight: 600;
   text-align: center;
 }
 
-.result__eyebrow {
-  margin: 0;
-  color: var(--result-gold);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
+/* 축하 연출: 그림이 채워진 뒤 잎·꽃 에셋(홈)이 방금 채운 구역에서 퍼졌다가 살짝 내려앉으며 사라진다.
+   출발점(top·left)은 fill-result.js가 채운 구역 가운데로 정하고, 그림 위에 보이도록 앞에 놓는다. */
+.result__celebrate {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
+.result__piece {
+  position: absolute;
+  top: -9px;
+  left: -10px;
+  width: 20px;
+  height: 18px;
+  background: url("/images/home/leaf.webp") center / contain no-repeat;
+  /* 알록달록한 그림 위에서도 보이도록 크림색 테두리 빛 */
+  filter: drop-shadow(0 0 2px #FFFDF9) drop-shadow(0 0 2px #FFFDF9) drop-shadow(0 1px 2px rgba(92, 59, 33, 0.25));
+  opacity: 0;
+}
+
+.result__piece--flower {
+  top: -12px;
+  left: -11px;
+  width: 22px;
+  height: 24px;
+  background-image: url("/images/home/flower.webp");
+}
+
+.result__celebrate.is-playing .result__piece {
+  animation: result-burst 1.7s cubic-bezier(0.2, 0.7, 0.3, 1) var(--delay, 0ms) both;
+}
+
+.result__title.is-popping {
+  animation: result-pop 0.5s ease-out;
+}
+
+@keyframes result-burst {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.3); }
+  15% { opacity: 1; }
+  65% { opacity: 1; transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--x), calc(var(--y) + 16px)) rotate(var(--r)) scale(0.9); }
+}
+
+@keyframes result-pop {
+  40% { transform: scale(1.06); }
+}
+
+/* 움직임 줄이기 설정이면 연출 없이 결과만 보여 준다. */
+@media (prefers-reduced-motion: reduce) {
+  .result__celebrate {
+    display: none;
+  }
+
+  .result__title.is-popping {
+    animation: none;
+  }
+}
+
+/* MISSION CLEAR: 홈 로고와 같은 Baloo 2, 잎 장식 (홈 에셋) */
+.result__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--art-orange-text);
+  font-family: var(--font-logo);
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.result__eyebrow::after {
+  content: "";
+  width: 18px;
+  height: 16px;
+  margin-top: -4px;
+  background: url("/images/home/leaf.webp") center / contain no-repeat;
+}
+
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
 .result__title {
   margin: 0;
-  font-family: var(--font-serif, "Gowun Batang", serif);
+  color: var(--art-brown);
+  font-family: var(--font-title);
   font-size: 24px;
+  font-weight: 800;
   line-height: 1.35;
   letter-spacing: 0;
+  word-break: keep-all;
 }
 
 .result .scene {
   margin-top: 6px;
-  box-shadow: 0 0 0 3px #E2C08A, 0 0 40px rgba(255, 217, 138, 0.22);
 }
 
 .result__info {
@@ -55,28 +124,34 @@ body.result-page {
 
 .result__name {
   margin: 0;
-  font-size: 22px;
+  color: var(--art-ink);
+  font-family: var(--font-title);
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .result__room {
   margin: 0;
-  color: var(--result-on-stage-muted);
+  color: var(--art-muted);
   font-size: 13px;
 }
 
+/* 진행 상황: 살구색 배지, 그림을 완성하면 금색 */
 .result__progress {
   margin: 6px 0 0;
-  padding: 6px 14px;
-  border: 1px solid color-mix(in srgb, var(--result-gold) 60%, transparent);
+  padding: 5px 14px;
   border-radius: 999px;
-  color: var(--result-gold);
+  color: var(--art-wood);
+  background: var(--art-peach);
+  font-family: var(--font-label);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .result__progress.is-complete {
-  color: var(--result-ink);
-  background: var(--result-gold);
+  color: #FFFFFF;
+  background: var(--art-gold);
 }
 
 .result__actions {
@@ -84,34 +159,8 @@ body.result-page {
   flex-direction: column;
   gap: 10px;
   align-self: stretch;
-  margin-top: auto;
-  padding-top: 12px;
-}
-
-.result__button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 52px;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.result__button--primary {
-  color: #FFFFFF;
-  background: var(--result-accent);
-}
-
-.result__button--secondary {
-  border: 1px solid rgba(246, 239, 227, 0.4);
-  color: var(--result-on-stage);
-}
-
-.result__button:focus-visible {
-  outline: 3px solid var(--result-gold);
-  outline-offset: 2px;
+  /* 버튼을 화면 맨 아래가 아니라 결과 바로 아래에 둔다. */
+  margin-top: 10px;
 }
 
 .result__notice {
@@ -121,26 +170,20 @@ body.result-page {
   align-self: stretch;
   margin-top: 96px;
   padding: 28px 20px;
-  border-radius: 20px;
-  color: var(--result-ink);
-  background: var(--result-sheet);
+  border: 1.5px solid var(--art-line);
+  border-radius: 24px;
+  background: var(--art-surface);
+  box-shadow: 0 2px 10px var(--art-shadow);
+}
+
+.result__notice .result__title {
+  font-size: 20px;
 }
 
 .result__text {
   margin: 0 0 8px;
-  color: var(--color-muted, #6F6155);
+  color: var(--art-muted);
   font-size: 14px;
   line-height: 1.6;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
+  word-break: keep-all;
 }

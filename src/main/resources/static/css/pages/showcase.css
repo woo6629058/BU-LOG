@@ -1,119 +1,113 @@
 /*
- * 진열장: 전시실마다 나무 진열장 하나(3열 선반)를 위에서 아래로 쌓는다 (시안 A).
- * 색상은 common.css 토큰이 정해지기 전까지 지역 변수의 fallback 값을 사용한다.
+ * 진열장: 전시실마다 나무 진열장 하나(3열 선반)를 위에서 아래로 쌓는다.
+ * 로그인 화면의 배경 장식·카드를 따르고, 진열장 나무색은 홈 수집 현황 카드의 갈색을 쓴다.
+ * 글꼴과 색은 components/art-theme.css 를 쓴다.
  */
 .showcase {
-  --showcase-ink: var(--color-ink, #2B211A);
-  --showcase-muted: var(--color-muted, #6F6155);
-  --showcase-accent: var(--color-accent, #A8502F);
-  --showcase-track: var(--color-track, #E6DCCD);
-  --showcase-wood: var(--color-wood, #8A5A3B);
-  --showcase-wood-light: var(--color-wood-light, #A06E4C);
-  --showcase-wood-dark: var(--color-wood-dark, #4D2E1B);
-  --showcase-slot: var(--color-slot, #FFF8EC);
-
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding: 28px 20px 32px;
-  color: var(--showcase-ink);
-  font-family: var(--font-sans, "Noto Sans KR", system-ui, sans-serif);
+  gap: 24px;
+  min-height: calc(100dvh - var(--tab-bar-height, 0px));
+  padding: max(56px, calc(44px + env(safe-area-inset-top, 0px))) 20px 28px;
+  color: var(--art-ink);
+  font-family: var(--font-body);
+  font-weight: 600;
 }
 
+/* 머리말: 로그인 화면처럼 가운데 정렬. 모은 수 알약(.art-total, art-theme.css) → 제목 → 안내 문장 */
 .showcase__header {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
 }
 
-.showcase__title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
 .showcase__title {
   margin: 0;
-  font-family: var(--font-serif, "Gowun Batang", serif);
+  color: var(--art-brown);
+  font-family: var(--font-title);
   font-size: 26px;
+  font-weight: 800;
   line-height: 1.3;
   letter-spacing: 0;
+  text-align: center;
 }
 
-.showcase__count {
-  margin: 0;
-  color: var(--showcase-muted);
-  font-size: 15px;
-}
-
-.showcase__count strong {
-  color: var(--showcase-accent);
-  font-size: 20px;
-}
-
-.showcase__bar {
-  height: 6px;
-  overflow: hidden;
-  border-radius: 99px;
-  background: var(--showcase-track);
-}
-
-.showcase__bar span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--showcase-accent);
-}
-
+/* 제목 밑 안내 문장 (로그인 화면 소개 문구와 같은 자리·느낌) */
 .showcase__intro {
   margin: 0;
-  color: var(--showcase-muted);
+  color: var(--art-text);
   font-size: 13px;
+  line-height: 1.45;
+  word-break: keep-all;
 }
 
 .showcase__halls {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 26px;
 }
 
 .showcase__hall-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
+  align-items: flex-end;
+  margin: 0 4px 10px;
 }
 
 .showcase__hall-title {
   margin: 0;
-  font-size: 16px;
+  color: var(--art-ink);
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .showcase__hall-count {
-  margin: 0;
-  color: var(--showcase-muted);
-  font-size: 13px;
-  font-weight: 700;
+  margin: 0 0 2px;
+  color: var(--art-muted);
+  font-family: var(--font-logo);
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1;
 }
 
-/* 나무 진열장 */
+/* 나무 진열장: 홈 수집 현황 카드와 같은 갈색, 둥근 모서리 */
 .showcase__cabinet {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 8px 4px;
-  border-radius: 14px;
-  background: linear-gradient(var(--showcase-wood-light), var(--showcase-wood));
-  box-shadow: inset 0 0 0 2px var(--showcase-wood-dark), 0 6px 14px rgba(43, 33, 26, 0.18);
+  gap: 6px;
+  padding: 10px 10px 4px;
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
+    var(--art-wood);
+  box-shadow: 0 6px 14px rgba(140, 91, 55, 0.22);
+}
+
+/* 진열장 위 오른쪽 모서리에 앉은 덤불 (홈 에셋) */
+.showcase__cabinet::before {
+  content: "";
+  position: absolute;
+  top: -17px;
+  right: 14px;
+  width: 52px;
+  height: 22px;
+  background: url("/images/home/bush.webp") center bottom / contain no-repeat;
+  pointer-events: none;
 }
 
 .showcase__shelf {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 8px;
   margin: 0;
-  padding: 6px 4px 14px;
+  padding: 4px 4px 16px;
   list-style: none;
 }
 
@@ -122,66 +116,64 @@
   content: "";
   position: absolute;
   right: -4px;
-  bottom: 2px;
+  bottom: 3px;
   left: -4px;
   height: 8px;
-  border-radius: 2px;
-  background: linear-gradient(#6B4229, var(--showcase-wood-dark));
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  background: var(--art-wood-dark);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 .showcase__item {
-  --artifact-size: 52px;
+  --artifact-size: 54px;
 
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  gap: 4px;
-  min-height: 96px;
-  padding: 8px 4px 6px;
-  border-radius: 8px;
-  color: var(--showcase-ink);
-  background: var(--showcase-slot);
+  gap: 6px;
+  height: 100%;
+  min-height: 100px;
+  padding: 10px 4px 8px;
+  border-radius: 14px;
+  color: var(--art-ink);
+  background: var(--art-surface);
   text-decoration: none;
   transition: transform 0.15s ease;
 }
 
-a.showcase__item:hover {
-  transform: translateY(-2px);
+@media (hover: hover) {
+  a.showcase__item:hover {
+    transform: translateY(-2px);
+  }
 }
 
 a.showcase__item:focus-visible {
-  outline: 3px solid #FFD98A;
+  outline: 3px solid var(--art-gold-bar);
   outline-offset: 2px;
 }
 
+/* 아직 모으지 않은 유물: 살구빛 반투명 칸 */
 .showcase__item.is-missing {
-  background: color-mix(in srgb, var(--showcase-slot) 60%, transparent);
+  background: rgba(251, 224, 207, 0.55);
 }
 
 .showcase__name {
+  color: var(--art-ink);
+  font-family: var(--font-label);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1.25;
   text-align: center;
   word-break: keep-all;
 }
 
 .showcase__item.is-missing .showcase__name {
-  color: #5B4C40;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
+  color: var(--art-brown);
+  font-family: var(--font-logo);
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
 }
 
 @media (prefers-reduced-motion: reduce) {
