@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/components/art-theme.css">
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
   <link rel="stylesheet" href="/css/pages/home.css">
   <!-- 로그인 여부를 확인하는 동안 홈을 가린다 (게스트로 둘러보기를 고른 브라우저는 바로 보여 준다). home.js가 해제한다. -->
   <script>
@@ -22,7 +24,8 @@
       document.documentElement.classList.add('auth-checking');
     }
   </script>
-  <script type="module" src="/js/pages/home.js"></script>
+  <!-- 화면 전환 때 탭바가 제자리에 남도록, 탭바를 만드는 이 스크립트가 끝난 뒤에 화면을 그린다 -->
+  <script type="module" src="/js/pages/home.js" blocking="render"></script>
 </head>
 <body class="page-home page-art">
   <main class="home">
@@ -55,7 +58,7 @@
             <span class="visually-hidden" id="home-count-label"></span>
           </p>
         </div>
-        <div class="home-progress__bar" aria-hidden="true"><span id="home-progress-fill"></span></div>
+        <div class="home-progress__bar" aria-hidden="true"><span class="art-fill" id="home-progress-fill"></span></div>
         <p class="home-progress__hint" id="home-hint"></p>
       </div>
     </section>

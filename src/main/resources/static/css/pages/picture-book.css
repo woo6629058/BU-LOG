@@ -101,17 +101,12 @@
   background: var(--art-surface);
   box-shadow: 0 2px 10px var(--art-shadow);
   text-decoration: none;
-  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 @media (hover: hover) {
   .book__frame:hover {
     border-color: var(--art-orange);
   }
-}
-
-.book__frame:active {
-  transform: scale(0.98);
 }
 
 .book__frame.is-complete {
@@ -344,10 +339,4 @@
   border: 0;
   color: #FFFFFF;
   background: var(--art-orange);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .book__frame {
-    transition: none;
-  }
 }

@@ -18,7 +18,7 @@ function element(tag, className, text) {
 }
 
 function linkButton(text, href, variant) {
-  const link = element('a', `detail__button detail__button--${variant} art-button${variant === 'ghost' ? ' art-button--secondary' : ''}`, text);
+  const link = element('a', `detail__button detail__button--${variant} art-button art-pressable${variant === 'ghost' ? ' art-button--secondary' : ''}`, text);
   link.href = href;
   return link;
 }
@@ -27,7 +27,7 @@ function linkButton(text, href, variant) {
 const formatDate = (value) => value.slice(0, 10).replaceAll('-', '.');
 
 function closeButton() {
-  const button = element('button', 'detail__close art-round-button');
+  const button = element('button', 'detail__close art-round-button art-pressable');
   button.type = 'button';
   button.setAttribute('aria-label', '닫기');
   button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
@@ -51,12 +51,16 @@ function renderDetail({ room, region }) {
   header.append(element('p', 'detail__room art-badge', room.name), element('h1', 'detail__name', region.artifactName));
 
   const stage = element('div', 'detail__stage');
-  stage.append(artifactFigure(region));
+  // 진열장의 유물 그림과 같은 이름 후보: 진열장에서 누르면 유물이 무대로 이어진다 (page-transition.js).
+  const figure = artifactFigure(region);
+  figure.dataset.vtName = `artifact-${region.exhibitId}`;
+  stage.append(figure);
 
   const place = element('p', 'detail__place', `${room.shortName} 그림 · ${region.title}`);
   const locate = linkButton('그림에서 위치 보기', pictureBookUrl(room.id, region.exhibitId), 'ghost');
 
-  const info = element('section', 'detail__info');
+  // 정보 시트는 아래에서 올라온다.
+  const info = element('section', 'detail__info art-rise');
   info.setAttribute('aria-labelledby', 'detail-story');
   const storyTitle = element('h2', 'detail__label art-badge', '유물 이야기');
   storyTitle.id = 'detail-story';

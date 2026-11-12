@@ -154,7 +154,6 @@
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.15s ease;
 }
 
 .art-button--secondary {
@@ -162,10 +161,6 @@
   color: var(--art-brown);
   background: var(--art-surface);
   box-shadow: 0 2px 8px var(--art-shadow);
-}
-
-.art-button:active {
-  transform: scale(0.98);
 }
 
 .art-round-button:focus-visible,
@@ -213,9 +208,168 @@
   font-weight: 750;
 }
 
+/* =========================================================
+   모션: 모바일 앱처럼 누름 반응, 목록 등장, 막대 채우기, 화면 전환
+   길이·곡선은 아래 토큰 하나로 맞춘다. 움직임 줄이기 설정이면 모두 끈다.
+   ========================================================= */
+:root {
+  --motion-press: 90ms;
+  --motion-release: 320ms;
+  --motion-enter: 420ms;
+  --motion-page: 340ms;
+  --motion-page-exit: 220ms; /* 나가는 화면은 들어오는 화면의 약 65% */
+  --motion-stagger: 40ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 누름 반응: 누르는 동안 살짝 작아지고, 손을 떼면 통통 튀며 돌아온다. */
+.art-pressable {
+  transition:
+    transform var(--motion-release) var(--ease-spring),
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.art-pressable:active {
+  transform: scale(0.96);
+  transition-duration: var(--motion-press), 150ms, 150ms, 150ms;
+  transition-timing-function: ease-out;
+}
+
+/* 목록 등장: 아래에서 살짝 올라오며 나타난다. 순서(--i)마다 40ms씩 늦게.
+   홈은 로그인 확인(auth-checking)이 끝나 화면이 보일 때 시작한다.
+   화면 전환 애니메이션으로 들어온 화면(is-vt)은 전환 자체가 등장이라 건너뛴다. */
+html:not(.auth-checking):not(.is-vt) .art-rise {
+  animation: art-rise var(--motion-enter) var(--ease-out) calc(var(--i, 0) * var(--motion-stagger)) both;
+}
+
+@keyframes art-rise {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+/* 진행 막대 채우기: 막대 안의 채움이 왼쪽에서 밀려 들어온다 (막대는 overflow: hidden). */
+html:not(.auth-checking) .art-fill {
+  animation: art-fill 800ms var(--ease-out) 120ms both;
+}
+
+@keyframes art-fill {
+  from { transform: translateX(-100%); }
+}
+
+/* 화면 전환 (js/common/page-transition.js 가 이동 방향을 정함)
+   push: 더 깊은 화면으로 — 새 화면이 오른쪽에서 밀려 들어옴 / pop: 뒤로 — 반대
+   tab-next·tab-prev: 탭 사이 — 옆으로 살짝 밀리며 바뀜 / 그 밖: 부드럽게 겹쳐 바뀜 */
+@view-transition {
+  navigation: auto;
+}
+
+/* 탭바는 화면이 바뀌어도 제자리에 남는다. */
+.page-art .tab-bar {
+  view-transition-name: tab-bar;
+}
+
+::view-transition-old(tab-bar) {
+  display: none;
+}
+
+::view-transition-new(tab-bar) {
+  animation: none;
+}
+
+/* 탭바가 없는 화면(유물 상세 등)과 오갈 때는 탭바도 화면과 함께 밀려 나가고 들어온다.
+   (:only-child = 한쪽 화면에만 탭바가 있음) */
+html:active-view-transition-type(push)::view-transition-old(tab-bar):only-child {
+  display: block;
+  animation: art-page-out-left var(--motion-page-exit) var(--ease-in) both;
+}
+
+html:active-view-transition-type(pop)::view-transition-new(tab-bar):only-child {
+  animation: art-page-in-left var(--motion-page) var(--ease-out) both;
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--motion-page);
+  animation-timing-function: var(--ease-out);
+}
+
+html:active-view-transition-type(push)::view-transition-old(root) {
+  animation: art-page-out-left var(--motion-page-exit) var(--ease-in) both;
+}
+
+html:active-view-transition-type(push)::view-transition-new(root) {
+  animation: art-page-in-right var(--motion-page) var(--ease-out) both;
+}
+
+html:active-view-transition-type(pop)::view-transition-old(root) {
+  z-index: 1;
+  animation: art-page-out-right var(--motion-page-exit) var(--ease-in) both;
+}
+
+html:active-view-transition-type(pop)::view-transition-new(root) {
+  animation: art-page-in-left var(--motion-page) var(--ease-out) both;
+}
+
+html:active-view-transition-type(tab-next)::view-transition-old(root) {
+  animation: art-tab-out var(--motion-page-exit) var(--ease-in) both;
+  --tab-shift: -24px;
+}
+
+html:active-view-transition-type(tab-next)::view-transition-new(root) {
+  animation: art-tab-in var(--motion-page) var(--ease-out) both;
+  --tab-shift: 24px;
+}
+
+html:active-view-transition-type(tab-prev)::view-transition-old(root) {
+  animation: art-tab-out var(--motion-page-exit) var(--ease-in) both;
+  --tab-shift: 24px;
+}
+
+html:active-view-transition-type(tab-prev)::view-transition-new(root) {
+  animation: art-tab-in var(--motion-page) var(--ease-out) both;
+  --tab-shift: -24px;
+}
+
+@keyframes art-page-in-right {
+  from { transform: translateX(100%); }
+}
+
+@keyframes art-page-out-left {
+  to { opacity: 0.6; transform: translateX(-28%); }
+}
+
+@keyframes art-page-in-left {
+  from { opacity: 0.6; transform: translateX(-28%); }
+}
+
+@keyframes art-page-out-right {
+  to { transform: translateX(100%); }
+}
+
+@keyframes art-tab-in {
+  from { opacity: 0; transform: translateX(var(--tab-shift)); }
+}
+
+@keyframes art-tab-out {
+  to { opacity: 0; transform: translateX(var(--tab-shift)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .art-button {
+  @view-transition {
+    navigation: none;
+  }
+
+  .art-pressable,
+  .art-pressable:active {
+    transform: none;
     transition: none;
+  }
+
+  html .art-rise,
+  html .art-fill {
+    animation: none;
   }
 }
 
@@ -280,6 +434,45 @@ body.page-art.has-tab-bar {
 .page-art .tab-bar__link[data-tab="picture-book"]::before { background-image: url("/images/home/icon-picture-book.webp"); }
 .page-art .tab-bar__link[data-tab="showcase"]::before { background-image: url("/images/home/icon-showcase.webp"); }
 .page-art .tab-bar__link[data-tab="ranking"]::before { background-image: url("/images/home/icon-ranking.webp"); }
+
+/* 탭 누름 반응과 선택 표시: 누르면 살짝 작아지고, 선택된 탭은 살구색 바탕이 번지며 아이콘이 통통 튄다. */
+.page-art .tab-bar__link {
+  transition: transform var(--motion-release) var(--ease-spring), color 150ms ease;
+}
+
+.page-art .tab-bar__link:active {
+  transform: scale(0.92);
+  transition-duration: var(--motion-press), 150ms;
+  transition-timing-function: ease-out;
+}
+
+.page-art .tab-bar__link[aria-current="page"] {
+  animation: art-tab-pill 360ms var(--ease-out) both;
+}
+
+.page-art .tab-bar__link[aria-current="page"]::before {
+  animation: art-tab-icon 520ms var(--ease-spring) 60ms both;
+}
+
+@keyframes art-tab-pill {
+  from { background-color: transparent; }
+}
+
+@keyframes art-tab-icon {
+  0% { transform: scale(0.7); }
+  60% { transform: scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-art .tab-bar__link,
+  .page-art .tab-bar__link:active,
+  .page-art .tab-bar__link[aria-current="page"],
+  .page-art .tab-bar__link[aria-current="page"]::before {
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+}
 
 .visually-hidden {
   position: absolute;

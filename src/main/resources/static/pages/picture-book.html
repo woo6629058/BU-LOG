@@ -14,14 +14,17 @@
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/components/art-theme.css">
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
   <link rel="stylesheet" href="/css/components/scene.css">
   <link rel="stylesheet" href="/css/pages/picture-book.css">
-  <script type="module" src="/js/pages/picture-book.js"></script>
+  <!-- 화면 전환 때 이어질 그림이 먼저 만들어지도록, 이 스크립트가 끝난 뒤에 화면을 그린다 -->
+  <script type="module" src="/js/pages/picture-book.js" blocking="render"></script>
 </head>
 <body class="page-art">
   <main class="book art-sky art-sky--branch" id="book">
     <header class="book__header">
-      <a class="book__back art-round-button" id="book-back" href="/pages/picture-book.html" aria-label="전체 그림 보기" hidden>
+      <a class="book__back art-round-button art-pressable" id="book-back" href="/pages/picture-book.html" aria-label="전체 그림 보기" hidden>
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
       </a>
       <!-- 채운 칸 수 알약과 안내 문장은 전체 보기에서만 보인다 (전시실 보기에서는 CSS로 숨김) -->

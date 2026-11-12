@@ -1,6 +1,7 @@
 import { getMe, logout } from '../api/auth-api.js';
 import { clearGuestChoice, hasChosenGuest } from '../common/auth-flow.js';
 import { mountTabBar } from '../common/tab-bar.js';
+import { countUp, rise } from '../common/motion.js';
 import {
   ROOMS,
   SAMPLE_RECORDS,
@@ -76,7 +77,7 @@ function element(tag, className, text) {
 
 function renderProgress() {
   const { filled, total } = summarizeAll(ROOMS, acquired);
-  document.querySelector('#home-filled').textContent = filled;
+  countUp(document.querySelector('#home-filled'), filled);
   document.querySelector('#home-total').textContent = total;
   document.querySelector('#home-count-label').textContent = `${total}칸 중 ${filled}칸 채움`;
   document.querySelector('#home-progress-fill').style.width = `${progressPercent(filled, total)}%`;
@@ -86,7 +87,7 @@ function renderProgress() {
 function renderRoom({ room, filled, total, complete }, index) {
   const state = complete ? 'complete' : filled > 0 ? 'active' : 'idle';
   const item = element('li');
-  const link = element('a', `home-room home-room--${state}`);
+  const link = element('a', `home-room art-pressable home-room--${state}`);
   link.href = `/pages/picture-book.html?room=${encodeURIComponent(room.id)}`;
 
   const number = element('span', 'home-room__number', complete ? '' : String(index + 1));
@@ -106,7 +107,7 @@ function renderRoom({ room, filled, total, complete }, index) {
   count.setAttribute('aria-hidden', 'true');
   const bar = element('span', 'home-room__bar');
   bar.setAttribute('aria-hidden', 'true');
-  const fill = element('span');
+  const fill = element('span', 'art-fill');
   fill.style.width = `${progressPercent(filled, total)}%`;
   bar.append(fill);
   status.append(count, bar);
@@ -114,7 +115,7 @@ function renderRoom({ room, filled, total, complete }, index) {
   const label = complete ? '그림 완성' : `${total}칸 중 ${filled}칸 채움`;
   link.append(number, thumb, text, status, element('span', 'visually-hidden', `, ${label}`));
   item.append(link);
-  return item;
+  return rise(item, index);
 }
 
 function renderRooms() {

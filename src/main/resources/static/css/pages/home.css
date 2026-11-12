@@ -338,17 +338,12 @@
   color: inherit;
   background: var(--home-surface);
   text-decoration: none;
-  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 @media (hover: hover) {
   .home-room:hover {
     border-color: var(--home-line-active);
   }
-}
-
-.home-room:active {
-  transform: scale(0.99);
 }
 
 /* 시안처럼 완료·진행 중 카드는 조금 더 높다. */
@@ -701,9 +696,10 @@ body.page-home {
 .home__logout:focus-visible { color: #3E2814; }
 .home__logout:focus-visible { outline: 2px solid var(--home-orange); outline-offset: 2px; }
 
-/* 로그인 여부를 확인하는 동안(index.html의 auth-checking) 홈 내용을 가린다. */
+/* 로그인 여부를 확인하는 동안(index.html의 auth-checking) 홈 내용을 가린다.
+   다른 탭에서 화면 전환으로 들어올 때(is-vt)는 탭바가 제자리에 남아야 하므로 탭바는 가리지 않는다. */
 .auth-checking .home,
-.auth-checking .tab-bar {
+.auth-checking:not(.is-vt) .tab-bar {
   visibility: hidden;
   /* 스크립트가 실패해도 4초 뒤에는 화면이 보이게 한다. */
   animation: home-auth-reveal 0s linear 4s forwards;

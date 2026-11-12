@@ -1,5 +1,6 @@
 import { mountTabBar } from '../common/tab-bar.js';
 import { artifactFigure } from '../common/artifact-figure.js';
+import { countUp, rise } from '../common/motion.js';
 import {
   ROOMS,
   SAMPLE_RECORDS,
@@ -22,7 +23,7 @@ function element(tag, className, text) {
 
 function renderTotal() {
   const { filled, total } = summarizeAll(ROOMS, acquired);
-  document.querySelector('#showcase-filled').textContent = filled;
+  countUp(document.querySelector('#showcase-filled'), filled);
   document.querySelector('#showcase-total').textContent = total;
   document.querySelector('#showcase-count-label').textContent = `${total}개 중 ${filled}개 모음`;
 }
@@ -30,9 +31,12 @@ function renderTotal() {
 function renderItem(item) {
   const li = element('li', 'showcase__slot');
   if (acquired.has(item.exhibitId)) {
-    const link = element('a', 'showcase__item');
+    const link = element('a', 'showcase__item art-pressable');
     link.href = `/pages/artifact-detail.html?exhibitId=${encodeURIComponent(item.exhibitId)}`;
-    link.append(artifactFigure(item), element('span', 'showcase__name', item.artifactName));
+    // 유물 상세의 무대 그림과 같은 이름 후보: 화면이 바뀔 때 유물이 무대로 날아가듯 이어진다 (page-transition.js).
+    const figure = artifactFigure(item);
+    figure.dataset.vtName = `artifact-${item.exhibitId}`;
+    link.append(figure, element('span', 'showcase__name', item.artifactName));
     li.append(link);
   } else {
     const empty = element('div', 'showcase__item is-missing');
@@ -44,7 +48,7 @@ function renderItem(item) {
   return li;
 }
 
-function renderHall(room) {
+function renderHall(room, index) {
   const { filled, total } = summarizeRoom(room, acquired);
   const section = element('section', 'showcase__hall');
   const titleId = `hall-${room.id}`;
@@ -66,7 +70,7 @@ function renderHall(room) {
   }
 
   section.append(header, cabinet);
-  return section;
+  return rise(section, index);
 }
 
 renderTotal();

@@ -139,7 +139,6 @@
   color: var(--art-ink);
   background: var(--art-surface);
   text-decoration: none;
-  transition: transform 0.15s ease;
 }
 
 @media (hover: hover) {
@@ -174,10 +173,4 @@ a.showcase__item:focus-visible {
   font-size: 13px;
   font-weight: 750;
   letter-spacing: 0.1em;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .showcase__item {
-    transition: none;
-  }
 }

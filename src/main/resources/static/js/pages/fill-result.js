@@ -17,7 +17,7 @@ function element(tag, className, text) {
 }
 
 function linkButton(text, href, variant) {
-  const link = element('a', `result__button result__button--${variant} art-button${variant === 'secondary' ? ' art-button--secondary' : ''}`, text);
+  const link = element('a', `result__button result__button--${variant} art-button art-pressable${variant === 'secondary' ? ' art-button--secondary' : ''}`, text);
   link.href = href;
   return link;
 }
@@ -73,6 +73,8 @@ function renderResult({ room, region }) {
   const scene = renderScene(room, before, {
     label: `${room.sceneTitle} 그림, ${total}칸 중 ${filled}칸 채움`,
   });
+  // 그림 도감의 전시실 그림과 같은 이름 후보: '그림 도감에서 보기'를 누르면 그림이 그대로 이어진다 (page-transition.js).
+  scene.dataset.vtName = `scene-${room.id}`;
 
   const eyebrow = element('p', 'result__eyebrow', isNew ? 'MISSION CLEAR' : 'ALREADY FILLED');
   eyebrow.setAttribute('aria-hidden', 'true');

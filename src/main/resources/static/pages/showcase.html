@@ -14,9 +14,12 @@
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/tab-bar.css">
   <link rel="stylesheet" href="/css/components/art-theme.css">
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
   <link rel="stylesheet" href="/css/components/artifact-figure.css">
   <link rel="stylesheet" href="/css/pages/showcase.css">
-  <script type="module" src="/js/pages/showcase.js"></script>
+  <!-- 화면 전환 때 이어질 그림이 먼저 만들어지도록, 이 스크립트가 끝난 뒤에 화면을 그린다 -->
+  <script type="module" src="/js/pages/showcase.js" blocking="render"></script>
 </head>
 <body class="page-art">
   <main class="showcase art-sky art-sky--branch">
