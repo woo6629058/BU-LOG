@@ -41,6 +41,18 @@ public class CuratedExhibitService {
             }
             exhibitRepository.save(exhibit);
         }
-        return new CuratedExhibitResult(curatedExhibits.size(), createdCount, updatedCount);
+        int releasedCount = releaseRemoved(curatedExhibits);
+        return new CuratedExhibitResult(curatedExhibits.size(), createdCount, updatedCount, releasedCount);
+    }
+
+    // 목록에서 빠진 유물은 수집 대상에서 해제한다. 수집 대상은 이 목록으로만 만들어지므로 일반 소장품(collectible=false)은 건드리지 않는다.
+    private int releaseRemoved(List<CuratedExhibit> curatedExhibits) {
+        List<String> curatedIds = curatedExhibits.stream()
+                .map(CuratedExhibit::id)
+                .toList();
+        List<Exhibit> removed = exhibitRepository.findAllByCollectibleTrueAndIdNotIn(curatedIds);
+        removed.forEach(Exhibit::releaseCuration);
+        exhibitRepository.saveAll(removed);
+        return removed.size();
     }
 }

@@ -25,10 +25,11 @@ public class CuratedExhibitRunner implements ApplicationRunner {
         try {
             CuratedExhibitResult result = curatedExhibitService.applyAll();
             log.info(
-                    "수집 대상 유물 등록 완료: 전체={}, 신규={}, 갱신={}",
+                    "수집 대상 유물 등록 완료: 전체={}, 신규={}, 갱신={}, 해제={}",
                     result.totalCount(),
                     result.createdCount(),
-                    result.updatedCount()
+                    result.updatedCount(),
+                    result.releasedCount()
             );
         } catch (RuntimeException exception) {
             log.error("수집 대상 유물 등록에 실패했습니다.", exception);

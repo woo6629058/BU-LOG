@@ -30,7 +30,7 @@ class CuratedExhibitServiceTest {
 
         CuratedExhibitResult result = service.apply(List.of(curated("ongi2-janggun", "/images/exhibits/ongi2-janggun.jpg")));
 
-        assertThat(result).isEqualTo(new CuratedExhibitResult(1, 1, 0));
+        assertThat(result).isEqualTo(new CuratedExhibitResult(1, 1, 0, 0));
         ArgumentCaptor<Exhibit> saved = ArgumentCaptor.forClass(Exhibit.class);
         verify(exhibitRepository).save(saved.capture());
         assertThat(saved.getValue().getId()).isEqualTo("ongi2-janggun");
@@ -45,7 +45,7 @@ class CuratedExhibitServiceTest {
 
         CuratedExhibitResult result = service.apply(List.of(curated(EMUSEUM_ID, null)));
 
-        assertThat(result).isEqualTo(new CuratedExhibitResult(1, 0, 1));
+        assertThat(result).isEqualTo(new CuratedExhibitResult(1, 0, 1, 0));
         assertThat(synced.getName()).isEqualTo("테스트 유물");
         assertThat(synced.getDescription()).isEqualTo("테스트 설명");
         assertThat(synced.getImageUrl()).isEqualTo("/api/exhibits/" + EMUSEUM_ID + "/image");
@@ -61,6 +61,22 @@ class CuratedExhibitServiceTest {
         service.apply(List.of(curated(EMUSEUM_ID, "/images/exhibits/edu-high-korean.jpg")));
 
         assertThat(synced.getImageUrl()).isEqualTo("/images/exhibits/edu-high-korean.jpg");
+    }
+
+    @Test
+    void 목록에서_빠진_유물은_수집_대상에서_해제한다() {
+        Exhibit removed = curated("local-old-exhibit", null).toNewExhibit();
+        when(exhibitReader.findById(anyString())).thenReturn(Optional.empty());
+        when(exhibitRepository.findAllByCollectibleTrueAndIdNotIn(List.of("ongi2-janggun")))
+                .thenReturn(List.of(removed));
+
+        CuratedExhibitResult result = service.apply(List.of(curated("ongi2-janggun", null)));
+
+        assertThat(result).isEqualTo(new CuratedExhibitResult(1, 1, 0, 1));
+        assertThat(removed.isCollectible()).isFalse();
+        assertThat(removed.getCardNumber()).isNull();
+        assertThat(removed.getVisitOrder()).isNull();
+        verify(exhibitRepository).saveAll(List.of(removed));
     }
 
     private CuratedExhibit curated(String id, String imageUrl) {

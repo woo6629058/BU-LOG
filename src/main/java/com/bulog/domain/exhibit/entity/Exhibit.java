@@ -185,6 +185,12 @@ public class Exhibit extends BaseEntity {
         this.collectible = true;
     }
 
+    public void releaseCuration() {
+        this.cardNumber = null;
+        this.visitOrder = null;
+        this.collectible = false;
+    }
+
     private static String requireText(String value, String fieldName) {
         String normalized = normalize(value);
         if (normalized == null) {
