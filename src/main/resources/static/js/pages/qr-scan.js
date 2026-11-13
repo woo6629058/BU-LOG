@@ -43,7 +43,8 @@ const GUIDE_DEFAULT = ['전시물 옆 QR 코드를 네모 안에 맞춰 주세�
 const unwrap = (response) => response?.result ?? response;
 
 // 유물 소개 화면 주소
-// TODO(조장과 확인): 서버에 /exhibits/{id} 주소가 생기면 그 주소로 바꾸기
+// QR에 들어 있는 /exhibits/{id}는 서버가 이 화면으로 보내 준다(휴대폰 기본 카메라용).
+// 앱 안에서는 이미 id를 읽었으니 한 번 더 거치지 않고 바로 이 화면으로 간다.
 const exhibitPageUrl = (id) => `/pages/exhibit.html?id=${encodeURIComponent(id)}`;
 
 // 받침이 있으면 "을", 없으면 "를" (예: 소줏고리를, 매병을)
