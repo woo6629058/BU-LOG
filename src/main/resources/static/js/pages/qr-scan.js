@@ -57,9 +57,9 @@ function withObjectParticle(word) {
 // ---------------------------------------------------------
 // QR 글자에서 전시물 id 꺼내기
 // 아래 형식을 모두 받음
-//   https://(사이트)/exhibits/goryeo-celadon
-//   https://(사이트)/pages/exhibit.html?id=goryeo-celadon
-//   goryeo-celadon (id만)
+//   https://(사이트)/exhibits/ongi1-faith-jar
+//   https://(사이트)/pages/exhibit.html?id=ongi1-faith-jar
+//   ongi1-faith-jar (id만)
 // ---------------------------------------------------------
 export function parseExhibitId(text) {
   const value = String(text ?? '').trim();

@@ -1,11 +1,13 @@
 // 그림 채우기 성공: 퀴즈 정답 뒤 퀴즈 화면이 ?exhibitId=…(이미 채운 구역이면 &new=0)로 보낸다.
-// 샘플 기록과 별개로, 주소의 유물은 방금 채워졌다고 보고 그린다.
+// 서버 기록과 별개로, 주소의 유물은 방금 채워졌다고 보고 그린다.
 import { loadScene, playFill, regionRect, renderScene } from '../common/scene.js';
-import { ROOMS, SAMPLE_RECORDS, acquiredSet, findRegion, summarizeRoom } from '../common/collection-data.js';
+import { acquiredSet, findRegion, loadCollection, summarizeRoom } from '../common/collection-data.js';
 
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
 const isNew = params.get('new') !== '0';
+// 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
+const { rooms: ROOMS, records } = await loadCollection();
 const hit = findRegion(ROOMS, exhibitId);
 const root = document.querySelector('#result');
 
@@ -63,7 +65,7 @@ function renderUnknown() {
 }
 
 function renderResult({ room, region }) {
-  const acquired = acquiredSet(SAMPLE_RECORDS);
+  const acquired = acquiredSet(records);
   acquired.add(exhibitId);
   const { filled, total, complete } = summarizeRoom(room, acquired);
 

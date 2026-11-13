@@ -3,7 +3,7 @@ import { getExhibit, getExhibitQuiz } from '../api/exhibits-api.js';
 
 mountLayout();
 
-// 1. 주소(?id=goryeo-celadon)에서 전시물 id 꺼내기
+// 1. 주소(?id=ongi1-faith-jar)에서 전시물 id 꺼내기
 const exhibitId = new URLSearchParams(window.location.search).get('id');
 const quizLink = document.querySelector('#quiz-link');
 if (exhibitId) quizLink.href = `/pages/quiz.html?exhibitId=${encodeURIComponent(exhibitId)}`;

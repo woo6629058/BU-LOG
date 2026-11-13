@@ -302,14 +302,17 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
   "message": "요청에 성공했습니다.",
   "result": {
     "acquiredCount": 1,
-    "totalCount": 10,
+    "totalCount": 24,
     "cards": [
       {
         "cardId": 7,
-        "exhibitId": "goryeo-celadon",
-        "name": "청자 상감운학문 매병",
-        "era": "고려",
-        "imageUrl": "/images/exhibits/goryeo-celadon.jpg",
+        "exhibitId": "ongi1-faith-jar",
+        "name": "신앙항아리",
+        "era": "근대",
+        "description": "부천의 '점말'은 병인박해를 피해 천주교인들이 모여살면서 옹기를 만들던 곳이다. ...",
+        "imageUrl": "/images/exhibits/ongi1-faith-jar.jpg",
+        "exhibitionRoom": "옹기1전시실",
+        "cardNumber": 1,
         "acquired": true,
         "acquiredAt": "2026-11-03T10:00:00"
       }
@@ -321,6 +324,7 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 게스트는 현재 브라우저 방문자의 카드만 조회합니다. 로그인 회원은 해당 계정에 연결된
 여러 브라우저의 방문 기록을 전시물 기준으로 합쳐서 조회합니다. 미획득 전시물도
 `acquired: false`로 반환하며 이때 `cardId`, `acquiredAt`은 응답에서 제외됩니다.
+카드는 수집 대상 유물 24개가 `cardNumber`(카드 번호 = 관람 순서) 순서로 옵니다. 화면은 `exhibitionRoom`으로 전시실을 나눕니다.
 
 ## 카드 상세
 

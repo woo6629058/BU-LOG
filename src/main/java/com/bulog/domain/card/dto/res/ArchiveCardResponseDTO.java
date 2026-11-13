@@ -9,7 +9,10 @@ public record ArchiveCardResponseDTO(
         String exhibitId,
         String name,
         String era,
+        String description,
         String imageUrl,
+        String exhibitionRoom,
+        Integer cardNumber,
         boolean acquired,
         LocalDateTime acquiredAt
 ) {

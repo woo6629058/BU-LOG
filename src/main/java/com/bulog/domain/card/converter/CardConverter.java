@@ -31,7 +31,10 @@ public final class CardConverter {
                 exhibit.getId(),
                 exhibit.getName(),
                 exhibit.getEra(),
+                exhibit.getDescription(),
                 exhibit.getImageUrl(),
+                exhibit.getExhibitionRoom(),
+                exhibit.getCardNumber(),
                 card != null,
                 card == null ? null : card.getAcquiredAt()
         );
