@@ -62,22 +62,25 @@
     </div>
     <p class="qr-brand">BU-LOG</p>
 
-    <!-- 번호로 입력 시트 -->
+    <!-- 시트 뒤 어두운 배경: 누르면 시트가 닫히고 다시 스캔 -->
+    <div class="qr-backdrop" id="qr-backdrop" hidden></div>
+
+    <!-- 번호로 입력 시트 (아래로 끌어내리거나 배경을 눌러도 닫힘) -->
     <form class="qr-sheet" id="qr-manual" hidden>
       <span class="qr-sheet__handle" aria-hidden="true"></span>
       <h2 class="qr-sheet__title">번호로 찾기</h2>
-      <p class="qr-sheet__desc">QR 코드 아래에 적힌 번호를 입력해 주세요</p>
-      <!-- 유물 번호(No.08)로 찾음. "8", "08", "No.08" 모두 가능 (전시물 id를 직접 넣어도 찾음) -->
+      <p class="qr-sheet__desc">QR 코드에 적힌 번호를 입력해 주세요</p>
+      <!-- 유물 번호(No.07)로 찾음. "7", "07", "No.07" 모두 가능 (전시물 id를 직접 넣어도 찾음) -->
       <label class="visually-hidden" for="qr-manual-input">유물 번호</label>
       <input class="qr-input" id="qr-manual-input" type="text" inputmode="numeric" autocomplete="off"
-             autocapitalize="off" spellcheck="false" placeholder="예: 08" required>
+             autocapitalize="off" spellcheck="false" placeholder="예: 07" required>
       <div class="qr-sheet__buttons">
         <button class="qr-button qr-button--ghost" id="qr-manual-cancel" type="button">취소</button>
         <button class="qr-button" type="submit">찾기</button>
       </div>
     </form>
 
-    <!-- 결과 시트: 01-2 인식 완료 / 01-3 잠긴 유물 -->
+    <!-- 결과 시트: 01-2 인식 완료 / 01-3 잠긴 유물 (아래로 끌어내리거나 배경을 눌러도 닫힘) -->
     <section class="qr-sheet" id="qr-result" aria-labelledby="qr-result-title" hidden>
       <span class="qr-sheet__handle" aria-hidden="true"></span>
       <div class="qr-result">
@@ -93,6 +96,8 @@
         </div>
       </div>
       <button class="qr-button qr-button--wide" id="qr-result-action" type="button"></button>
+      <!-- 다른 유물을 찍고 싶을 때 -->
+      <button class="qr-text-button" id="qr-result-rescan" type="button">다시 찍기</button>
     </section>
   </main>
 </body>
