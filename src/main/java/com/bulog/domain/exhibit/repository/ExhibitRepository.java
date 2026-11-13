@@ -13,6 +13,8 @@ public interface ExhibitRepository extends JpaRepository<Exhibit, String>, Exhib
 
     List<Exhibit> findAllByExternalIdIn(Collection<String> externalIds);
 
+    List<Exhibit> findAllByCollectibleTrueAndIdNotIn(Collection<String> ids);
+
     @Override
     @Query("""
             select exhibit

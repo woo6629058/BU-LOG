@@ -150,6 +150,30 @@ public class Exhibit extends BaseEntity {
                 : "/api/exhibits/" + id + "/image";
     }
 
+    public void applyCuration(
+            String name,
+            String era,
+            String description,
+            String imageUrl,
+            String museumName,
+            String sourceName,
+            String sourceUrl,
+            String exhibitionRoom,
+            Integer cardNumber,
+            Integer visitOrder
+    ) {
+        this.name = requireText(name, "name");
+        this.era = normalize(era);
+        this.description = requireText(description, "description");
+        if (normalize(imageUrl) != null) {
+            this.imageUrl = normalize(imageUrl);
+        }
+        this.museumName = requireText(museumName, "museumName");
+        this.sourceName = requireText(sourceName, "sourceName");
+        this.sourceUrl = normalize(sourceUrl);
+        curate(exhibitionRoom, cardNumber, visitOrder);
+    }
+
     public void curate(
             String exhibitionRoom,
             Integer cardNumber,
@@ -159,6 +183,12 @@ public class Exhibit extends BaseEntity {
         this.cardNumber = requirePositive(cardNumber, "cardNumber");
         this.visitOrder = requirePositive(visitOrder, "visitOrder");
         this.collectible = true;
+    }
+
+    public void releaseCuration() {
+        this.cardNumber = null;
+        this.visitOrder = null;
+        this.collectible = false;
     }
 
     private static String requireText(String value, String fieldName) {
