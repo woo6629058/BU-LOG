@@ -5,6 +5,10 @@ import { apiRequest } from '../api/api-client.js';
 const SCAN_INTERVAL_MS = 200;
 // 잘못된 QR 안내를 띄운 뒤 다시 읽기까지 쉬는 시간
 const ERROR_COOLDOWN_MS = 2000;
+// 시트를 닫은 직후, 카메라에 아직 비치는 같은 QR을 다시 읽지 않는 시간
+const SAME_QR_IGNORE_MS = 1500;
+// 시트를 이만큼(px) 아래로 끌면 닫힘
+const SWIPE_CLOSE_PX = 80;
 
 // 1. 화면 자리(HTML 태그) 미리 찾아두기
 const els = {
@@ -27,6 +31,8 @@ const els = {
   resultTitle: document.querySelector('#qr-result-title'),
   resultDesc: document.querySelector('#qr-result-desc'),
   resultAction: document.querySelector('#qr-result-action'),
+  resultRescan: document.querySelector('#qr-result-rescan'),
+  backdrop: document.querySelector('#qr-backdrop'),
 };
 
 // 2. 지금 상태
@@ -35,6 +41,8 @@ const state = {
   timer: null,      // 반복해서 QR 읽는 타이머
   paused: false,    // 시트가 열려 있거나 서버에 물어보는 중이면 읽기 멈춤
   torchOn: false,
+  lastText: '',     // 마지막으로 읽은 QR 글자
+  ignoreUntil: 0,   // 이 시각 전까지는 같은 QR을 다시 읽지 않음
 };
 
 const GUIDE_DEFAULT = ['전시물 옆 QR 코드를 네모 안에 맞춰 주세요', '자동으로 인식돼요'];
@@ -194,6 +202,9 @@ function scanOnce() {
 }
 
 function handleScannedText(text) {
+  // 시트를 막 닫았는데 같은 QR이 아직 화면에 있으면 바로 다시 열리지 않게 잠깐 무시
+  if (text === state.lastText && Date.now() < state.ignoreUntil) return;
+  state.lastText = text;
   const exhibitId = parseExhibitId(text);
   state.paused = true;
   if (!exhibitId) {
@@ -249,12 +260,31 @@ function fillThumbnail(exhibit, showImage) {
   }
 }
 
+// ---------------------------------------------------------
+// 시트 열기·닫기
 // 시트가 열리면 안내 문구와 하단 버튼은 숨김 (피그마 01-2, 01-3)
+// 닫는 방법: 아래로 끌어내리기 / 어두운 배경 누르기 / "다시 찍기"·"취소" / Esc
+// ---------------------------------------------------------
 const qrRoot = document.querySelector('#qr-content');
 
-function openResultSheet() {
-  els.result.hidden = false;
+function openSheet(sheet) {
+  els.result.hidden = sheet !== els.result;
+  els.manualForm.hidden = sheet !== els.manualForm;
+  sheet.style.transform = '';
+  els.backdrop.hidden = false;
   qrRoot.classList.add('qr--sheet-open');
+}
+
+// 시트만 닫음 (스캔을 다시 시작하지는 않음)
+function hideSheets() {
+  els.result.hidden = true;
+  els.manualForm.hidden = true;
+  els.backdrop.hidden = true;
+  qrRoot.classList.remove('qr--sheet-open');
+}
+
+function openResultSheet() {
+  openSheet(els.result);
 }
 
 // 01-2 인식 완료
@@ -291,21 +321,62 @@ function showLocked(exhibit) {
 }
 
 function backToScanning() {
-  qrRoot.classList.remove('qr--sheet-open');
-  els.result.hidden = true;
-  els.manualForm.hidden = true;
+  hideSheets();
   els.frame.dataset.state = 'scanning';
   resetGuide();
+  state.ignoreUntil = Date.now() + SAME_QR_IGNORE_MS;
   state.paused = false;
 }
+
+els.resultRescan.addEventListener('click', backToScanning);
+els.backdrop.addEventListener('click', backToScanning);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !els.backdrop.hidden) backToScanning();
+});
+
+// 아래로 끌어내려서 닫기 (손가락·마우스 모두)
+function enableSwipeDown(sheet) {
+  let startY = null;
+  let dy = 0;
+
+  sheet.addEventListener('pointerdown', (event) => {
+    // 입력칸·버튼을 누를 때는 끌기로 보지 않음
+    if (event.target.closest('input, button, a')) return;
+    startY = event.clientY;
+    dy = 0;
+    sheet.classList.add('is-dragging');
+    sheet.setPointerCapture?.(event.pointerId);
+  });
+
+  sheet.addEventListener('pointermove', (event) => {
+    if (startY === null) return;
+    dy = Math.max(0, event.clientY - startY); // 위로는 안 끌림
+    sheet.style.transform = `translateY(${dy}px)`;
+  });
+
+  const finish = () => {
+    if (startY === null) return;
+    startY = null;
+    sheet.classList.remove('is-dragging');
+    if (dy > SWIPE_CLOSE_PX) {
+      backToScanning();
+    } else {
+      sheet.style.transform = ''; // 조금만 끌었으면 제자리로
+    }
+  };
+  sheet.addEventListener('pointerup', finish);
+  sheet.addEventListener('pointercancel', finish);
+}
+
+enableSwipeDown(els.result);
+enableSwipeDown(els.manualForm);
 
 // ---------------------------------------------------------
 // 번호로 입력
 // ---------------------------------------------------------
 els.manualOpen.addEventListener('click', () => {
   state.paused = true;
-  els.result.hidden = true;
-  els.manualForm.hidden = false;
+  openSheet(els.manualForm);
   els.manualInput.value = '';
   els.manualInput.focus();
 });
@@ -328,7 +399,7 @@ async function findExhibitIdByNumber(cardNumber) {
 els.manualForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const value = els.manualInput.value;
-  els.manualForm.hidden = true;
+  hideSheets(); // 찾는 동안 안내 문구가 보이도록 시트를 닫음
 
   const cardNumber = parseCardNumber(value);
   if (cardNumber !== null) {
@@ -338,7 +409,7 @@ els.manualForm.addEventListener('submit', async (event) => {
       if (exhibitId) {
         lookUpExhibit(exhibitId);
       } else {
-        flashError(`No.${String(cardNumber).padStart(2, '0')} 유물을 찾을 수 없어요`, 'QR 코드 아래에 적힌 번호를 확인해 주세요');
+        flashError(`No.${String(cardNumber).padStart(2, '0')} 유물을 찾을 수 없어요`, 'QR 코드에 적힌 번호를 확인해 주세요');
       }
     } catch {
       flashError('유물 정보를 불러오지 못했어요', '잠시 후 다시 시도해 주세요');
@@ -349,7 +420,7 @@ els.manualForm.addEventListener('submit', async (event) => {
   // 숫자가 아니면 전시물 id나 주소로 보고 찾음 (개발 중 테스트용)
   const exhibitId = parseExhibitId(value);
   if (!exhibitId) {
-    flashError('번호를 다시 확인해 주세요', 'QR 코드 아래에 적힌 번호를 입력해 주세요');
+    flashError('번호를 다시 확인해 주세요', 'QR 코드에 적힌 번호를 입력해 주세요');
     return;
   }
   lookUpExhibit(exhibitId);
