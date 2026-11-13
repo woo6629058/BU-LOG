@@ -3,6 +3,7 @@ package com.bulog.domain.exhibit.curation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.bulog.domain.exhibit.entity.Exhibit;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -50,6 +51,13 @@ class CuratedExhibitsTest {
                 .forEach(imageUrl -> assertThat(Files.isRegularFile(Path.of("src/main/resources/static" + imageUrl)))
                         .as(imageUrl)
                         .isTrue());
+    }
+
+    @Test
+    void 설명은_DB_TEXT_칸에_들어가는_길이다() {
+        exhibits.forEach(exhibit -> assertThat(exhibit.description().getBytes(StandardCharsets.UTF_8).length)
+                .as(exhibit.id())
+                .isLessThanOrEqualTo(65_535));
     }
 
     @Test

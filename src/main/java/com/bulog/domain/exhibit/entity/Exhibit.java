@@ -4,7 +4,6 @@ import com.bulog.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -30,8 +29,8 @@ public class Exhibit extends BaseEntity {
     @Column(length = 100)
     private String era;
 
-    @Lob
-    @Column(nullable = false)
+    // 길이를 정하지 않은 Lob은 MySQL에서 TINYTEXT(255바이트)가 되어 긴 설명이 들어가지 않으므로 TEXT로 고정한다.
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "image_url", length = 1000)
