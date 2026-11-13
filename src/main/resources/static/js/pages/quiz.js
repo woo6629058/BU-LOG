@@ -8,7 +8,7 @@ mountLayout();
 const MAX_CHANCES = 2;
 
 // 1. 주소에서 정보 꺼내기
-//   ?exhibitId=PS01...  → 서버의 진짜 퀴즈
+//   ?exhibitId=ongi2-sojutgori  → 서버의 진짜 퀴즈
 //   ?demo=choice | count | handle | lock → 서버 없이 체험해 보는 가짜 문제 (회의·시연용)
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
@@ -82,7 +82,7 @@ const DEMO_QUIZZES = {
   },
 };
 const demo = DEMO_QUIZZES[demoKey] ?? null;
-const DEMO_FILL_ID = 'ongi2-1'; // 진영 님 그림 도감 샘플의 소줏고리 자리
+const DEMO_FILL_ID = 'ongi2-sojutgori'; // 그림 도감의 소줏고리 자리
 
 // 2. 화면 자리(HTML 태그) 미리 찾아두기
 const els = {

@@ -2,10 +2,9 @@ import { mountTabBar } from '../common/tab-bar.js';
 import { renderScene } from '../common/scene.js';
 import { countUp, rise } from '../common/motion.js';
 import {
-  ROOMS,
-  SAMPLE_RECORDS,
   acquiredSet,
   findRoom,
+  loadCollection,
   summarizeAll,
   summarizeRoom,
 } from '../common/collection-data.js';
@@ -16,9 +15,11 @@ const HINT_TEXT = '전시실에서 이 유물의 QR을 찾아 미션을 풀어 �
 
 // 주소에 아는 전시실이 있으면 그 전시실 화면, 없으면 6곳 전체 보기.
 const params = new URLSearchParams(window.location.search);
+// 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
+const { rooms: ROOMS, records } = await loadCollection();
 const room = findRoom(ROOMS, params.get('room'));
 const focus = params.get('focus');
-const acquired = acquiredSet(SAMPLE_RECORDS);
+const acquired = acquiredSet(records);
 
 const roomUrl = (roomId) => `/pages/picture-book.html?room=${encodeURIComponent(roomId)}`;
 // TODO(Frontend B): QR·퀴즈 흐름이 연결되면 지운다. 채우기 화면을 미리 보기 위한 임시 링크.

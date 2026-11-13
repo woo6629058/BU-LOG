@@ -1,13 +1,15 @@
 import { artifactFigure } from '../common/artifact-figure.js';
-import { ROOMS, SAMPLE_RECORDS, findRecord, findRegion } from '../common/collection-data.js';
+import { findRecord, findRegion, loadCollection } from '../common/collection-data.js';
 
 const SHOWCASE_URL = '/pages/showcase.html';
 const pictureBookUrl = (roomId, focus) =>
   `/pages/picture-book.html?room=${encodeURIComponent(roomId)}${focus ? `&focus=${encodeURIComponent(focus)}` : ''}`;
 
 const exhibitId = new URLSearchParams(window.location.search).get('exhibitId');
+// 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
+const { rooms: ROOMS, records } = await loadCollection();
 const hit = findRegion(ROOMS, exhibitId);
-const record = hit ? findRecord(SAMPLE_RECORDS, exhibitId) : null;
+const record = hit ? findRecord(records, exhibitId) : null;
 const root = document.querySelector('#detail');
 
 function element(tag, className, text) {

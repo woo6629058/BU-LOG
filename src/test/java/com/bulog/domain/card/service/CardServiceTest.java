@@ -3,6 +3,7 @@ package com.bulog.domain.card.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.bulog.domain.card.dto.res.ArchiveCardResponseDTO;
 import com.bulog.domain.card.dto.res.ArchiveResponseDTO;
 import com.bulog.domain.card.dto.res.CardAcquisitionResponseDTO;
 import com.bulog.domain.card.exception.CardException;
@@ -34,12 +35,12 @@ class CardServiceTest {
         CardAcquisitionResponseDTO first = cardService.issueCard(
                 guest.visitor(),
                 null,
-                "goryeo-celadon"
+                "ongi1-faith-jar"
         );
         CardAcquisitionResponseDTO second = cardService.issueCard(
                 guest.visitor(),
                 null,
-                "goryeo-celadon"
+                "ongi1-faith-jar"
         );
 
         assertThat(first.newlyAcquired()).isTrue();
@@ -58,12 +59,12 @@ class CardServiceTest {
         CardAcquisitionResponseDTO first = cardService.issueCard(
                 firstGuest.visitor(),
                 member.getId(),
-                "goryeo-celadon"
+                "ongi1-faith-jar"
         );
         CardAcquisitionResponseDTO duplicate = cardService.issueCard(
                 secondGuest.visitor(),
                 member.getId(),
-                "goryeo-celadon"
+                "ongi1-faith-jar"
         );
         ArchiveResponseDTO archive = cardService.getArchive(
                 secondGuest.visitor(),
@@ -73,9 +74,13 @@ class CardServiceTest {
         assertThat(duplicate.newlyAcquired()).isFalse();
         assertThat(duplicate.cardId()).isEqualTo(first.cardId());
         assertThat(archive.acquiredCount()).isEqualTo(1);
-        assertThat(archive.cards()).singleElement().satisfies(card -> {
-            assertThat(card.acquired()).isTrue();
+        assertThat(archive.totalCount()).isEqualTo(24);
+        assertThat(archive.cards()).filteredOn(ArchiveCardResponseDTO::acquired).singleElement().satisfies(card -> {
             assertThat(card.cardId()).isEqualTo(first.cardId());
+            assertThat(card.exhibitId()).isEqualTo("ongi1-faith-jar");
+            assertThat(card.exhibitionRoom()).isEqualTo("옹기1전시실");
+            assertThat(card.cardNumber()).isEqualTo(1);
+            assertThat(card.description()).isNotBlank();
         });
     }
 
@@ -86,7 +91,7 @@ class CardServiceTest {
         CardAcquisitionResponseDTO issued = cardService.issueCard(
                 owner.visitor(),
                 null,
-                "goryeo-celadon"
+                "ongi1-faith-jar"
         );
 
         assertThatThrownBy(() -> cardService.getCard(issued.cardId(), other.visitor(), null))

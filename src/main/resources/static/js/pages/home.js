@@ -3,10 +3,9 @@ import { clearGuestChoice, hasChosenGuest } from '../common/auth-flow.js';
 import { mountTabBar } from '../common/tab-bar.js';
 import { countUp, rise } from '../common/motion.js';
 import {
-  ROOMS,
-  SAMPLE_RECORDS,
   acquiredSet,
   describeNextGoal,
+  loadCollection,
   progressPercent,
   summarizeAll,
   summarizeRoom,
@@ -66,7 +65,9 @@ const ROOM_THUMBS = {
   stone: '/images/home/thumb-stone.webp',
 };
 
-const acquired = acquiredSet(SAMPLE_RECORDS);
+// 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
+const { rooms: ROOMS, records } = await loadCollection();
+const acquired = acquiredSet(records);
 
 function element(tag, className, text) {
   const node = document.createElement(tag);

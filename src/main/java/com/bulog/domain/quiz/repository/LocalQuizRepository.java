@@ -12,24 +12,26 @@ import org.springframework.stereotype.Repository;
 @Profile("local")
 public class LocalQuizRepository implements QuizReader {
 
-    private static final Quiz GORYEO_CELADON_QUIZ = Quiz.create(
+    // local 프로필 확인용 샘플 퀴즈. 샘플 카드에 없는 유물이라 정답을 맞히면 새로 채우는 흐름을 볼 수 있다.
+    // 실제 관찰 미션 24개는 따로 만든다.
+    private static final Quiz FLOWER_JAR_QUIZ = Quiz.create(
             1L,
-            "goryeo-celadon",
-            "이 전시물이 제작된 시대는 언제일까요?",
-            "상감청자는 고려 시대를 대표하는 도자기입니다.",
+            "ongi1-flower-jar",
+            "화초문항아리의 몸통에는 어떤 무늬가 그려져 있을까요?",
+            "화초문항아리는 몸통에 꽃과 풀 무늬를 그려 넣은 옹기입니다.",
             List.of(
-                    QuizOption.create(11L, "고려", true, 1),
-                    QuizOption.create(12L, "조선", false, 2),
-                    QuizOption.create(13L, "삼국", false, 3)
+                    QuizOption.create(11L, "꽃과 풀", true, 1),
+                    QuizOption.create(12L, "물고기", false, 2),
+                    QuizOption.create(13L, "구름", false, 3)
             )
     );
 
     private static final Map<Long, Quiz> QUIZZES_BY_ID = Map.of(
-            GORYEO_CELADON_QUIZ.getId(), GORYEO_CELADON_QUIZ
+            FLOWER_JAR_QUIZ.getId(), FLOWER_JAR_QUIZ
     );
 
     private static final Map<String, Quiz> QUIZZES_BY_EXHIBIT_ID = Map.of(
-            GORYEO_CELADON_QUIZ.getExhibitId(), GORYEO_CELADON_QUIZ
+            FLOWER_JAR_QUIZ.getExhibitId(), FLOWER_JAR_QUIZ
     );
 
     @Override
