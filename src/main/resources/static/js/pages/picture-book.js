@@ -131,7 +131,6 @@ function renderHall() {
   const scene = renderScene(room, acquired, { focusExhibitId, regionHref: demoFillUrl });
   scene.dataset.vtName = sceneTransitionName(room.id);
   document.querySelector('#book-scene').replaceChildren(scene);
-  document.querySelector('#book-demo-hint').hidden = complete;
 
   const message = document.querySelector('#book-message');
   message.textContent = complete ? `${room.sceneTitle} 그림 완성!` : '';

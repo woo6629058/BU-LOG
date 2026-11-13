@@ -213,16 +213,6 @@
   line-height: 1;
 }
 
-.book__demo-hint {
-  margin: -2px 0 0;
-  padding: 9px 14px;
-  border: 1.5px dashed var(--art-line);
-  border-radius: 14px;
-  color: var(--art-muted);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
 .book__message {
   min-height: 1.5em;
   margin: 0;
