@@ -142,6 +142,17 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 브라우저 캐시는 7일로 설정됩니다. 이미지가 없는 전시물은 `EXHIBIT_404_002`, e뮤지엄 장애는
 `EXHIBIT_503_002`를 반환합니다.
 
+## 전시실 QR 주소
+
+`GET /exhibits/{exhibitId}` (API가 아닌 화면 주소)
+
+전시실 QR에는 `https://bulog.tech/exhibits/{유물 ID}`가 들어갑니다. 예: `https://bulog.tech/exhibits/ongi1-faith-jar`
+
+- 있는 유물이면 `302`로 `/pages/exhibit.html?id={유물 ID}`(유물 소개 화면)로 보냅니다.
+- 없는 유물이거나 ID 형식(영문 소문자·숫자·`-`)이 아니면 홈(`/`)으로 보냅니다.
+- 휴대폰 기본 카메라로 찍어도 열리게 하려는 주소입니다. 앱 QR 스캔 화면은 ID를 직접 읽어 유물 소개 화면으로 바로 갑니다.
+- 인쇄용 QR 24개: `docs/qr/bulog-qr-24.pdf`(BU-LOG 디자인), `docs/qr/bulog-qr-24-plain.pdf`(흑백 기본형), 낱장 이미지 `docs/qr/png/`
+
 ## 전시물 퀴즈
 
 `GET /api/exhibits/{exhibitId}/quiz`
