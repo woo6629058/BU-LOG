@@ -1,4 +1,5 @@
 import { artifactFigure } from '../common/artifact-figure.js';
+import { getCard } from '../api/archive-api.js';
 import { findRecord, findRegion, loadCollection } from '../common/collection-data.js';
 
 const SHOWCASE_URL = '/pages/showcase.html';
@@ -11,6 +12,7 @@ const { rooms: ROOMS, records } = await loadCollection();
 const hit = findRegion(ROOMS, exhibitId);
 const record = hit ? findRecord(records, exhibitId) : null;
 const root = document.querySelector('#detail');
+const unwrap = (response) => response?.result ?? response;
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -75,6 +77,28 @@ function renderDetail({ room, region }) {
   root.replaceChildren(backButton(), header, stage, place, locate, info);
 }
 
+async function renderOwnedDetail({ room, region }) {
+  try {
+    const card = unwrap(await getCard(record.cardId));
+    renderDetail({
+      room,
+      region: {
+        ...region,
+        artifactName: card.name,
+        description: card.description ?? '',
+        era: card.era ?? null,
+        photoUrl: card.imageUrl ?? null,
+      },
+    });
+  } catch {
+    renderNotice(
+      '유물 정보를 불러오지 못했어요',
+      '잠시 후 다시 시도해 주세요.',
+      linkButton('그림 도감으로 돌아가기', pictureBookUrl(room.id), 'primary'),
+    );
+  }
+}
+
 if (!hit) {
   renderNotice('유물을 찾을 수 없어요', '주소가 바르지 않거나 없는 유물이에요.', linkButton('홈으로 가기', '/', 'primary'));
 } else if (!record) {
@@ -84,5 +108,5 @@ if (!hit) {
     linkButton('그림 도감에서 보기', pictureBookUrl(hit.room.id), 'primary'),
   );
 } else {
-  renderDetail(hit);
+  await renderOwnedDetail(hit);
 }

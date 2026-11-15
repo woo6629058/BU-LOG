@@ -45,3 +45,6 @@ src/main/resources/application-*.yml
 ### Runtime ###
 *.log
 logs/
+
+### macOS ###
+.DS_Store

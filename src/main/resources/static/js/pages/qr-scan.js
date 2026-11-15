@@ -8,7 +8,10 @@ const ERROR_COOLDOWN_MS = 2000;
 // 시트를 닫은 직후, 카메라에 아직 비치는 같은 QR을 다시 읽지 않는 시간
 const SAME_QR_IGNORE_MS = 1500;
 // 시트를 이만큼(px) 아래로 끌면 닫힘
-const SWIPE_CLOSE_PX = 80;
+const SWIPE_CLOSE_PX = 32;
+// 위로 당길 때 살짝 따라오는 최대 높이와 저항감
+const SHEET_PULL_MAX_PX = 20;
+const SHEET_PULL_RESISTANCE = 0.18;
 
 // 1. 화면 자리(HTML 태그) 미리 찾아두기
 const els = {
@@ -23,6 +26,7 @@ const els = {
   manualOpen: document.querySelector('#qr-manual-open'),
   manualForm: document.querySelector('#qr-manual'),
   manualInput: document.querySelector('#qr-manual-input'),
+  manualError: document.querySelector('#qr-manual-error'),
   manualCancel: document.querySelector('#qr-manual-cancel'),
   result: document.querySelector('#qr-result'),
   resultBox: document.querySelector('.qr-result'),
@@ -266,11 +270,26 @@ function fillThumbnail(exhibit, showImage) {
 // 닫는 방법: 아래로 끌어내리기 / 어두운 배경 누르기 / "다시 찍기"·"취소" / Esc
 // ---------------------------------------------------------
 const qrRoot = document.querySelector('#qr-content');
+const collapsedSheetHeights = new WeakMap();
+
+function resetSheetPosition(sheet) {
+  sheet.style.height = '';
+  sheet.style.transform = '';
+  sheet.classList.remove('is-dragging');
+}
+
+function updateCollapsedSheetHeight(sheet) {
+  sheet.style.height = '';
+  const collapsedHeight = sheet.getBoundingClientRect().height;
+  collapsedSheetHeights.set(sheet, collapsedHeight);
+  sheet.style.height = `${collapsedHeight}px`;
+}
 
 function openSheet(sheet) {
   els.result.hidden = sheet !== els.result;
   els.manualForm.hidden = sheet !== els.manualForm;
-  sheet.style.transform = '';
+  resetSheetPosition(sheet);
+  updateCollapsedSheetHeight(sheet);
   els.backdrop.hidden = false;
   qrRoot.classList.add('qr--sheet-open');
 }
@@ -279,6 +298,7 @@ function openSheet(sheet) {
 function hideSheets() {
   els.result.hidden = true;
   els.manualForm.hidden = true;
+  [els.result, els.manualForm].forEach(resetSheetPosition);
   els.backdrop.hidden = true;
   qrRoot.classList.remove('qr--sheet-open');
 }
@@ -334,54 +354,78 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && !els.backdrop.hidden) backToScanning();
 });
 
-// 아래로 끌어내려서 닫기 (손가락·마우스 모두)
-function enableSwipeDown(sheet) {
+// 위로 당기면 살짝 따라왔다 돌아오고, 아래로 끌면 닫힘 (손가락·마우스 모두)
+function enableSheetDrag(sheet) {
   let startY = null;
-  let dy = 0;
+  let closeDistance = 0;
 
   sheet.addEventListener('pointerdown', (event) => {
     // 입력칸·버튼을 누를 때는 끌기로 보지 않음
     if (event.target.closest('input, button, a')) return;
     startY = event.clientY;
-    dy = 0;
+    closeDistance = 0;
     sheet.classList.add('is-dragging');
     sheet.setPointerCapture?.(event.pointerId);
   });
 
   sheet.addEventListener('pointermove', (event) => {
     if (startY === null) return;
-    dy = Math.max(0, event.clientY - startY); // 위로는 안 끌림
-    sheet.style.transform = `translateY(${dy}px)`;
+    const collapsedHeight = collapsedSheetHeights.get(sheet) ?? sheet.getBoundingClientRect().height;
+    const dragDistance = event.clientY - startY;
+    const pullDistance = Math.min(SHEET_PULL_MAX_PX, Math.max(0, -dragDistance) * SHEET_PULL_RESISTANCE);
+
+    closeDistance = Math.max(0, dragDistance);
+    sheet.style.height = `${collapsedHeight + pullDistance}px`;
+    sheet.style.transform = closeDistance > 0 ? `translateY(${closeDistance}px)` : '';
   });
 
   const finish = () => {
     if (startY === null) return;
     startY = null;
     sheet.classList.remove('is-dragging');
-    if (dy > SWIPE_CLOSE_PX) {
+
+    const collapsedHeight = collapsedSheetHeights.get(sheet) ?? sheet.getBoundingClientRect().height;
+
+    if (closeDistance > SWIPE_CLOSE_PX) {
       backToScanning();
     } else {
-      sheet.style.transform = ''; // 조금만 끌었으면 제자리로
+      sheet.style.height = `${collapsedHeight}px`;
+      sheet.style.transform = '';
     }
+    closeDistance = 0;
   };
   sheet.addEventListener('pointerup', finish);
   sheet.addEventListener('pointercancel', finish);
+  sheet.addEventListener('lostpointercapture', finish);
 }
 
-enableSwipeDown(els.result);
-enableSwipeDown(els.manualForm);
+enableSheetDrag(els.result);
+enableSheetDrag(els.manualForm);
 
 // ---------------------------------------------------------
 // 번호로 입력
 // ---------------------------------------------------------
 els.manualOpen.addEventListener('click', () => {
   state.paused = true;
-  openSheet(els.manualForm);
   els.manualInput.value = '';
+  setManualError('');
+  openSheet(els.manualForm);
   els.manualInput.focus();
 });
 
 els.manualCancel.addEventListener('click', backToScanning);
+
+function setManualError(message) {
+  const hasError = Boolean(message);
+  els.manualError.textContent = message;
+  els.manualError.hidden = !hasError;
+  els.manualInput.setAttribute('aria-invalid', String(hasError));
+  if (!els.manualForm.hidden) updateCollapsedSheetHeight(els.manualForm);
+}
+
+els.manualInput.addEventListener('input', () => {
+  if (!els.manualError.hidden) setManualError('');
+});
 
 // "8", "08", "No.08", "no 8" → 8 / 숫자가 아니면 null
 export function parseCardNumber(text) {
@@ -398,7 +442,12 @@ async function findExhibitIdByNumber(cardNumber) {
 
 els.manualForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const value = els.manualInput.value;
+  const value = els.manualInput.value.trim();
+  if (!value) {
+    setManualError('유물 번호를 입력해 주세요');
+    els.manualInput.focus();
+    return;
+  }
   hideSheets(); // 찾는 동안 안내 문구가 보이도록 시트를 닫음
 
   const cardNumber = parseCardNumber(value);

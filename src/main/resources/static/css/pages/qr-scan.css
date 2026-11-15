@@ -484,7 +484,7 @@
   font-weight: 400;
   line-height: 19px;
   color: #4A2E1E;
-  background: #F9D3BE;
+  background: var(--peach-soft);
 }
 
 /* 안내 문구 */
@@ -494,7 +494,7 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0;
-  color: #F9D3BE;
+  color: var(--peach-soft);
 }
 
 /* 아래 "번호로 입력", "컬렉션" 알약 */
@@ -509,40 +509,106 @@
 
 /* 아래에서 올라오는 시트 */
 .qr-sheet {
-  padding: 14px 24px calc(34px + env(safe-area-inset-bottom));
-  border-radius: 32px 32px 0 0;
+  padding: 11px 21px calc(25px + env(safe-area-inset-bottom));
+  border-radius: 26px 26px 0 0;
   background: #FFF5E4;
 }
 
-.qr-sheet__title { font-size: 22px; font-weight: 400; }
+.qr-sheet__title {
+  margin-bottom: 2px;
+  font-size: 17px;
+  font-weight: 400;
+}
 .qr-sheet__desc,
 .qr-result__desc {
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 700;
+  line-height: 1.5;
   color: #5A3A26;
 }
+.qr-sheet__desc { margin-bottom: 12px; }
 
-.qr-result__thumb { border-radius: 16px; background: #F9D3BE; }
-.qr-result__meta { font-size: 12px; font-weight: 400; color: #C0603A; }
-.qr-result__title { font-family: var(--font-title); font-size: 22px; font-weight: 400; }
+.qr-result {
+  align-items: center;
+  gap: 12px;
+}
+.qr-result__thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--peach-soft);
+}
+.qr-result__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.qr-result__meta {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #C0603A;
+}
+.qr-result__title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.qr-result__desc { margin: 0; }
+
+#qr-result .qr-sheet__handle {
+  margin-bottom: 16px;
+}
 
 .qr-input {
+  height: clamp(46px, 12vw, 48px);
+  min-height: 0;
+  padding: 0 12px;
   border-color: #EFE2CC;
-  border-radius: 16px;
+  border-radius: 12px;
   background: #fff;
 }
 .qr-input:focus { border-color: #F2B79B; }
+.qr-input[aria-invalid="true"] {
+  border-color: #C0603A;
+  background: #FFF9F3;
+}
+.qr-input::placeholder {
+  font-size: 14px;
+}
+
+.qr-input-error {
+  margin: 7px 2px 0;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #9C472F;
+  background: var(--peach-soft);
+}
+.qr-input-error[hidden] { display: none; }
+
+.qr-sheet__buttons {
+  gap: 8px;
+  margin-top: 10px;
+}
 
 /* 버튼: 피치색 알약 */
 .qr-button {
-  min-height: 56px;
+  min-height: 48px;
   border-radius: 999px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 400;
   color: #4A2E1E;
   background: #F4BFA3;
 }
+.qr-button--wide { margin-top: 13px; }
 .qr-button--ghost {
   border: 1.5px solid #EFE2CC;
   color: #4A2E1E;
@@ -607,28 +673,32 @@
 
 /* 끌어내릴 수 있는 시트: 브라우저 스크롤 대신 끌기로 받기 */
 .qr-sheet {
+  box-sizing: border-box;
+  max-height: 56dvh;
+  overflow-y: auto;
   touch-action: none;
-  transition: transform 0.2s ease-out;
+  transition: height 0.22s ease-out, transform 0.2s ease-out;
 }
 .qr-sheet input,
 .qr-sheet button { touch-action: manipulation; }
 .qr-sheet.is-dragging { transition: none; }
 
-/* 손잡이를 조금 더 크게 */
+/* 다른 화면의 카드·버튼 비율에 맞춘 작은 손잡이 */
 .qr-sheet__handle {
-  width: 44px;
-  height: 5px;
+  width: 38px;
+  height: 4px;
+  margin-bottom: 13px;
   cursor: grab;
 }
 
 /* "다시 찍기" 글자 버튼 */
 .qr-text-button {
   display: block;
-  margin: 8px auto 0;
-  padding: 10px 18px;
+  margin: 6px auto 0;
+  padding: 8px 16px;
   border: 0;
   font-family: var(--font-label);
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 800;
   color: #8A6A55;
   background: none;
