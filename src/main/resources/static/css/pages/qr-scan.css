@@ -484,7 +484,7 @@
   font-weight: 400;
   line-height: 19px;
   color: #4A2E1E;
-  background: #F9D3BE;
+  background: var(--peach-soft);
 }
 
 /* 안내 문구 */
@@ -494,7 +494,7 @@
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0;
-  color: #F9D3BE;
+  color: var(--peach-soft);
 }
 
 /* 아래 "번호로 입력", "컬렉션" 알약 */
@@ -537,7 +537,7 @@
   width: 46px;
   height: 46px;
   border-radius: 12px;
-  background: #F9D3BE;
+  background: var(--peach-soft);
 }
 .qr-result__text {
   display: flex;
@@ -590,7 +590,7 @@
   font-weight: 600;
   line-height: 1.4;
   color: #9C472F;
-  background: #F9D3BE;
+  background: var(--peach-soft);
 }
 .qr-input-error[hidden] { display: none; }
 
