@@ -66,14 +66,16 @@
     <div class="qr-backdrop" id="qr-backdrop" hidden></div>
 
     <!-- 번호로 입력 시트 (아래로 끌어내리거나 배경을 눌러도 닫힘) -->
-    <form class="qr-sheet" id="qr-manual" hidden>
+    <form class="qr-sheet" id="qr-manual" novalidate hidden>
       <span class="qr-sheet__handle" aria-hidden="true"></span>
       <h2 class="qr-sheet__title">번호로 찾기</h2>
       <p class="qr-sheet__desc">QR 코드에 적힌 번호를 입력해 주세요</p>
       <!-- 유물 번호(No.07)로 찾음. "7", "07", "No.07" 모두 가능 (전시물 id를 직접 넣어도 찾음) -->
       <label class="visually-hidden" for="qr-manual-input">유물 번호</label>
       <input class="qr-input" id="qr-manual-input" type="text" inputmode="numeric" autocomplete="off"
-             autocapitalize="off" spellcheck="false" placeholder="예: 07" required>
+             autocapitalize="off" spellcheck="false" placeholder="예: 07"
+             aria-describedby="qr-manual-error" required>
+      <p class="qr-input-error" id="qr-manual-error" role="alert" hidden></p>
       <div class="qr-sheet__buttons">
         <button class="qr-button qr-button--ghost" id="qr-manual-cancel" type="button">취소</button>
         <button class="qr-button" type="submit">찾기</button>
