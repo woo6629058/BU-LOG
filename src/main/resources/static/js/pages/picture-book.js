@@ -22,7 +22,8 @@ const focus = params.get('focus');
 const acquired = acquiredSet(records);
 
 const roomUrl = (roomId) => `/pages/picture-book.html?room=${encodeURIComponent(roomId)}`;
-// TODO(Frontend B): QR·퀴즈 흐름이 연결되면 지운다. 채우기 화면을 미리 보기 위한 임시 링크.
+// TODO: 채우기 화면을 미리 보기 위한 임시 링크. — QR·퀴즈 흐름이 연결되면 제거.
+// 빈 그림 구역을 누르면 카드 발급 없이 채우기 결과 화면을 미리 볼 수 있다.
 const demoFillUrl = (item) => `/pages/fill-result.html?exhibitId=${encodeURIComponent(item.exhibitId)}`;
 
 function element(tag, className, text) {
