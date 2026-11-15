@@ -11,6 +11,8 @@ if (exhibitId) quizLink.href = `/pages/quiz.html?exhibitId=${encodeURIComponent(
 // 2. 데이터를 넣을 자리(HTML 태그) 미리 찾아두기
 const nameEl = document.querySelector('#exhibit-name');
 const descriptionEl = document.querySelector('#exhibit-description');
+const photoEl = document.querySelector('.exhibit-photo');
+const imagePlaceholderEl = document.querySelector('.exhibit-photo__placeholder');
 const imageEl = document.querySelector('#exhibit-image');
 const galleryEl = document.querySelector('#exhibit-gallery');          // 상단 뒤로가기 옆 전시실 이름
 const galleryTagEl = document.querySelector('#exhibit-gallery-tag');   // 태그: 옹기2전시실
@@ -20,8 +22,26 @@ const missionQuestionEl = document.querySelector('#mission-question'); // 관찰
 // 서버 응답은 { isSuccess, code, message, result } 형태라 result만 꺼냄
 const unwrap = (response) => response?.result ?? response;
 
-// 사진 파일이 없거나 깨지면 사진을 숨겨서 갈색 배경 + 안내 문구가 보이게 함
-imageEl.addEventListener('error', () => { imageEl.hidden = true; });
+// 사진 파일이 없거나 깨지면 사진을 숨겨서 기본 배경 + 안내 문구가 보이게 함
+imageEl.addEventListener('load', () => {
+  const ratio = imageEl.naturalWidth / imageEl.naturalHeight;
+  photoEl.classList.remove('exhibit-photo--portrait', 'exhibit-photo--square', 'exhibit-photo--landscape');
+
+  if (ratio < 0.9) {
+    photoEl.classList.add('exhibit-photo--portrait');
+  } else if (ratio > 1.15) {
+    photoEl.classList.add('exhibit-photo--landscape');
+  } else {
+    photoEl.classList.add('exhibit-photo--square');
+  }
+
+  imagePlaceholderEl.hidden = true;
+  imageEl.hidden = false;
+});
+imageEl.addEventListener('error', () => {
+  imageEl.hidden = true;
+  imagePlaceholderEl.hidden = false;
+});
 
 // 태그에 글자를 넣고, 글자가 없으면 태그를 숨김
 function setTag(element, text) {
@@ -76,9 +96,8 @@ async function renderExhibit() {
     setTag(cardNoEl, numberText ? `유물 ${numberText}` : null);
 
     if (exhibit.imageUrl) {
-      imageEl.src = exhibit.imageUrl;
       imageEl.alt = exhibit.name;
-      imageEl.hidden = false;
+      imageEl.src = exhibit.imageUrl;
     }
 
     renderMissionQuestion();
