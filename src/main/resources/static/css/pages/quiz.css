@@ -691,3 +691,263 @@
 
 /* Noto Sans KR가 손글씨보다 넓어서 안내 알약이 두 줄이 되지 않게 조금 줄임 */
 .quiz-notice { font-size: 13px; letter-spacing: -0.02em; }
+/* =========================================================
+   유물 사진 카드 (11/16 회의: 객관식·자물쇠에도 사진이 보이게)
+   폴라로이드 사진을 마스킹테이프로 붙인 느낌. 누르면 크게 보기
+   ========================================================= */
+.quiz-photo {
+  position: relative;
+  width: 62%;
+  margin: 4px auto 22px;
+  padding: 8px 8px 0;
+  border-radius: 6px;
+  background: #FFFFFF;
+  box-shadow: 0 6px 16px rgba(74, 46, 30, 0.14);
+  transform: rotate(-2deg);
+  transition: width 0.25s ease, transform 0.25s ease;
+}
+.quiz-photo.is-zoomed {
+  width: 100%;
+  transform: rotate(0deg);
+}
+
+.quiz-photo__frame {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #F6EADB;
+  cursor: zoom-in;
+}
+.quiz-photo.is-zoomed .quiz-photo__frame { cursor: zoom-out; }
+.quiz-photo__frame:focus-visible {
+  outline: 3px solid #F2B79B;
+  outline-offset: 2px;
+}
+
+.quiz-photo__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+.quiz-photo.is-zoomed .quiz-photo__img {
+  aspect-ratio: auto;
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+.quiz-photo__caption {
+  padding: 8px 4px 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: #8A6A55;
+}
+
+/* 마스킹테이프 두 장 */
+.quiz-photo__tape {
+  position: absolute;
+  top: -10px;
+  width: 54px;
+  height: 18px;
+  background: rgba(244, 191, 163, 0.75);
+  box-shadow: 0 1px 2px rgba(74, 46, 30, 0.08);
+}
+.quiz-photo__tape--left { left: -14px; transform: rotate(-32deg); }
+.quiz-photo__tape--right { right: -14px; transform: rotate(28deg); background: rgba(219, 228, 196, 0.85); }
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-photo { transition: none; }
+}
+
+/* =========================================================
+   찾아 누르기 (11/16 회의: 새 게임)
+   사진을 자르지 않고 그대로 보여 줘야 누른 자리가 정확함
+   ========================================================= */
+.quiz-find {
+  position: relative;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #F6EADB;
+  cursor: crosshair;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s;
+}
+.quiz-find:focus-visible { outline: 3px solid #F2B79B; outline-offset: 2px; }
+.quiz-find.is-wrong { border-color: #E07B6A; }
+.quiz-find.is-correct { border-color: #6FA36B; cursor: default; }
+
+/* 높이를 제한하면 세로로 긴 사진에 빈 여백이 생겨 누른 자리가 어긋나서, 사진 비율 그대로 보여 줌 */
+.quiz-find__picture {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+/* 누른 자리: 돋보기 고리 + 스티커 */
+.quiz-find__marker {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  border: 3px solid #FFFFFF;
+  border-radius: 50%;
+  background: rgba(244, 191, 163, 0.35);
+  box-shadow: 0 0 0 3px #C0603A, 0 4px 10px rgba(43, 33, 26, 0.3);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+.quiz-find__marker[hidden] { display: none; }
+.quiz-find__dot { width: 8px; height: 8px; border-radius: 50%; background: #C0603A; }
+.quiz-find.is-correct .quiz-find__dot { background: #6FA36B; }
+.quiz-find.is-correct .quiz-find__marker { box-shadow: 0 0 0 3px #6FA36B, 0 4px 10px rgba(43, 33, 26, 0.3); background: rgba(183, 201, 142, 0.4); }
+.quiz-find.is-wrong .quiz-find__marker { box-shadow: 0 0 0 3px #E07B6A, 0 4px 10px rgba(43, 33, 26, 0.3); }
+.quiz-find__marker.is-popping { animation: quiz-find-pop 0.28s ease-out; }
+
+@keyframes quiz-find-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* 정답 꽃가루 */
+.quiz-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+.quiz-confetti__piece {
+  position: absolute;
+  top: -12px;
+  width: 9px;
+  height: 14px;
+  border-radius: 3px;
+  animation: quiz-confetti-fall 1.3s ease-in forwards;
+}
+.quiz-confetti__piece:nth-child(3n) { width: 11px; height: 11px; border-radius: 50%; }
+
+@keyframes quiz-confetti-fall {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--drift), 70vh) rotate(var(--spin)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-find__marker.is-popping { animation: none; }
+}
+
+/* =========================================================
+   순서 맞추기 (11/16 회의: 4번째 게임)
+   카드를 끌어서 위→아래 순서로 놓음
+   ========================================================= */
+.quiz-order {
+  padding: 10px 14px 12px;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 22px;
+  background: #FFFFFF;
+  transition: border-color 0.2s;
+}
+.quiz-order.is-wrong { border-color: #E07B6A; }
+.quiz-order.is-correct { border-color: #6FA36B; background: #F3F8EE; }
+
+.quiz-order__end {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  color: #B39A80;
+}
+
+.quiz-order__list {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quiz-order__card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 6px 6px 6px 10px;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 14px;
+  background: #FFF9F0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.quiz-order__card.is-dragging {
+  position: relative;
+  z-index: 2;
+  cursor: grabbing;
+  background: #FFFFFF;
+  box-shadow: 0 8px 18px rgba(74, 46, 30, 0.18);
+  transition: box-shadow 0.15s ease;
+}
+.quiz-order.is-correct .quiz-order__card { border-color: #CFE2C4; background: #FFFFFF; cursor: default; }
+
+.quiz-order__no {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-family: var(--font-number);
+  font-size: 15px;
+  font-weight: 750;
+  color: #FFFFFF;
+  background: #F4BFA3;
+}
+.quiz-order.is-correct .quiz-order__no { background: #8DBB85; }
+
+/* 잡는 곳 표시 (점 6개) */
+.quiz-order__grip {
+  flex: none;
+  width: 10px;
+  height: 16px;
+  background: radial-gradient(circle, #C9AF8E 1.5px, transparent 1.6px) 0 0 / 5px 5.5px;
+}
+
+.quiz-order__label {
+  flex: 1;
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  color: #2B211A;
+}
+
+.quiz-order__move {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #8A6A55;
+  background: #F6EADB;
+  cursor: pointer;
+}
+.quiz-order__move:disabled { opacity: 0.3; cursor: default; }
+.quiz-order__move:focus-visible { outline: 3px solid #F2B79B; outline-offset: 1px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-order__card { transition: none; }
+}
