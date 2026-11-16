@@ -18,7 +18,7 @@ const region = (order, exhibitId, artifactName, shape) => ({
   description: '',
   era: null,
   photoUrl: null, // 서버의 유물 사진(배경 있음). 화면 그림에는 아직 쓰지 않는다.
-  imageSrc: null, // TODO: 배경 없는(누끼) 유물 이미지를 받으면 경로를 넣는다.
+  imageSrc: `/images/artifacts/${exhibitId}.webp`, // 배경 없는(누끼) 유물 그림. 윤곽은 잠긴 그림, 색은 완성 그림을 따른다.
   ...shape,
 });
 
