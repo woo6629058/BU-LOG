@@ -405,3 +405,87 @@
   font-weight: 600;
   letter-spacing: 0;
 }
+
+/* =========================================================
+   유물을 못 불러왔을 때 (없는 유물, 잘못된 주소, 서버 오류)
+   빈 사진 칸·미션 박스·"QR 인증 완료"를 숨기고 안내와 버튼만 보여줌
+   ========================================================= */
+.mission-box[hidden],
+.exhibit-empty[hidden] { display: none; }
+
+.exhibit.is-error .exhibit-badge,
+.exhibit.is-error .exhibit-photo,
+.exhibit.is-error .exhibit-tags,
+.exhibit.is-error .exhibit-name,
+.exhibit.is-error .exhibit-description,
+.exhibit.is-error .mission-box,
+.exhibit.is-error .exhibit-cta { display: none; }
+
+.exhibit-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 12vh;
+  padding: 0 8px;
+  text-align: center;
+}
+
+.exhibit-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  margin-bottom: 22px;
+  border-radius: 50%;
+  background: var(--peach-soft, #F9D3BE);
+}
+.exhibit-empty__icon svg { width: 58px; height: 58px; }
+
+.exhibit-empty__title {
+  margin: 0 0 10px;
+  font-family: var(--font-title);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: #2B211A;
+  word-break: keep-all;
+}
+
+.exhibit-empty__message {
+  max-width: 280px;
+  margin: 0 0 28px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #5A3A26;
+  word-break: keep-all;
+}
+
+.exhibit-empty__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.exhibit-empty__button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50px;
+  border: 1.5px solid #EFE2CC;
+  border-radius: 999px;
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  color: #4A2E1E;
+  background: #FFFFFF;
+}
+.exhibit-empty__button--primary {
+  border-color: #F4BFA3;
+  background: #F4BFA3;
+}
+.exhibit-empty__button:focus-visible { outline: 3px solid #F2B79B; outline-offset: 2px; }
