@@ -56,13 +56,22 @@ function formatNumber(number) {
 }
 
 // 3. 실패했을 때 화면에 보여줄 내용
-function showError(message) {
-  nameEl.textContent = '전시물을 불러오지 못했어요';
-  descriptionEl.textContent = message;
-  setTag(galleryTagEl, null);
-  setTag(cardNoEl, null);
-  document.querySelector('.mission-box').hidden = true; // 전시물이 없으면 미션도 숨김
+// 사진·태그·미션·하단 버튼·"QR 인증 완료"는 숨기고, 가운데 안내와 버튼만 보여줌 (exhibit.css의 .is-error)
+//   retry: true  → "다시 시도" 버튼 (서버 오류일 때)
+//   retry: false → "QR 다시 찍기" 버튼 (주소가 틀렸거나 없는 유물일 때)
+function showError(title, message, { retry = false } = {}) {
+  document.querySelector('#exhibit-content').classList.add('is-error');
+  document.querySelector('#exhibit-empty-title').textContent = title;
+  document.querySelector('#exhibit-empty-message').textContent = message;
+  document.querySelector('#exhibit-empty').hidden = false;
   quizLink.hidden = true; // 전시물이 없으면 퀴즈로 못 가게 버튼 숨김
+
+  const primary = document.querySelector('#exhibit-empty-primary');
+  if (retry) {
+    primary.textContent = '다시 시도';
+    primary.href = window.location.href;
+  }
+  document.title = `${title} | BU:LOG`;
 }
 
 // 4. 관찰 미션 질문 채우기 (실패해도 기본 문구가 남아 있어서 화면은 그대로)
@@ -78,7 +87,7 @@ async function renderMissionQuestion() {
 // 5. 서버에서 받아서 화면 채우기
 async function renderExhibit() {
   if (!exhibitId) {
-    showError('주소에 전시물 정보가 없어요. QR 코드를 다시 찍어 주세요.');
+    showError('유물 정보가 없는 주소예요', '전시물 옆 QR 코드를 다시 찍어 주세요.');
     return;
   }
 
@@ -103,9 +112,9 @@ async function renderExhibit() {
     renderMissionQuestion();
   } catch (error) {
     if (error.status === 404) {
-      showError('해당 전시물을 찾을 수 없어요. QR 코드를 다시 찍어 주세요.');
+      showError('유물을 찾을 수 없어요', '주소가 바뀌었거나 아직 준비 중인 유물이에요. 전시물 옆 QR 코드를 다시 찍어 주세요.');
     } else {
-      showError('잠시 후 다시 시도해 주세요.');
+      showError('유물을 불러오지 못했어요', '잠시 연결이 불안정해요. 조금 뒤에 다시 시도해 주세요.', { retry: true });
     }
   }
 }

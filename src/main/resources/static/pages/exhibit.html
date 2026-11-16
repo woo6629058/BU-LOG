@@ -26,6 +26,24 @@
       <span class="exhibit-badge">✓ QR 인증 완료</span>
     </div>
 
+    <!-- 유물을 못 불러왔을 때만 보이는 안내 (이때 사진·태그·미션·하단 버튼은 숨김) -->
+    <section class="exhibit-empty" id="exhibit-empty" hidden>
+      <div class="exhibit-empty__icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" stroke="#C0603A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="27" cy="27" r="17"/>
+          <path d="M40 40l14 14"/>
+          <path d="M22.5 22a5 5 0 1 1 6.5 4.8c-1.3.4-2 1.4-2 2.7v.8"/>
+          <circle cx="27" cy="35.5" r="0.6" fill="#C0603A"/>
+        </svg>
+      </div>
+      <h1 class="exhibit-empty__title" id="exhibit-empty-title">유물을 찾을 수 없어요</h1>
+      <p class="exhibit-empty__message" id="exhibit-empty-message"></p>
+      <div class="exhibit-empty__actions">
+        <a class="exhibit-empty__button exhibit-empty__button--primary" id="exhibit-empty-primary" href="/pages/qr-scan.html">QR 다시 찍기</a>
+        <a class="exhibit-empty__button" href="/">홈으로</a>
+      </div>
+    </section>
+
     <!-- 유물 사진 (사진이 없으면 갈색 배경 + 안내 문구가 보임) -->
     <div class="exhibit-photo">
       <p class="exhibit-photo__placeholder">현장에서 촬영한 유물 사진</p>
