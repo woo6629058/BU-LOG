@@ -1,0 +1,217 @@
+/*
+ * 완주자 프로필: 명예의 전당 명단에서 고른 탐험가의 완주 기록. Figma 08-2 의 요소를 참고했다.
+ * 위에서부터 프로필 동그라미 · 이름 · 완주 번호와 완주 일시 · 한마디 → 채운 유물과 탐험 시간 → 완성한 그림 여섯 장.
+ * 글꼴과 색은 components/art-theme.css 를 쓴다 (홈과 같은 글꼴 4종).
+ */
+.finisher {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* 아래는 언덕 그림(::before)이 들어갈 자리 */
+  padding: max(24px, calc(12px + env(safe-area-inset-top, 0px))) 20px 96px;
+  font-weight: 600;
+}
+
+/* 화면 맨 아래의 언덕과 꽃 (홈 에셋). 내용 뒤에 깔린다. */
+.finisher::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  aspect-ratio: 3 / 1;
+  background: url("/images/home/bottom-hills.webp") center bottom / 100% auto no-repeat;
+  pointer-events: none;
+}
+
+.finisher__back {
+  position: absolute;
+  z-index: 1;
+  top: max(16px, calc(8px + env(safe-area-inset-top, 0px)));
+  left: 16px;
+}
+
+.finisher__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+/* 뒤로가기 버튼과 같은 줄에 놓이는 화면 이름 */
+.finisher__eyebrow {
+  margin: 0 0 6px;
+  color: var(--art-brown);
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 32px;
+}
+
+.finisher__photo {
+  --avatar-size: 104px;
+
+  border: 4px solid var(--art-surface);
+  box-shadow: 0 6px 18px var(--art-shadow);
+}
+
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
+.finisher__name {
+  margin: 0;
+  color: var(--art-brown);
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0;
+  word-break: keep-all;
+}
+
+.finisher__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* 완주 번호: 작은 배지(.art-badge)에 트로피를 붙인다. */
+.finisher__number {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+}
+
+.finisher__number img {
+  width: 15px;
+  height: auto;
+}
+
+.finisher__date {
+  margin: 0;
+  padding: 5px 12px 3px;
+  border: 1.5px solid var(--art-line-soft);
+  border-radius: 999px;
+  color: var(--art-muted);
+  background: var(--art-surface);
+  font-family: var(--font-logo);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+/* 한마디: 흰 말풍선 */
+.finisher__message {
+  max-width: 300px;
+  margin: 4px 0 0;
+  padding: 9px 18px;
+  border: 1.5px solid var(--art-line);
+  border-radius: 18px;
+  color: var(--art-text);
+  background: var(--art-surface);
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+/* 기록 두 칸: 채운 유물 · 탐험 시간 */
+.finisher__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+}
+
+.finisher__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1.5px solid var(--art-line);
+  border-radius: 18px;
+  background: var(--art-surface);
+}
+
+.finisher__stat-label {
+  color: var(--art-muted);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.finisher__stat-value {
+  margin: 0;
+  color: var(--art-ink);
+  font-family: var(--font-logo);
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+/* 완성한 그림 여섯 장: 3칸 액자 */
+.finisher__gallery-title {
+  margin: 0 4px 10px;
+  color: var(--art-ink);
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.finisher__pictures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.finisher__picture {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+}
+
+.finisher__picture-image {
+  width: 100%;
+  height: auto;
+  border: 3px solid var(--art-surface);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--art-shadow);
+}
+
+.finisher__picture-name {
+  color: var(--art-text);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* 완주 번호가 없거나 명단에 없는 번호로 열었을 때 */
+.finisher__notice {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.finisher__notice-text {
+  margin: 0 0 8px;
+  color: var(--art-text);
+  font-size: 14px;
+  line-height: 1.45;
+}

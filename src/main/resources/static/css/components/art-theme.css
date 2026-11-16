@@ -247,6 +247,27 @@
   font-weight: 750;
 }
 
+/* 프로필 동그라미 (명예의 전당·완주자 프로필): 이름 첫 글자를 넣는다. 크기는 --avatar-size, 색은 data-tone 0~4 */
+.art-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: var(--avatar-size, 36px);
+  height: var(--avatar-size, 36px);
+  border-radius: 50%;
+  color: var(--art-ink);
+  background: #F9D3BE;
+  font-family: var(--font-label);
+  font-size: calc(var(--avatar-size, 36px) * 0.42);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.art-avatar[data-tone="1"] { background: #DFE6CF; }
+.art-avatar[data-tone="2"] { background: #E4DEF0; }
+.art-avatar[data-tone="3"] { background: #D8E5F2; }
+.art-avatar[data-tone="4"] { background: #F8E7B9; }
+
 /* =========================================================
    모션: 모바일 앱처럼 누름 반응, 목록 등장, 막대 채우기, 화면 전환
    길이·곡선은 아래 토큰 하나로 맞춘다. 움직임 줄이기 설정이면 모두 끈다.

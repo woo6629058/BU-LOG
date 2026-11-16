@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="모든 전시실 그림을 완성한 탐험가의 완주 기록을 보는 BU:LOG 완주자 프로필">
+  <title>탐험가 프로필 | BU:LOG</title>
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
+  <!-- 홈과 같은 글꼴: 숫자 Baloo 2, 본문 Noto Sans KR (티머니 둥근바람·SUIT는 art-theme.css에서 불러옴) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@600&display=swap">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
+  <link rel="stylesheet" href="/css/components/art-theme.css">
+  <link rel="stylesheet" href="/css/pages/finisher.css">
+  <!-- 아래 모듈이 가져오는 모듈을 한 번에 미리 받는다 (가져오기 단계마다 기다리지 않게) -->
+  <link rel="modulepreload" href="/js/common/collection-data.js">
+  <link rel="modulepreload" href="/js/common/hall-of-fame-data.js">
+  <script type="module" src="/js/pages/finisher.js" blocking="render"></script>
+</head>
+<body class="page-art">
+  <main class="finisher art-sky" id="finisher"></main>
+</body>
+</html>
