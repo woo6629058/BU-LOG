@@ -37,7 +37,7 @@ const TABS = [
   {
     key: 'ranking',
     label: '명예의 전당',
-    href: null,
+    href: '/pages/hall-of-fame.html',
     icon: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/>',
   },
 ];

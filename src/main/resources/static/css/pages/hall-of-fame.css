@@ -1,0 +1,732 @@
+/*
+ * 명예의 전당: 모든 전시실 그림을 완성한 사람(완주자) 명단과 실시간 기록. Figma 08 · 08-1 의 요소를 참고했다.
+ * 위에서부터 머리말 → 완주자 요약 카드 → 최근 완주자 목록.
+ * 화면 아래에는 떠오르는 실시간 기록(.hof-ticker)과 내 기록 막대(.hof-me)가 탭바 위에 고정되고,
+ * 실시간 기록을 누르면 전체 기록 시트(.hof-sheet)가 아래에서 올라온다.
+ * 글꼴과 색은 components/art-theme.css 를 쓴다 (홈과 같은 글꼴 4종).
+ */
+.page-hof {
+  --hof-gold-bg: #F8E7B9;
+  --hof-gold-line: #EBCB7E;
+  --hof-blue-bg: #D8E5F2;
+  --hof-blue: #3F6A94;
+  --hof-backdrop: rgba(43, 26, 16, 0.45);
+  /* 고정된 막대 높이: 본문 아래 여백과 서로의 위치를 이 값으로 맞춘다. */
+  --hof-me-height: 64px;
+  --hof-ticker-height: 124px;
+  /* 탭바 실제 높이 (art-theme.css 의 탭바와 같은 계산) */
+  --hof-tab-height: max(48px, var(--tab-bar-height, 72px));
+}
+
+.hof {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: calc(100dvh - var(--tab-bar-height, 0px));
+  /* 마지막 완주자까지 고정 막대 위로 올릴 수 있게 아래를 비운다. */
+  padding: max(56px, calc(44px + env(safe-area-inset-top, 0px))) 20px calc(var(--hof-me-height) + var(--hof-ticker-height) + 4px);
+  font-weight: 600;
+}
+
+/* 머리말: 진열장·그림 도감처럼 가운데 정렬. LIVE 배지 → 제목 → 안내 문장 */
+.hof__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+/* 전역 h1 규칙(common.css)의 크기·행간·자간을 덮어쓴다. */
+.hof__title {
+  margin: 0;
+  color: var(--art-brown);
+  font-family: var(--font-title);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.hof__intro {
+  margin: 0;
+  color: var(--art-text);
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+/* LIVE 배지: 깜빡이는 점 + 글자 (머리말과 기록 시트 제목 옆) */
+.hof-live {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: 4px 10px 3px;
+  border: 1.5px solid var(--art-line-soft);
+  border-radius: 999px;
+  color: var(--art-orange-text);
+  background: var(--art-surface);
+  font-family: var(--font-logo);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.hof-live__dot {
+  width: 6px;
+  height: 6px;
+  margin-bottom: 1px;
+  border-radius: 50%;
+  background: var(--art-orange);
+  animation: hof-live-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hof-live-pulse {
+  50% { opacity: 0.3; }
+}
+
+/* 완주자 요약: 금색 카드. 트로피 · 전체 완주자 수 · 오늘 완주한 사람 수 */
+.hof-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--hof-gold-line);
+  border-radius: 20px;
+  background: var(--hof-gold-bg);
+}
+
+.hof-summary__trophy {
+  flex-shrink: 0;
+  width: 46px;
+  height: auto;
+}
+
+.hof-summary__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.hof-summary__label {
+  margin: 0;
+  color: var(--art-text);
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+.hof-summary__count {
+  margin: 2px 0 0;
+  color: var(--art-ink);
+  font-family: var(--font-label);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.hof-summary__count strong {
+  margin-right: 4px;
+  font-family: var(--font-logo);
+  font-size: 34px;
+  font-weight: 750;
+}
+
+.hof-summary__today {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--art-orange-text);
+  background: var(--art-surface);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* 최근 완주자 목록 */
+/* 좁은 화면에서는 안내 문장이 제목 아랫줄로 내려간다. */
+.hof__section-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2px 8px;
+  margin: 0 4px 10px;
+}
+
+.hof__section-title {
+  white-space: nowrap;
+  margin: 0;
+  color: var(--art-ink);
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.hof__section-meta {
+  margin: 0 0 2px;
+  color: var(--art-muted);
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: right;
+  word-break: keep-all;
+}
+
+.hof__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 완주자 한 줄: 완주 번호 · 프로필 동그라미 · 이름과 완주 시각 · 화살표. 누르면 완주자 프로필로 간다. */
+.hof-finisher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 8px 10px 8px 12px;
+  border: 1.5px solid var(--art-line);
+  border-radius: 16px;
+  color: var(--art-ink);
+  background: var(--art-surface);
+  text-decoration: none;
+}
+
+.hof-finisher.is-new {
+  border-color: var(--art-button);
+  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
+}
+
+@media (hover: hover) {
+  .hof-finisher:hover {
+    border-color: var(--art-orange);
+  }
+}
+
+.hof-finisher:focus-visible {
+  outline: 3px solid var(--art-orange);
+  outline-offset: 2px;
+}
+
+/* 완주 번호: 작은 배지(.art-badge) 모양에 숫자 글꼴 */
+.hof-finisher__no {
+  flex-shrink: 0;
+  min-width: 58px;
+  padding: 5px 8px 3px;
+  font-family: var(--font-logo);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.hof-finisher__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hof-finisher__name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hof-finisher__name {
+  overflow: hidden;
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.hof-finisher__new {
+  flex-shrink: 0;
+  padding: 3px 7px 2px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: var(--art-orange-text);
+  font-family: var(--font-logo);
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.hof-finisher__when {
+  color: var(--art-muted);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.hof-finisher__chevron {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--art-muted);
+}
+
+.hof-finisher__chevron svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- 떠오르는 실시간 기록: 내 기록 막대 바로 위에 고정. 목록 끝이 이 뒤로 흐려지며 들어간다. ---------- */
+.hof-ticker {
+  position: fixed;
+  z-index: 14;
+  right: 0;
+  /* 내 기록 막대의 둥근 윗모서리 뒤까지 바탕을 깐다. */
+  bottom: calc(var(--hof-tab-height) + var(--hof-me-height) - 22px);
+  left: 0;
+  width: 100%;
+  max-width: var(--layout-width);
+  height: calc(var(--hof-ticker-height) + 22px);
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  /* 맨 위 알약 뒤로 목록 글자가 비치지 않게 위쪽에서 빨리 진해진다. */
+  background: linear-gradient(rgba(254, 245, 228, 0), rgba(254, 245, 228, 0.94) 18%, var(--art-bg) 32%);
+  cursor: pointer;
+}
+
+.hof-ticker:focus-visible {
+  outline: 3px solid var(--art-orange);
+  outline-offset: -6px;
+}
+
+.hof-ticker__items {
+  position: absolute;
+  inset: 0 16px 30px;
+}
+
+/* 알약 하나. 칸(data-slot)마다 34px씩 위에 놓이고 위로 갈수록 흐려진다. */
+.hof-ticker__pill {
+  --slot: 0;
+
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  height: 28px;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--art-line);
+  border-radius: 999px;
+  color: var(--art-ink);
+  background: rgba(255, 253, 249, 0.94);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translate(-50%, calc(var(--slot) * -34px));
+  transition: transform 520ms var(--ease-out), opacity 520ms ease;
+}
+
+.hof-ticker__pill[data-slot="-1"] { --slot: -0.7; opacity: 0; }
+.hof-ticker__pill[data-slot="0"] { opacity: 1; }
+.hof-ticker__pill[data-slot="1"] { --slot: 1; opacity: 0.55; }
+.hof-ticker__pill[data-slot="2"] { --slot: 2; opacity: 0.28; }
+.hof-ticker__pill[data-slot="3"] { --slot: 2.7; opacity: 0; }
+
+.hof-ticker__pill svg,
+.hof-ticker__pill img {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  color: var(--art-orange);
+}
+
+.hof-ticker__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* '전체 보기'는 맨 아래(가장 새) 알약에만 보인다. 위로 밀릴 때 너비가 부드럽게 줄도록 max-width 로 접는다. */
+.hof-ticker__more {
+  flex-shrink: 0;
+  max-width: 0;
+  overflow: hidden;
+  color: var(--art-orange-text);
+  opacity: 0;
+  transition: max-width 400ms var(--ease-out), opacity 300ms ease;
+}
+
+.hof-ticker__more::before { content: "· "; }
+.hof-ticker__more::after { content: " ›"; }
+
+.hof-ticker__pill[data-slot="0"] .hof-ticker__more {
+  max-width: 80px;
+  opacity: 1;
+}
+
+/* 화면이 낮으면 명단이 가려지지 않게 알약을 2개, 더 낮으면 1개만 보여 준다. (칸 하나에 34px) */
+@media (max-height: 759px) {
+  .page-hof { --hof-ticker-height: 90px; }
+  .hof-ticker__pill[data-slot="2"] { opacity: 0; }
+}
+
+@media (max-height: 619px) {
+  .page-hof { --hof-ticker-height: 56px; }
+  .hof-ticker__pill[data-slot="1"] { opacity: 0; }
+}
+
+/* ---------- 내 기록 막대: 탭바 바로 위에 고정. 탭바의 둥근 윗모서리 뒤까지 살구색을 깐다. ---------- */
+.hof-me {
+  position: fixed;
+  z-index: 15;
+  right: 0;
+  bottom: calc(var(--hof-tab-height) - 24px);
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: var(--layout-width);
+  height: calc(var(--hof-me-height) + 24px);
+  margin-inline: auto;
+  padding: 0 16px 24px 20px;
+  border-radius: 22px 22px 0 0;
+  color: var(--art-ink);
+  background: var(--art-button);
+  box-shadow: 0 -4px 14px rgba(140, 97, 56, 0.18);
+  font-weight: 600;
+}
+
+.hof-me .art-avatar {
+  background: var(--art-surface);
+  color: var(--art-orange-text);
+}
+
+/* 아주 좁은 폰(320px대)은 남은 칸 안내가 잘리지 않게 프로필 동그라미를 뺀다. */
+@media (max-width: 359px) {
+  .hof-me .art-avatar { display: none; }
+}
+
+/* 채운 수 / 전체: 큰 숫자 아래 작은 분모 */
+.hof-me__count {
+  flex-shrink: 0;
+  margin: 0;
+  font-family: var(--font-logo);
+  font-weight: 750;
+  line-height: 1;
+  text-align: center;
+}
+
+.hof-me__count strong {
+  display: block;
+  font-size: 24px;
+  font-weight: 750;
+}
+
+.hof-me__total {
+  font-size: 12px;
+}
+
+.hof-me__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hof-me__name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+
+.hof-me__name {
+  overflow: hidden;
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.hof-me__badge {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.7);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.hof-me__hint {
+  margin: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.hof-me__next {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--art-orange-text);
+  background: var(--art-surface);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ---------- 실시간 기록 시트: 아래에서 올라오는 창 (dialog). 바깥 어두운 배경을 누르면 닫힌다. ---------- */
+/* 시트가 열려 있는 동안 뒤 화면은 스크롤하지 않는다. */
+html:has(.hof-sheet[open]) {
+  overflow: hidden;
+}
+
+.hof-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: var(--layout-width);
+  height: min(640px, calc(100dvh - 72px));
+  max-height: none;
+  margin: 0 auto;
+  padding: 10px 0 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 28px 28px 0 0;
+  color: var(--art-ink);
+  background: var(--art-bg);
+  box-shadow: 0 -6px 24px rgba(74, 46, 31, 0.18);
+  font-weight: 600;
+  /* 닫힐 때: 열릴 때보다 빠르게 내려간다. display·overlay 는 움직임이 끝난 뒤에 바뀐다. */
+  transform: translateY(100%);
+  transition:
+    transform var(--motion-page-exit) var(--ease-in),
+    overlay var(--motion-page-exit) allow-discrete,
+    display var(--motion-page-exit) allow-discrete;
+}
+
+.hof-sheet[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transform: none;
+  transition:
+    transform var(--motion-page) var(--ease-out),
+    overlay var(--motion-page) allow-discrete,
+    display var(--motion-page) allow-discrete;
+}
+
+.hof-sheet::backdrop {
+  background: rgba(43, 26, 16, 0);
+  transition:
+    background-color var(--motion-page-exit) ease,
+    overlay var(--motion-page-exit) allow-discrete,
+    display var(--motion-page-exit) allow-discrete;
+}
+
+.hof-sheet[open]::backdrop {
+  background: var(--hof-backdrop);
+}
+
+@starting-style {
+  .hof-sheet[open] { transform: translateY(100%); }
+  .hof-sheet[open]::backdrop { background: rgba(43, 26, 16, 0); }
+}
+
+.hof-sheet__handle {
+  flex-shrink: 0;
+  width: 44px;
+  height: 5px;
+  margin: 0 auto 4px;
+  border-radius: 3px;
+  background: var(--art-line);
+}
+
+.hof-sheet__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+}
+
+.hof-sheet__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hof-sheet__title-row img {
+  flex-shrink: 0;
+  width: 26px;
+  height: auto;
+}
+
+.hof-sheet__title {
+  margin: 0;
+  color: var(--art-brown);
+  font-family: var(--font-title);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.hof-sheet__intro {
+  margin: 2px 0 0;
+  color: var(--art-text);
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+/* 기록 종류 칩 (.art-chips · .art-chip, art-theme.css): 여기서는 버튼이라 고른 칩을 aria-pressed 로 나타낸다. */
+.hof-sheet .art-chips {
+  flex-shrink: 0;
+  padding-block: 0;
+}
+
+.hof-sheet .art-chip {
+  min-height: 40px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.hof-sheet .art-chip[aria-pressed="true"] {
+  border-color: var(--art-button);
+  color: var(--art-ink);
+  background: var(--art-button);
+  box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
+}
+
+.hof-sheet__list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  padding: 2px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+/* 기록 한 줄: 종류 아이콘 · 내용과 장소 · 지난 시간 */
+.hof-record {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--art-line-soft);
+  border-radius: 16px;
+  background: var(--art-surface);
+}
+
+/* 완주 기록은 금색 테두리로 돋보이게 */
+.hof-record--finish {
+  border-color: var(--hof-gold-line);
+}
+
+.hof-record__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--hof-blue);
+  background: var(--hof-blue-bg);
+}
+
+.hof-record--done .hof-record__icon {
+  color: var(--art-green);
+  background: var(--art-green-bg);
+}
+
+.hof-record--finish .hof-record__icon {
+  background: var(--art-peach);
+}
+
+.hof-record__icon svg,
+.hof-record__icon img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.hof-record__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.hof-record__text {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.hof-record__detail {
+  margin: 3px 0 0;
+  color: var(--art-muted);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.hof-record__time {
+  flex-shrink: 0;
+  margin: 0;
+  color: var(--art-muted);
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* 움직임 줄이기: 깜빡임, 떠오르기, 시트가 올라오는 움직임을 끈다. */
+@media (prefers-reduced-motion: reduce) {
+  .hof-live__dot {
+    animation: none;
+  }
+
+  .hof-ticker__pill,
+  .hof-ticker__more,
+  .hof-sheet,
+  .hof-sheet[open],
+  .hof-sheet::backdrop {
+    transition: none;
+  }
+}

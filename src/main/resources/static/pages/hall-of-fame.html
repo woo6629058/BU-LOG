@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="모든 전시실 그림을 완성한 탐험가 명단과 실시간 기록을 보는 BU:LOG 명예의 전당">
+  <title>명예의 전당 | BU:LOG</title>
+  <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
+  <script src="/js/common/page-transition.js"></script>
+  <!-- 홈과 같은 글꼴: 숫자 Baloo 2, 본문 Noto Sans KR (티머니 둥근바람·SUIT는 art-theme.css에서 불러옴) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@750&family=Noto+Sans+KR:wght@600&display=swap">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/components/mobile-layout.css">
+  <link rel="stylesheet" href="/css/components/tab-bar.css">
+  <link rel="stylesheet" href="/css/components/art-theme.css">
+  <link rel="stylesheet" href="/css/pages/hall-of-fame.css">
+  <!-- 아래 모듈이 가져오는 모듈을 한 번에 미리 받는다 (가져오기 단계마다 기다리지 않게) -->
+  <link rel="modulepreload" href="/js/common/tab-bar.js">
+  <link rel="modulepreload" href="/js/common/motion.js">
+  <link rel="modulepreload" href="/js/common/collection-data.js">
+  <link rel="modulepreload" href="/js/common/hall-of-fame-data.js">
+  <link rel="modulepreload" href="/js/api/auth-api.js">
+  <link rel="modulepreload" href="/js/api/api-client.js">
+  <!-- 화면 전환 때 탭바가 제자리에 남도록, 탭바를 만드는 이 스크립트가 끝난 뒤에 화면을 그린다 -->
+  <script type="module" src="/js/pages/hall-of-fame.js" blocking="render"></script>
+</head>
+<body class="page-art page-hof">
+  <main class="hof art-sky art-sky--branch">
+    <header class="hof__header">
+      <p class="hof-live"><span class="hof-live__dot" aria-hidden="true"></span>LIVE</p>
+      <h1 class="hof__title">명예의 전당</h1>
+      <p class="hof__intro">전시실 그림을 모두 완성한 탐험가들이에요</p>
+    </header>
+
+    <section class="hof-summary" aria-labelledby="hof-summary-label">
+      <img class="hof-summary__trophy" src="/images/home/icon-ranking.webp" alt="" width="46" height="42">
+      <div class="hof-summary__body">
+        <h2 class="hof-summary__label" id="hof-summary-label">모든 전시실 완주 탐험가</h2>
+        <p class="hof-summary__count">
+          <span aria-hidden="true"><strong id="hof-total">0</strong>명</span>
+          <span class="visually-hidden" id="hof-total-label"></span>
+        </p>
+      </div>
+      <p class="hof-summary__today" id="hof-today"></p>
+    </section>
+
+    <section class="hof__finishers" aria-labelledby="hof-list-title">
+      <div class="hof__section-header">
+        <h2 class="hof__section-title" id="hof-list-title">최근 완주한 탐험가</h2>
+        <p class="hof__section-meta">누르면 프로필을 볼 수 있어요</p>
+      </div>
+      <ol class="hof__list" id="hof-list"></ol>
+    </section>
+  </main>
+
+  <!-- 실시간 기록: 새 기록이 아래에서 떠오르고 오래된 기록은 위로 밀리며 흐려진다. 누르면 전체 기록 시트가 열린다. -->
+  <button type="button" class="hof-ticker" id="hof-ticker" aria-haspopup="dialog">
+    <span class="hof-ticker__items" id="hof-ticker-items" aria-hidden="true"></span>
+    <span class="visually-hidden">실시간 기록 전체 보기</span>
+  </button>
+
+  <!-- 내 기록: 탭바 바로 위에 고정 -->
+  <aside class="hof-me" aria-label="내 기록">
+    <p class="hof-me__count">
+      <span aria-hidden="true"><strong id="hof-me-filled">0</strong><span class="hof-me__total">/<span id="hof-me-total">0</span></span></span>
+      <span class="visually-hidden" id="hof-me-count-label"></span>
+    </p>
+    <span id="hof-me-avatar"></span>
+    <div class="hof-me__text">
+      <p class="hof-me__name-row"><span class="hof-me__name" id="hof-me-name"></span><span class="hof-me__badge">나</span></p>
+      <p class="hof-me__hint" id="hof-me-hint"></p>
+    </div>
+    <p class="hof-me__next" id="hof-me-next" hidden></p>
+  </aside>
+
+  <!-- 실시간 기록 시트: 아래에서 올라오는 창 -->
+  <dialog class="hof-sheet" id="hof-sheet" aria-labelledby="hof-sheet-title">
+    <div class="hof-sheet__handle" aria-hidden="true"></div>
+    <header class="hof-sheet__header">
+      <div>
+        <div class="hof-sheet__title-row">
+          <img src="/images/home/icon-ranking.webp" alt="" width="26" height="24">
+          <h2 class="hof-sheet__title" id="hof-sheet-title">실시간 기록</h2>
+          <p class="hof-live"><span class="hof-live__dot" aria-hidden="true"></span>LIVE</p>
+        </div>
+        <p class="hof-sheet__intro">지금 박물관에서 일어나는 일들이에요</p>
+      </div>
+      <button type="button" class="art-round-button" id="hof-sheet-close" aria-label="닫기">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <ul class="art-chips" id="hof-filters" aria-label="기록 종류"></ul>
+    <ul class="hof-sheet__list" id="hof-records"></ul>
+    <p class="visually-hidden" id="hof-records-status" role="status"></p>
+  </dialog>
+</body>
+</html>
