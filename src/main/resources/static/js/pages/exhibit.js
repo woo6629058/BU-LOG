@@ -43,6 +43,25 @@ imageEl.addEventListener('error', () => {
   imagePlaceholderEl.hidden = false;
 });
 
+// 설명이 4줄보다 길면 접어 두고 "더 보기" 버튼을 보여줌 (11/17)
+const moreButton = document.querySelector('#exhibit-more');
+function setupMore() {
+  descriptionEl.classList.add('is-clamped');
+  // 접은 상태에서 내용이 잘리면(실제 높이 > 보이는 높이) 버튼을 보여줌
+  const overflowing = descriptionEl.scrollHeight > descriptionEl.clientHeight + 2;
+  if (!overflowing) {
+    descriptionEl.classList.remove('is-clamped');
+    moreButton.hidden = true;
+    return;
+  }
+  moreButton.hidden = false;
+}
+moreButton.addEventListener('click', () => {
+  const open = descriptionEl.classList.toggle('is-clamped') === false;
+  moreButton.textContent = open ? '접기' : '더 보기';
+  moreButton.setAttribute('aria-expanded', String(open));
+});
+
 // 태그에 글자를 넣고, 글자가 없으면 태그를 숨김
 function setTag(element, text) {
   element.textContent = text ?? '';
@@ -97,6 +116,7 @@ async function renderExhibit() {
     document.title = `${exhibit.name} | BU:LOG`;
     nameEl.textContent = exhibit.name;
     descriptionEl.textContent = exhibit.description ?? '';
+    setupMore();
 
     // 전시실 이름과 유물 번호 (피그마: "옹기2전시실", "유물 No.08")
     if (exhibit.exhibitionRoom) galleryEl.textContent = exhibit.exhibitionRoom;

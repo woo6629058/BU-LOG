@@ -59,6 +59,8 @@
     <!-- 유물 이름, 설명 (API 데이터로 바뀜) -->
     <h1 class="exhibit-name" id="exhibit-name">유물을 불러오고 있어요</h1>
     <p class="exhibit-description" id="exhibit-description"></p>
+    <!-- 설명이 길면 4줄까지만 보이고 이 버튼으로 펼침 (exhibit.js가 필요할 때만 보여줌) -->
+    <button class="exhibit-more" id="exhibit-more" type="button" aria-controls="exhibit-description" aria-expanded="false" hidden>더 보기</button>
 
     <!-- 관찰 미션 박스 (질문은 퀴즈 API에서 받아서 채움) -->
     <section class="mission-box" aria-labelledby="mission-label">

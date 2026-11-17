@@ -489,3 +489,43 @@
   background: #F4BFA3;
 }
 .exhibit-empty__button:focus-visible { outline: 3px solid #F2B79B; outline-offset: 2px; }
+
+/* =========================================================
+   긴 설명 접기 (11/17): 4줄까지만 보이고 "더 보기"로 펼침
+   ========================================================= */
+.exhibit-description.is-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
+.exhibit-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 4px 0;
+  border: 0;
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 800;
+  color: #C0603A;
+  background: none;
+  cursor: pointer;
+}
+.exhibit-more::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+}
+.exhibit-more[aria-expanded="true"]::after { margin-top: 3px; transform: rotate(-135deg); }
+.exhibit-more[hidden] { display: none; }
+.exhibit-more:focus-visible { outline: 3px solid #F2B79B; outline-offset: 2px; border-radius: 4px; }
+.exhibit.is-error .exhibit-more { display: none; }
