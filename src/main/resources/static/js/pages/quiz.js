@@ -143,7 +143,7 @@ const state = {
   quiz: null,             // 서버(또는 체험 모드)에서 받은 퀴즈
   game: null,             // 지금 화면에 그린 게임 (아래 GAME_RENDERERS가 만든 것)
   chancesLeft: MAX_CHANCES,
-  usedHint: false,        // 힌트를 쓰면 일반 유물 (지금은 화면 표시만, 서버 기록은 조장과 확인 필요)
+  usedHint: false,        // 힌트를 봤는지 (11/16 회의: 황금·일반 구분 없앰, 지금은 기록만)
   submitting: false,      // 채점 중이면 버튼 두 번 못 누르게
   nextUrl: null,          // 끝나면 버튼을 눌렀을 때 갈 주소
 };
@@ -297,12 +297,11 @@ function renderMultipleChoice(quiz, container, onChange) {
       selectedId = null;
     },
     // 정답 보기: 왼쪽에서 빛이 쓸고 지나가고, 알파벳이 ✓로 바뀌며 통통 튐
-    markCorrect(golden) {
+    markCorrect() {
       const button = selectedButton();
       if (!button) return;
       button.classList.remove('is-selected');
       button.classList.add('is-correct', 'is-celebrate');
-      if (golden) button.classList.add('is-golden');
       const letter = button.querySelector('.quiz-option__letter');
       if (letter) letter.textContent = '✓';
       addSparks(button, { count: 5, radius: 30, x: '30px', y: '50%' });
@@ -629,9 +628,8 @@ function renderFind(quiz, container, onChange) {
       shake(board);
     },
     // 누른 자리에서 동그라미 물결이 퍼짐 (가운데는 비워서 누른 곳이 가려지지 않음)
-    markCorrect(golden) {
+    markCorrect() {
       board.classList.add('is-correct');
-      if (golden) board.classList.add('is-golden');
       if (!picked || prefersReducedMotion) return;
       for (let i = 0; i < 3; i += 1) {
         const ripple = element('span', 'quiz-find__ripple');
@@ -752,9 +750,8 @@ function renderOrder(quiz, container, onChange) {
       shake(wrap);
     },
     // 위에서 아래로 카드가 하나씩 차례로 빛나며 번호가 ✓로 바뀜
-    markCorrect(golden) {
+    markCorrect() {
       wrap.classList.add('is-correct', 'is-celebrate');
-      if (golden) wrap.classList.add('is-golden');
     },
     disable() {
       locked = true;
@@ -825,9 +822,8 @@ function renderLock(quiz, container, onChange) {
       shake(lock);
     },
     // 숫자가 하나씩 초록으로 맞춰지고 → 고리가 튕겨 열리며 반짝임
-    markCorrect(golden) {
+    markCorrect() {
       lock.classList.add('is-open', 'is-celebrate');
-      if (golden) lock.classList.add('is-golden');
       addSparks(lock, { count: 7, radius: 58, x: '50%', y: '42px' });
     },
     disable() { dialButtons.forEach((button) => { button.disabled = true; }); },
@@ -897,14 +893,14 @@ function renderLabel(exhibit) {
 // ---------------------------------------------------------
 function handleCorrect(result) {
   // 정답 연출은 게임마다 맞힌 자리에서 (11/17: 화면 전체 꽃가루는 07 수집 완료에서만)
-  // 황금 유물이면 금색, 일반이면 초록색
-  const golden = state.chancesLeft === MAX_CHANCES && !state.usedHint;
-  state.game.markCorrect(golden);
+  // (11/16 회의: 황금·일반 유물 구분은 없앰)
+  const firstTry = state.chancesLeft === MAX_CHANCES;
+  state.game.markCorrect();
   navigator.vibrate?.([40, 60, 40]); // 지원하는 폰에서만 짧게 진동
 
   showFeedback(
     'correct',
-    golden ? '한 번에 정답! 황금 유물로 채워요' : '정답이에요! 일반 유물로 채워요',
+    firstTry ? '한 번에 정답! 그림을 채우러 가요' : '정답이에요! 그림을 채우러 가요',
     result.explanation ?? '',
   );
 
@@ -981,7 +977,6 @@ els.submit.addEventListener('click', handleSubmit);
 
 // ---------------------------------------------------------
 // 힌트 (서버가 hint를 보내줄 때만 보임. 체험 모드에는 있음)
-// 힌트를 쓰면 정답이어도 일반 유물
 // ---------------------------------------------------------
 els.hint.addEventListener('click', () => {
   if (!state.quiz?.hint) return;
