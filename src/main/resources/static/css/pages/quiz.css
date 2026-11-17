@@ -820,29 +820,6 @@
   100% { transform: scale(1); }
 }
 
-/* 정답 꽃가루 */
-.quiz-confetti {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  overflow: hidden;
-  pointer-events: none;
-}
-.quiz-confetti__piece {
-  position: absolute;
-  top: -12px;
-  width: 9px;
-  height: 14px;
-  border-radius: 3px;
-  animation: quiz-confetti-fall 1.3s ease-in forwards;
-}
-.quiz-confetti__piece:nth-child(3n) { width: 11px; height: 11px; border-radius: 50%; }
-
-@keyframes quiz-confetti-fall {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-  100% { transform: translate(var(--drift), 70vh) rotate(var(--spin)); opacity: 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .quiz-find__marker.is-popping { animation: none; }
 }
@@ -950,4 +927,135 @@
 
 @media (prefers-reduced-motion: reduce) {
   .quiz-order__card { transition: none; }
+}
+
+/* =========================================================
+   정답 연출 (11/17: 게임마다 맞힌 자리에서. 꽃가루는 07 수집 완료용)
+   초록 = 일반, 금색(.is-golden) = 황금 유물
+   ========================================================= */
+.quiz-page { --qz-win: #6FA36B; --qz-gold: #D4A537; }
+
+/* 공통 반짝임 */
+.quiz-spark {
+  position: absolute;
+  z-index: 3;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  background: #E9B850;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  pointer-events: none;
+  opacity: 0;
+  animation: quiz-spark 0.75s ease-out forwards;
+}
+@keyframes quiz-spark {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.3) rotate(0deg); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(1) rotate(90deg); }
+}
+
+/* ---------- 객관식: 보기에 빛이 쓸고 지나감 ---------- */
+.quiz-option.is-celebrate {
+  position: relative;
+  overflow: visible;
+  animation: quiz-option-win 0.5s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.quiz-option.is-celebrate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.85) 45%, transparent 70%) -150% 0 / 60% 100% no-repeat;
+  pointer-events: none;
+  animation: quiz-sweep 0.9s ease-out 0.1s forwards;
+}
+.quiz-option.is-celebrate .quiz-option__letter { animation: quiz-pop 0.45s cubic-bezier(0.3, 1.8, 0.5, 1) 0.05s both; }
+.quiz-option.is-golden { border-color: var(--qz-gold); background: #FFF4D6; box-shadow: 0 0 0 4px rgba(212, 165, 55, 0.18); }
+.quiz-option.is-golden .quiz-option__letter { color: #fff; background: var(--qz-gold); }
+
+@keyframes quiz-option-win { 0% { transform: scale(1); } 45% { transform: scale(1.035); } 100% { transform: scale(1); } }
+@keyframes quiz-sweep { to { background-position: 250% 0; } }
+@keyframes quiz-pop { 0% { transform: scale(0.4); } 100% { transform: scale(1); } }
+
+/* ---------- 찾아 누르기: 누른 자리에서 물결 ---------- */
+.quiz-find__ripple {
+  position: absolute;
+  z-index: 2;
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  border: 3px solid var(--qz-win);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: quiz-ripple 1.1s ease-out forwards;
+}
+.quiz-find.is-golden { border-color: var(--qz-gold); }
+.quiz-find.is-golden .quiz-find__ripple { border-color: var(--qz-gold); }
+.quiz-find.is-golden .quiz-find__marker { box-shadow: 0 0 0 3px var(--qz-gold), 0 4px 10px rgba(43, 33, 26, 0.3); background: rgba(255, 228, 150, 0.35); }
+.quiz-find.is-golden .quiz-find__dot { background: var(--qz-gold); }
+@keyframes quiz-ripple {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.8); }
+}
+
+/* ---------- 순서 맞추기: 위에서 아래로 차례로 빛남 ---------- */
+.quiz-order.is-celebrate .quiz-order__card { animation: quiz-card-win 0.55s ease-out both; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(2) { animation-delay: 0.14s; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(3) { animation-delay: 0.28s; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(4) { animation-delay: 0.42s; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(5) { animation-delay: 0.56s; }
+.quiz-order.is-celebrate .quiz-order__no { animation: quiz-pop 0.45s cubic-bezier(0.3, 1.8, 0.5, 1) both; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(2) .quiz-order__no { animation-delay: 0.14s; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(3) .quiz-order__no { animation-delay: 0.28s; }
+.quiz-order.is-celebrate .quiz-order__card:nth-child(4) .quiz-order__no { animation-delay: 0.42s; }
+.quiz-order.is-golden { border-color: var(--qz-gold); background: #FFF8E4; }
+.quiz-order.is-golden .quiz-order__card { border-color: #F0D79A; }
+.quiz-order.is-golden .quiz-order__no { background: var(--qz-gold); }
+@keyframes quiz-card-win {
+  0% { transform: translateX(0); box-shadow: none; }
+  40% { transform: translateX(6px); box-shadow: 0 0 0 4px rgba(111, 163, 107, 0.25); }
+  100% { transform: translateX(0); box-shadow: none; }
+}
+.quiz-order.is-golden .quiz-order__card { animation-name: quiz-card-win-gold; }
+@keyframes quiz-card-win-gold {
+  0% { transform: translateX(0); box-shadow: none; }
+  40% { transform: translateX(6px); box-shadow: 0 0 0 4px rgba(212, 165, 55, 0.3); }
+  100% { transform: translateX(0); box-shadow: none; }
+}
+
+/* ---------- 자물쇠: 숫자가 차례로 맞춰지고 고리가 튕겨 열림 ---------- */
+.quiz-lock { position: relative; }
+.quiz-lock.is-celebrate .quiz-lock__number { animation: quiz-digit-win 0.4s ease-out both; }
+.quiz-lock.is-celebrate .quiz-lock__dial:nth-child(2) .quiz-lock__number { animation-delay: 0.12s; }
+.quiz-lock.is-celebrate .quiz-lock__dial:nth-child(3) .quiz-lock__number { animation-delay: 0.24s; }
+.quiz-lock.is-celebrate .quiz-lock__dial:nth-child(4) .quiz-lock__number { animation-delay: 0.36s; }
+.quiz-lock.is-celebrate .quiz-lock__shackle { animation: quiz-shackle-pop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 0.35s both; }
+.quiz-lock.is-golden .quiz-lock__body { background: linear-gradient(135deg, #C9952C 0%, #E4BC57 50%, #C9952C 100%); }
+.quiz-lock.is-golden .quiz-lock__shackle { border-color: #D4A537; }
+@keyframes quiz-digit-win {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); color: #2F7A45; background: #E2F1E5; }
+  100% { transform: scale(1); color: #2F7A45; background: #E2F1E5; }
+}
+.quiz-lock.is-golden.is-celebrate .quiz-lock__number { animation-name: quiz-digit-win-gold; }
+@keyframes quiz-digit-win-gold {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); color: #8A6A12; background: #FFF4D6; }
+  100% { transform: scale(1); color: #8A6A12; background: #FFF4D6; }
+}
+@keyframes quiz-shackle-pop {
+  0% { transform: translateY(0) rotate(0deg); }
+  60% { transform: translateY(-22px) rotate(-22deg); }
+  100% { transform: translateY(-14px) rotate(-18deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-option.is-celebrate,
+  .quiz-option.is-celebrate::after,
+  .quiz-option.is-celebrate .quiz-option__letter,
+  .quiz-order.is-celebrate .quiz-order__card,
+  .quiz-order.is-celebrate .quiz-order__no,
+  .quiz-lock.is-celebrate .quiz-lock__number,
+  .quiz-lock.is-celebrate .quiz-lock__shackle { animation: none; }
 }

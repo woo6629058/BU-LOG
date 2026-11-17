@@ -296,13 +296,35 @@ function renderMultipleChoice(quiz, container, onChange) {
       }
       selectedId = null;
     },
-    markCorrect() {
+    // 정답 보기: 왼쪽에서 빛이 쓸고 지나가고, 알파벳이 ✓로 바뀌며 통통 튐
+    markCorrect(golden) {
       const button = selectedButton();
-      button?.classList.remove('is-selected');
-      button?.classList.add('is-correct');
+      if (!button) return;
+      button.classList.remove('is-selected');
+      button.classList.add('is-correct', 'is-celebrate');
+      if (golden) button.classList.add('is-golden');
+      const letter = button.querySelector('.quiz-option__letter');
+      if (letter) letter.textContent = '✓';
+      addSparks(button, { count: 5, radius: 30, x: '30px', y: '50%' });
     },
     disable() { buttons.forEach((button) => { button.disabled = true; }); },
   };
+}
+
+// 정답 연출에 쓰는 작은 반짝임 (game: 붙일 곳, count: 개수, radius: 퍼지는 거리 px)
+// 움직임 줄이기 설정이면 안 만듦
+function addSparks(target, { count = 6, radius = 44, x = '50%', y = '50%' } = {}) {
+  if (prefersReducedMotion) return;
+  for (let i = 0; i < count; i += 1) {
+    const spark = element('span', 'quiz-spark');
+    const angle = (Math.PI * 2 * i) / count + 0.4;
+    spark.style.left = x;
+    spark.style.top = y;
+    spark.style.setProperty('--sx', `${Math.cos(angle) * radius}px`);
+    spark.style.setProperty('--sy', `${Math.sin(angle) * radius}px`);
+    spark.style.animationDelay = `${(i % 3) * 40}ms`;
+    target.append(spark);
+  }
 }
 
 // B. 도장 찍기 (숫자 세기): 유물 그림 위를 누를 때마다 그 자리에 스티커(또는 도장)가 붙음
@@ -606,7 +628,20 @@ function renderFind(quiz, container, onChange) {
       board.classList.add('is-wrong');
       shake(board);
     },
-    markCorrect() { board.classList.add('is-correct'); },
+    // 누른 자리에서 동그라미 물결이 퍼짐 (가운데는 비워서 누른 곳이 가려지지 않음)
+    markCorrect(golden) {
+      board.classList.add('is-correct');
+      if (golden) board.classList.add('is-golden');
+      if (!picked || prefersReducedMotion) return;
+      for (let i = 0; i < 3; i += 1) {
+        const ripple = element('span', 'quiz-find__ripple');
+        ripple.style.left = `${picked.x}%`;
+        ripple.style.top = `${picked.y}%`;
+        ripple.style.animationDelay = `${i * 180}ms`;
+        board.append(ripple);
+      }
+      addSparks(board, { count: 8, radius: 62, x: `${picked.x}%`, y: `${picked.y}%` });
+    },
     disable() {
       locked = true;
       board.tabIndex = -1;
@@ -716,7 +751,11 @@ function renderOrder(quiz, container, onChange) {
       wrap.classList.add('is-wrong');
       shake(wrap);
     },
-    markCorrect() { wrap.classList.add('is-correct'); },
+    // 위에서 아래로 카드가 하나씩 차례로 빛나며 번호가 ✓로 바뀜
+    markCorrect(golden) {
+      wrap.classList.add('is-correct', 'is-celebrate');
+      if (golden) wrap.classList.add('is-golden');
+    },
     disable() {
       locked = true;
       render();
@@ -785,7 +824,12 @@ function renderLock(quiz, container, onChange) {
       tried.add(code());
       shake(lock);
     },
-    markCorrect() { lock.classList.add('is-open'); },
+    // 숫자가 하나씩 초록으로 맞춰지고 → 고리가 튕겨 열리며 반짝임
+    markCorrect(golden) {
+      lock.classList.add('is-open', 'is-celebrate');
+      if (golden) lock.classList.add('is-golden');
+      addSparks(lock, { count: 7, radius: 58, x: '50%', y: '42px' });
+    },
     disable() { dialButtons.forEach((button) => { button.disabled = true; }); },
   };
 }
@@ -851,31 +895,13 @@ function renderLabel(exhibit) {
 // ---------------------------------------------------------
 // 채점
 // ---------------------------------------------------------
-// 정답 축하 꽃가루 (움직임 줄이기 설정이면 안 함)
-function celebrate() {
-  if (prefersReducedMotion) return;
-  const colors = ['#F4BFA3', '#E9B850', '#C0603A', '#B7C98E', '#E4DEF0'];
-  const layer = element('div', 'quiz-confetti');
-  layer.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 18; i += 1) {
-    const piece = element('span', 'quiz-confetti__piece');
-    piece.style.left = `${8 + Math.random() * 84}%`;
-    piece.style.background = colors[i % colors.length];
-    piece.style.animationDelay = `${Math.random() * 0.25}s`;
-    piece.style.setProperty('--drift', `${(Math.random() - 0.5) * 80}px`);
-    piece.style.setProperty('--spin', `${Math.random() * 540 - 270}deg`);
-    layer.append(piece);
-  }
-  document.body.append(layer);
-  setTimeout(() => layer.remove(), 1600);
-}
-
 function handleCorrect(result) {
-  state.game.markCorrect();
-  celebrate();
+  // 정답 연출은 게임마다 맞힌 자리에서 (11/17: 화면 전체 꽃가루는 07 수집 완료에서만)
+  // 황금 유물이면 금색, 일반이면 초록색
+  const golden = state.chancesLeft === MAX_CHANCES && !state.usedHint;
+  state.game.markCorrect(golden);
   navigator.vibrate?.([40, 60, 40]); // 지원하는 폰에서만 짧게 진동
 
-  const golden = state.chancesLeft === MAX_CHANCES && !state.usedHint;
   showFeedback(
     'correct',
     golden ? '한 번에 정답! 황금 유물로 채워요' : '정답이에요! 일반 유물로 채워요',
