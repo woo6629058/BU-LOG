@@ -65,14 +65,18 @@
   "code": "EXHIBIT_200_001",
   "message": "전시물 조회에 성공했습니다.",
   "result": {
-    "id": "goryeo-celadon",
-    "name": "청자 상감운학문 매병",
-    "era": "고려",
-    "description": "전시물 설명",
-    "imageUrl": "/images/exhibits/goryeo-celadon.jpg",
+    "id": "ongi1-faith-jar",
+    "name": "신앙항아리",
+    "era": "근대",
+    "description": "부천의 '점말'은 병인박해를 피해 천주교인들이 모여살면서 옹기를 만들던 곳이다. ...",
+    "imageUrl": "/images/exhibits/ongi1-faith-jar.jpg",
     "museumName": "부천시립박물관",
-    "sourceName": "e뮤지엄",
-    "sourceUrl": "https://www.emuseum.go.kr/"
+    "sourceName": "부천시박물관 3D 전시실, 부천시박물관 누리집",
+    "sourceUrl": "https://my.matterport.com/show/?m=ckQy8JMv3Xj",
+    "exhibitionRoom": "옹기1전시실",
+    "cardNumber": 1,
+    "visitOrder": 1,
+    "collectible": true
   }
 }
 ```
@@ -197,10 +201,10 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
   "message": "퀴즈 채점에 성공했습니다.",
   "result": {
     "correct": true,
-    "explanation": "정답 해설",
+    "explanation": "십자가 2개, 물결무늬 2줄, 뚜껑 손잡이 1개예요. ...",
     "card": {
       "cardId": 7,
-      "exhibitId": "goryeo-celadon",
+      "exhibitId": "ongi1-faith-jar",
       "newlyAcquired": true
     }
   }
@@ -209,7 +213,8 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 
 제출한 선택지가 해당 퀴즈에 속하지 않으면 `400 Bad Request`를 반환합니다. 정답인 경우
 현재 방문자에게 카드가 발급됩니다. 이미 같은 카드를 가지고 있다면 기존 `cardId`와
-`newlyAcquired: false`를 반환합니다. 오답 응답에는 `card` 필드가 포함되지 않습니다.
+`newlyAcquired: false`를 반환합니다. 오답 응답에는 `explanation`과 `card`가 포함되지 않습니다(해설에 정답이 들어 있어서 맞혔을 때만 보냅니다).
+틀려도 시도 횟수 제한은 없습니다.
 
 ## 닉네임 사용 가능 여부
 
@@ -362,11 +367,11 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
   "message": "카드 조회에 성공했습니다.",
   "result": {
     "cardId": 7,
-    "exhibitId": "goryeo-celadon",
-    "name": "청자 상감운학문 매병",
-    "era": "고려",
-    "description": "전시물 설명",
-    "imageUrl": "/images/exhibits/goryeo-celadon.jpg",
+    "exhibitId": "ongi1-faith-jar",
+    "name": "신앙항아리",
+    "era": "근대",
+    "description": "부천의 '점말'은 병인박해를 피해 천주교인들이 모여살면서 옹기를 만들던 곳이다. ...",
+    "imageUrl": "/images/exhibits/ongi1-faith-jar.jpg",
     "acquiredAt": "2026-11-03T10:00:00"
   }
 }
@@ -406,7 +411,7 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 - `finishers`: 최근에 완주한 순서로 20명. `durationSeconds`는 첫 카드부터 마지막 카드까지 걸린 시간(초)입니다.
 - `records`: 최근 기록 30개(최근 순서). `type`은 `FILL`(카드를 받아 그림 한 칸 채움), `ROOM_DONE`(한 전시실 카드를 모두 모음), `FINISH`(완주). 종류에 없는 칸은 응답에서 빠집니다.
 - `name`: 로그인한 회원은 닉네임, 게스트는 `게스트 0000`(방문자마다 같은 네 자리 번호).
-- "오늘 16:27", "3분 전" 같은 문구는 화면이 만듭니다. 화면은 30초마다 다시 불러옵니다.
+- "오늘 16:27", "3분 전" 같은 문구는 화면이 만듭니다. 화면은 10초마다, 그리고 다른 탭에서 돌아왔을 때 다시 불러옵니다.
 
 ## 완주자 프로필
 
