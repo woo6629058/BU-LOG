@@ -104,10 +104,15 @@ public class HallOfFameService {
             List<Exhibit> collectibles
     ) {
         Set<String> collectibleIds = collectibles.stream().map(Exhibit::getId).collect(Collectors.toSet());
-        List<LocalDateTime> acquiredTimes = ownerCards.stream()
+        // 기기가 합쳐져 같은 유물 카드가 둘 이상이면 먼저 받은 시각만 센다.
+        Collection<LocalDateTime> acquiredTimes = ownerCards.stream()
                 .filter(card -> collectibleIds.contains(card.getExhibitId()))
-                .map(CardCollection::getAcquiredAt)
-                .toList();
+                .collect(Collectors.toMap(
+                        CardCollection::getExhibitId,
+                        CardCollection::getAcquiredAt,
+                        (first, second) -> first.isBefore(second) ? first : second
+                ))
+                .values();
         Set<String> owned = ownerCards.stream().map(CardCollection::getExhibitId).collect(Collectors.toSet());
         if (collectibleIds.isEmpty() || !owned.containsAll(collectibleIds)
                 || finisherStore.findFirstByVisitor_IdInOrderByIdAsc(ownerVisitorIds).isPresent()) {

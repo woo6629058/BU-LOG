@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -154,6 +156,11 @@ public class MemberController {
             visitorCookieManager.write(response, resolution.rawToken());
         }
         // 다른 기기에서 모은 카드와 합쳐져 모두 모았으면 이때 완주 번호를 준다.
-        cardService.syncFinisher(resolution.visitor(), authenticatedMember.member().getId());
+        // 가입·로그인은 이미 끝난 뒤라, 완주 판정이 실패해도 로그인 응답은 그대로 보낸다 (기록만 남김).
+        try {
+            cardService.syncFinisher(resolution.visitor(), authenticatedMember.member().getId());
+        } catch (RuntimeException exception) {
+            log.warn("로그인 후 완주 판정 실패: memberId={}", authenticatedMember.member().getId(), exception);
+        }
     }
 }

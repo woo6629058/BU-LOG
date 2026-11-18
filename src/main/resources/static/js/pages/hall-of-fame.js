@@ -95,7 +95,10 @@ function renderMe() {
   document.querySelector('#hof-me-filled').textContent = filled;
   document.querySelector('#hof-me-total').textContent = total;
   document.querySelector('#hof-me-count-label').textContent = `${total}개 중 ${filled}개 채움`;
-  document.querySelector('#hof-me-avatar').replaceWith(avatar(name));
+  // 다시 그릴 때도 찾을 수 있게 같은 id를 붙여 바꾼다.
+  const photo = avatar(name);
+  photo.id = 'hof-me-avatar';
+  document.querySelector('#hof-me-avatar').replaceWith(photo);
   document.querySelector('#hof-me-name').textContent = name;
   document.querySelector('#hof-me-hint').textContent = remaining > 0 ? `완주까지 ${remaining}개 남았어요` : '모든 그림을 완성했어요';
 
@@ -260,8 +263,12 @@ async function refresh() {
   if (recovered && hall.records.length === 0) showTickerPlaceholder();
   renderSummary({ animate: false });
   renderList();
-  const { filled, total } = summarizeAll(rooms, acquiredSet(records));
-  renderMeNext(total - filled);
+  // 처음에 못 받았다가 받았으면 내 이름(게스트 번호)과 그림도 새 응답으로 다시 그린다.
+  if (recovered) renderMe();
+  else {
+    const { filled, total } = summarizeAll(rooms, acquiredSet(records));
+    renderMeNext(total - filled);
+  }
   showRecords(currentFilter, { keepScroll: true });
   setTickerRecords(hall.records, { announceNew: true });
 }
