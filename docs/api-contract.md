@@ -366,3 +366,52 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 ```
 
 현재 게스트 또는 로그인 회원이 소유하지 않은 카드에는 `CARD_404_001`을 반환합니다.
+
+## 명예의 전당
+
+`GET /api/hall-of-fame`
+
+```json
+{
+  "isSuccess": true,
+  "code": "HALL_200_001",
+  "message": "명예의 전당 조회에 성공했습니다.",
+  "result": {
+    "total": 2,
+    "today": 1,
+    "myNo": null,
+    "myName": "게스트 7919",
+    "finishers": [
+      { "no": 2, "name": "게스트 5838", "finishedAt": "2026-11-18T16:27:00", "durationSeconds": 708 },
+      { "no": 1, "name": "부록이", "finishedAt": "2026-11-17T15:10:00", "durationSeconds": 1088 }
+    ],
+    "records": [
+      { "id": 41, "type": "FINISH", "name": "게스트 5838", "finisherNo": 2, "durationSeconds": 708, "occurredAt": "2026-11-18T16:27:00" },
+      { "id": 40, "type": "ROOM_DONE", "name": "게스트 5838", "exhibitionRoom": "수석전시실", "occurredAt": "2026-11-18T16:27:00" },
+      { "id": 39, "type": "FILL", "name": "게스트 5838", "exhibitId": "stone-sunflower", "exhibitName": "해바라기문양석", "exhibitionRoom": "수석전시실", "occurredAt": "2026-11-18T16:27:00" }
+    ]
+  }
+}
+```
+
+- 완주: 수집 대상 유물 카드를 모두 모은 것. 마지막 카드를 받는 순간 완주 번호(`no`)가 붙고 바뀌지 않습니다.
+- `total`: 전체 완주자 수, `today`: 오늘(서버 기준 한국 시각) 완주한 수, `myNo`: 내 완주 번호(완주 전이면 `null`), `myName`: 명단에 보이는 내 이름.
+- `finishers`: 최근에 완주한 순서로 20명. `durationSeconds`는 첫 카드부터 마지막 카드까지 걸린 시간(초)입니다.
+- `records`: 최근 기록 30개(최근 순서). `type`은 `FILL`(카드를 받아 그림 한 칸 채움), `ROOM_DONE`(한 전시실 카드를 모두 모음), `FINISH`(완주). 종류에 없는 칸은 응답에서 빠집니다.
+- `name`: 로그인한 회원은 닉네임, 게스트는 `게스트 0000`(방문자마다 같은 네 자리 번호).
+- "오늘 16:27", "3분 전" 같은 문구는 화면이 만듭니다. 화면은 30초마다 다시 불러옵니다.
+
+## 완주자 프로필
+
+`GET /api/hall-of-fame/finishers/{no}`
+
+```json
+{
+  "isSuccess": true,
+  "code": "HALL_200_002",
+  "message": "완주자 조회에 성공했습니다.",
+  "result": { "no": 2, "name": "게스트 5838", "finishedAt": "2026-11-18T16:27:00", "durationSeconds": 708 }
+}
+```
+
+없는 완주 번호에는 `HALL_404_001`을 반환합니다.

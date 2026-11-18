@@ -1,70 +1,168 @@
 // 명예의 전당·완주자 프로필이 함께 쓰는 완주자 명단과 실시간 기록.
 // 완주자: 6개 전시실의 그림 24칸을 모두 채운 사람. 채운 순서대로 완주 번호(No.1, No.2 …)를 받는다.
 // 순위는 매기지 않고, 가장 최근에 완주한 사람이 맨 위에 온다.
-//
-// 백엔드 API가 아직 없어서(docs/api-contract.md에 명세 없음) 화면에 보이는 모양 그대로 적은 예시 데이터다.
-// API가 정해지면 응답을 이 모양으로 바꿔 주는 함수로 바꾼다.
+// 서버(GET /api/hall-of-fame, docs/api-contract.md)는 시각만 주고, 화면에 보이는 문구는 여기서 만든다.
+import { getFinisher, getHallOfFame } from '../api/hall-of-fame-api.js';
+import { ROOMS } from './collection-data.js';
+import { avatarImage, avatarTone } from './explorer-avatar.js';
 
-// 전체 완주자 수와 오늘 완주한 사람 수
-export const SUMMARY = { total: 128, today: 7 };
+const pad = (value) => String(value).padStart(2, '0');
+const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
-// when: 목록에 보이는 완주 시각 / finishedAt: 프로필에 보이는 완주 일시 / duration: 탐험 시간 / message: 한마디(없을 수 있음)
-const finisher = (no, name, when, finishedAt, duration, message = null) => ({ no, name, when, finishedAt, duration, message });
+// 서버 시각("2026-11-18T16:27:00")은 한국 시각이라 그대로 읽는다.
+const toDate = (value) => new Date(value);
+const clock = (date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 
-// 최근에 완주한 순서
-export const FINISHERS = [
-  finisher(128, '게스트 2741', '오늘 16:27', '2026.11.11 16:27', '11분 48초', '소줏고리가 제일 신기했어요!'),
-  finisher(127, '게스트 0193', '오늘 16:05', '2026.11.11 16:05', '13분 05초', '수석전시실 돌이 진짜 그림 같았어요'),
-  finisher(126, '게스트 5520', '오늘 15:48', '2026.11.11 15:48', '10분 32초'),
-  finisher(125, '게스트 8806', '오늘 14:12', '2026.11.11 14:12', '12분 55초', '학교종 소리가 들리는 것 같았어요'),
-  finisher(124, '게스트 3317', '오늘 13:30', '2026.11.11 13:30', '16분 40초'),
-  finisher(123, '게스트 1029', '오늘 11:02', '2026.11.11 11:02', '14분 12초', '반달돌칼 찾기가 제일 어려웠어요'),
-  finisher(122, '게스트 6648', '오늘 10:41', '2026.11.11 10:41', '11분 58초'),
-  finisher(121, '게스트 4402', '어제 17:55', '2026.11.10 17:55', '18분 05초', '가족이랑 같이 완주했어요'),
-  finisher(120, '게스트 7715', '어제 16:20', '2026.11.10 16:20', '15분 20초'),
-];
+// 목록에 보이는 완주 시각: 오늘 16:27 / 어제 16:27 / 11.16 16:27
+function shortWhen(date, now = new Date()) {
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (sameDay(date, now)) return `오늘 ${clock(date)}`;
+  if (sameDay(date, yesterday)) return `어제 ${clock(date)}`;
+  return `${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${clock(date)}`;
+}
 
-export const findFinisher = (no) => FINISHERS.find((item) => item.no === no) ?? null;
+// 프로필에 보이는 완주 일시: 2026.11.18 16:27
+const fullWhen = (date) => `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${clock(date)}`;
 
-// 실시간 기록의 종류: fill 그림 채움 / done 전시실 완료 / finish 모든 전시실 완주
-const record = (type, text, detail, time) => ({ type, text, detail, time });
+// 탐험 시간: 11분 48초 / 1시간 5분
+function formatDuration(totalSeconds) {
+  const seconds = Math.max(0, Math.round(totalSeconds ?? 0));
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) return `${hours}시간 ${minutes}분`;
+  return `${minutes}분 ${pad(seconds % 60)}초`;
+}
 
-// 최근 순서
-export const LIVE_RECORDS = [
-  record('fill', '게스트 6045님이 「세브르 평화의 화병」으로 그림을 채웠어요', '유럽자기전시실', '방금'),
-  record('done', '게스트 1187님이 옹기2전시실을 완료했어요', '4/4 완성', '1분 전'),
-  record('fill', '게스트 3920님이 「반달돌칼」로 그림을 채웠어요', '부천향토역사관', '2분 전'),
-  record('finish', '게스트 2741님이 모든 전시실을 완주했어요', 'No.128 완주 · 11분 48초', '3분 전'),
-  record('fill', '게스트 8806님이 「소줏고리」로 그림을 채웠어요', '옹기2전시실', '5분 전'),
-  record('done', '게스트 0193님이 수석전시실을 완료했어요', '4/4 완성', '6분 전'),
-  record('fill', '게스트 5520님이 「인화문 토기병」으로 그림을 채웠어요', '부천향토역사관', '8분 전'),
-  record('fill', '게스트 3317님이 「학교종」으로 그림을 채웠어요', '교육전시실', '9분 전'),
-  record('done', '게스트 1029님이 교육전시실을 완료했어요', '4/4 완성', '11분 전'),
-  record('fill', '게스트 6648님이 「화초문항아리」로 그림을 채웠어요', '옹기1전시실', '12분 전'),
-];
+// 실시간 기록 시각: 방금 / 3분 전 / 2시간 전 / 어제 / 11월 16일
+function relativeTime(date, now = new Date()) {
+  const minutes = Math.floor((now - date) / 60000);
+  if (minutes < 1) return '방금';
+  if (minutes < 60) return `${minutes}분 전`;
+  if (sameDay(date, now)) return `${Math.floor(minutes / 60)}시간 전`;
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (sameDay(date, yesterday)) return '어제';
+  return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
 
-// 프로필 동그라미(.art-avatar, art-theme.css): 이름 첫 글자와 색 번호(0~4)
-const AVATAR_TONES = 5;
+// 받침에 따라 조사를 고른다. 마지막 한글 글자를 본다 (예: 추상석(관통석) → 석).
+function lastHangul(word) {
+  const letters = [...String(word)].filter((letter) => letter >= '가' && letter <= '힣');
+  return letters.at(-1) ?? null;
+}
 
-export function avatar(name, seed = 0) {
+function batchim(word) {
+  const letter = lastHangul(word);
+  return letter ? (letter.charCodeAt(0) - 0xac00) % 28 : 0;
+}
+
+const RIEUL = 8;
+// 으로/로 (받침 없음·ㄹ받침은 '로'), 을/를
+const roParticle = (word) => ([0, RIEUL].includes(batchim(word)) ? '로' : '으로');
+const eulParticle = (word) => (batchim(word) === 0 ? '를' : '을');
+
+function toFinisher(item) {
+  const finishedAt = toDate(item.finishedAt);
+  return {
+    no: item.no,
+    name: item.name,
+    when: shortWhen(finishedAt),
+    finishedAt: fullWhen(finishedAt),
+    duration: formatDuration(item.durationSeconds),
+    message: null, // 한마디: 아직 입력하는 곳이 없다
+  };
+}
+
+const RECORD_TYPES = { FILL: 'fill', ROOM_DONE: 'done', FINISH: 'finish' };
+// 「유물」과 조사(으로) 사이에서 줄이 바뀌지 않게 단어 연결 문자(\u2060)를 넣는다.
+
+// 기록 아이콘 그림: 유물은 배경 없는 유물 그림, 전시실은 홈 전시실 목록의 대표 그림
+const artifactImage = (exhibitId) => (exhibitId ? `/images/artifacts/${encodeURIComponent(exhibitId)}.webp` : null);
+function roomThumb(roomName) {
+  const room = ROOMS.find((item) => item.name === roomName);
+  return room ? `/images/home/thumb-${room.id}.webp` : null;
+}
+
+function toRecord(item) {
+  const type = RECORD_TYPES[item.type] ?? 'fill';
+  const name = `${item.name}님이`;
+  const room = item.exhibitionRoom ?? '전시실';
+  const time = relativeTime(toDate(item.occurredAt));
+  if (type === 'finish') {
+    return { id: item.id, type, text: `${name} 모든 전시실을 완주했어요`, detail: `No.${item.finisherNo} 완주 · ${formatDuration(item.durationSeconds)}`, time };
+  }
+  if (type === 'done') {
+    return { id: item.id, type, iconSrc: roomThumb(item.exhibitionRoom), text: `${name} ${room}${eulParticle(room)} 완료했어요`, detail: '그림 완성', time };
+  }
+  const exhibit = item.exhibitName ?? '유물';
+  return { id: item.id, type, iconSrc: artifactImage(item.exhibitId), text: `${name} 「${exhibit}」\u2060${roParticle(exhibit)} 그림을 채웠어요`, detail: room, time };
+}
+
+// total: 전체 완주자 수, today: 오늘 완주한 수, myNo: 내 완주 번호(완주 전이면 null), myName: 명단에 보이는 내 이름
+// finishers: 최근 완주한 순서, records: 최근 기록 순서
+export async function loadHallOfFame() {
+  const { result } = await getHallOfFame();
+  return {
+    total: result.total,
+    today: result.today,
+    myNo: result.myNo ?? null,
+    myName: result.myName ?? null,
+    finishers: (result.finishers ?? []).map(toFinisher),
+    records: (result.records ?? []).map(toRecord),
+  };
+}
+
+// 완주 번호로 완주자 한 명. 번호가 잘못됐거나 없는 번호(404)면 null, 그 밖의 오류는 그대로 던진다.
+export async function loadFinisher(no) {
+  if (!Number.isInteger(no) || no < 1) return null;
+  try {
+    const { result } = await getFinisher(no);
+    return toFinisher(result);
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
+}
+
+// 프로필 동그라미(.art-avatar, art-theme.css): 이름으로 고른 유물 그림과 바탕색 (explorer-avatar.js)
+export function avatar(name) {
   const node = document.createElement('span');
-  node.className = 'art-avatar';
-  node.dataset.tone = String(seed % AVATAR_TONES);
+  node.className = 'art-avatar art-avatar--artifact';
+  node.dataset.tone = String(avatarTone(name));
   node.setAttribute('aria-hidden', 'true');
-  node.textContent = name.trim().charAt(0);
+  const image = document.createElement('img');
+  image.src = avatarImage(name);
+  image.alt = '';
+  image.decoding = 'async';
+  // 그림을 못 불러오면 이름 첫 글자로 보여 준다.
+  image.addEventListener('error', () => { node.replaceChildren(name.trim().charAt(0)); }, { once: true });
+  node.append(image);
   return node;
 }
 
-// 실시간 기록 아이콘 (24×24, 선 색은 글자색을 따른다). finish는 트로피 그림을 쓴다.
-const TROPHY_SRC = '/images/home/icon-ranking.webp';
+// 실시간 기록 아이콘 (24×24, 선 색은 글자색을 따른다). finish는 색이 있는 트로피 그림을 쓴다.
+const TROPHY_SRC = '/images/home/trophy-color.webp';
 const RECORD_ICONS = {
   fill: '<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M4 16.5l4.5-4.5 4 4 2.5-2.5 5 5"/><circle cx="15.5" cy="9.5" r="1.4"/>',
   done: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
 };
 
-export function recordIcon(type) {
+// 그림 채움은 받은 유물 그림, 전시실 완료는 홈의 전시실 그림(iconSrc)을 쓴다.
+// 그림이 없거나 못 불러오면 기본 아이콘.
+export function recordIcon(type, iconSrc = null) {
+  if (iconSrc && type !== 'finish') {
+    const image = document.createElement('img');
+    image.className = 'is-artifact';
+    image.src = iconSrc;
+    image.alt = '';
+    image.decoding = 'async';
+    image.addEventListener('error', () => image.replaceWith(recordIcon(type)), { once: true });
+    return image;
+  }
   if (type === 'finish') {
     const image = document.createElement('img');
+    image.className = 'is-artifact';
     image.src = TROPHY_SRC;
     image.alt = '';
     return image;

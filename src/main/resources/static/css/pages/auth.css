@@ -796,6 +796,8 @@
 
 .done-emblem { width: 108px; height: 108px; border-width: 3px; box-shadow: 0 0 0 10px rgba(251, 224, 207, 0.45), 0 6px 16px rgba(140, 91, 55, 0.12); }
 .done-emblem__art { width: 80px; margin-top: 8px; }
+/* 프로필 유물 그림: 세로로 긴 그림도 동그라미 안에 들어오게 높이로 맞춘다 */
+.done-emblem__art--artifact { width: auto; max-width: 72px; height: 66px; margin-top: 0; object-fit: contain; }
 .done-emblem__badge { width: 30px; }
 .done-emblem__badge--leaf { width: 28px; }
 

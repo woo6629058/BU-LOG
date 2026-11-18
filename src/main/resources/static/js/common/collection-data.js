@@ -158,7 +158,8 @@ export async function loadCollection() {
     return { rooms: mergeCards(ROOMS, cards), records: toRecords(cards) };
   } catch (error) {
     console.warn('[BU:LOG] 수집 기록을 불러오지 못해 기본 유물로 그립니다.', error);
-    return { rooms: ROOMS, records: [] };
+    // failed: 기록을 못 받은 것과 정말 기록이 없는 것을 구분할 때 쓴다.
+    return { rooms: ROOMS, records: [], failed: true };
   }
 }
 

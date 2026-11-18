@@ -1,13 +1,15 @@
 // 그림 채우기 성공: 퀴즈 정답 뒤 퀴즈 화면이 ?exhibitId=…(이미 채운 구역이면 &new=0)로 보낸다.
-// 서버 기록과 별개로, 주소의 유물은 방금 채워졌다고 보고 그린다.
+// 서버 기록(카드)에 있는 유물만 채워진 것으로 그린다. 아직 카드를 받지 않은 유물이면 미션 안내를 보여 준다.
+// 퀴즈 체험 모드(?demo=)에서 온 경우만 &preview=1 로 카드 없이 미리 본다 (저장은 안 됨).
 import { loadScene, playFill, regionRect, renderScene } from '../common/scene.js';
 import { acquiredSet, findRegion, loadCollection, summarizeRoom } from '../common/collection-data.js';
 
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
 const isNew = params.get('new') !== '0';
+const isPreview = params.get('preview') === '1';
 // 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
-const { rooms: ROOMS, records } = await loadCollection();
+const { rooms: ROOMS, records, failed: loadFailed } = await loadCollection();
 const hit = findRegion(ROOMS, exhibitId);
 const root = document.querySelector('#result');
 
@@ -64,9 +66,34 @@ function renderUnknown() {
   root.replaceChildren(box);
 }
 
+// 기록을 받아 오지 못했을 때: 채웠는지 알 수 없으니 다시 시도하게 한다.
+function renderLoadFailed() {
+  const box = element('section', 'result__notice');
+  const retry = element('button', 'art-button', '다시 불러오기');
+  retry.type = 'button';
+  retry.addEventListener('click', () => window.location.reload());
+  box.append(
+    element('h1', 'result__title', '기록을 불러오지 못했어요'),
+    element('p', 'result__text', '잠시 뒤 다시 시도해 주세요.'),
+    retry,
+  );
+  root.replaceChildren(box);
+}
+
+// 아직 카드를 받지 않은 유물: 주소만 열어서는 채워지지 않는다.
+function renderNotFilled({ room, region }) {
+  const box = element('section', 'result__notice');
+  box.append(
+    element('h1', 'result__title', '아직 채우지 않은 구역이에요'),
+    element('p', 'result__text', `${region.artifactName}의 QR을 찾아 관찰 미션을 풀면 그림이 채워져요.`),
+    linkButton('그림 도감에서 보기', `/pages/picture-book.html?room=${encodeURIComponent(room.id)}`, 'primary'),
+  );
+  root.replaceChildren(box);
+}
+
 function renderResult({ room, region }) {
   const acquired = acquiredSet(records);
-  acquired.add(exhibitId);
+  if (isPreview) acquired.add(exhibitId);
   const { filled, total, complete } = summarizeRoom(room, acquired);
 
   // 새로 채운 구역은 비운 상태로 그린 뒤 채우기 연출을 재생한다.
@@ -116,5 +143,7 @@ function renderResult({ room, region }) {
   }
 }
 
-if (hit) renderResult(hit);
-else renderUnknown();
+if (!hit) renderUnknown();
+else if (!isPreview && loadFailed) renderLoadFailed();
+else if (!isPreview && !acquiredSet(records).has(exhibitId)) renderNotFilled(hit);
+else renderResult(hit);

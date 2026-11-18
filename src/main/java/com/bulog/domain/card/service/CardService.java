@@ -11,6 +11,7 @@ import com.bulog.domain.card.exception.code.CardErrorCode;
 import com.bulog.domain.card.repository.CardCollectionStore;
 import com.bulog.domain.exhibit.entity.Exhibit;
 import com.bulog.domain.exhibit.repository.ExhibitCatalog;
+import com.bulog.domain.halloffame.service.HallOfFameService;
 import com.bulog.domain.visitor.entity.Visitor;
 import com.bulog.domain.visitor.service.VisitorService;
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ public class CardService {
     private final CardCollectionStore cardCollectionStore;
     private final ExhibitCatalog exhibitCatalog;
     private final VisitorService visitorService;
+    private final HallOfFameService hallOfFameService;
 
     @Transactional
     public CardAcquisitionResponseDTO issueCard(
@@ -43,9 +45,8 @@ public class CardService {
                 lockedVisitor,
                 authenticatedMemberId
         );
-        CardCollection existingCard = cardCollectionStore
-                .findAllByVisitor_IdIn(ownerVisitorIds)
-                .stream()
+        List<CardCollection> ownerCards = cardCollectionStore.findAllByVisitor_IdIn(ownerVisitorIds);
+        CardCollection existingCard = ownerCards.stream()
                 .filter(card -> card.getExhibitId().equals(exhibitId))
                 .min(Comparator.comparing(CardCollection::getAcquiredAt))
                 .orElse(null);
@@ -60,7 +61,20 @@ public class CardService {
                 exhibitId,
                 LocalDateTime.now()
         ));
+        hallOfFameService.recordNewCard(lockedVisitor, ownerVisitorIds, ownerCards, issuedCard);
         return CardConverter.toAcquisitionResponse(issuedCard, true);
+    }
+
+    /** 로그인으로 방문자 기록이 합쳐진 뒤 호출: 합친 카드로 완주했으면 완주 번호를 준다. */
+    @Transactional
+    public void syncFinisher(Visitor visitor, Long memberId) {
+        Visitor lockedVisitor = visitorService.lockVisitor(visitor.getId());
+        List<Long> ownerVisitorIds = visitorService.getVisitorIds(lockedVisitor, memberId);
+        hallOfFameService.finishIfComplete(
+                lockedVisitor,
+                ownerVisitorIds,
+                cardCollectionStore.findAllByVisitor_IdIn(ownerVisitorIds)
+        );
     }
 
     @Transactional(readOnly = true)

@@ -9,7 +9,11 @@ import com.bulog.domain.card.dto.res.CardAcquisitionResponseDTO;
 import com.bulog.domain.card.exception.CardException;
 import com.bulog.domain.card.repository.LocalCardCollectionRepository;
 import com.bulog.domain.exhibit.repository.LocalExhibitRepository;
+import com.bulog.domain.halloffame.repository.LocalFinisherRepository;
+import com.bulog.domain.halloffame.repository.LocalHallRecordRepository;
+import com.bulog.domain.halloffame.service.HallOfFameService;
 import com.bulog.domain.member.entity.Member;
+import com.bulog.domain.member.repository.LocalMemberRepository;
 import com.bulog.domain.visitor.repository.LocalVisitorRepository;
 import com.bulog.domain.visitor.service.VisitorResolution;
 import com.bulog.domain.visitor.service.VisitorService;
@@ -22,10 +26,19 @@ class CardServiceTest {
             new LocalVisitorRepository(),
             new VisitorTokenService()
     );
+    private final LocalExhibitRepository exhibitRepository = new LocalExhibitRepository();
+    private final HallOfFameService hallOfFameService = new HallOfFameService(
+            new LocalFinisherRepository(),
+            new LocalHallRecordRepository(),
+            exhibitRepository,
+            visitorService,
+            new LocalMemberRepository()
+    );
     private final CardService cardService = new CardService(
             new LocalCardCollectionRepository(),
-            new LocalExhibitRepository(),
-            visitorService
+            exhibitRepository,
+            visitorService,
+            hallOfFameService
     );
 
     @Test

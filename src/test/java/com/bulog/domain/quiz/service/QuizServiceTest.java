@@ -6,6 +6,10 @@ import static org.assertj.core.groups.Tuple.tuple;
 
 import com.bulog.domain.card.repository.LocalCardCollectionRepository;
 import com.bulog.domain.card.service.CardService;
+import com.bulog.domain.halloffame.repository.LocalFinisherRepository;
+import com.bulog.domain.halloffame.repository.LocalHallRecordRepository;
+import com.bulog.domain.halloffame.service.HallOfFameService;
+import com.bulog.domain.member.repository.LocalMemberRepository;
 import com.bulog.domain.exhibit.entity.Exhibit;
 import com.bulog.domain.exhibit.repository.ExhibitCatalog;
 import com.bulog.domain.quiz.dto.res.QuizAttemptResponseDTO;
@@ -41,12 +45,25 @@ class QuizServiceTest {
     private final Visitor visitor = Visitor.create(1L, "sample-token-hash");
     private final QuizService quizService = new QuizService(
             new StubQuizReader(quiz),
-            new CardService(
-                    new LocalCardCollectionRepository(),
-                    new StubExhibitCatalog(),
-                    new VisitorService(new StubVisitorStore(visitor), new VisitorTokenService())
-            )
+            cardService()
     );
+
+    private CardService cardService() {
+        StubExhibitCatalog exhibitCatalog = new StubExhibitCatalog();
+        VisitorService visitorService = new VisitorService(new StubVisitorStore(visitor), new VisitorTokenService());
+        return new CardService(
+                new LocalCardCollectionRepository(),
+                exhibitCatalog,
+                visitorService,
+                new HallOfFameService(
+                        new LocalFinisherRepository(),
+                        new LocalHallRecordRepository(),
+                        exhibitCatalog,
+                        visitorService,
+                        new LocalMemberRepository()
+                )
+        );
+    }
 
     @Test
     void 전시물의_퀴즈를_조회한다() {

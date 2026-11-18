@@ -22,9 +22,6 @@ const focus = params.get('focus');
 const acquired = acquiredSet(records);
 
 const roomUrl = (roomId) => `/pages/picture-book.html?room=${encodeURIComponent(roomId)}`;
-// TODO: 채우기 화면을 미리 보기 위한 임시 링크. — QR·퀴즈 흐름이 연결되면 제거.
-// 빈 그림 구역을 누르면 카드 발급 없이 채우기 결과 화면을 미리 볼 수 있다.
-const demoFillUrl = (item) => `/pages/fill-result.html?exhibitId=${encodeURIComponent(item.exhibitId)}`;
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -129,7 +126,7 @@ function renderHall() {
   document.querySelector('#book-room-name').textContent = room.name;
   document.querySelector('#book-scene-title').textContent = room.sceneTitle;
   document.querySelector('#book-scene-count').textContent = complete ? '완성' : `${filled} / ${total}`;
-  const scene = renderScene(room, acquired, { focusExhibitId, regionHref: demoFillUrl });
+  const scene = renderScene(room, acquired, { focusExhibitId });
   scene.dataset.vtName = sceneTransitionName(room.id);
   document.querySelector('#book-scene').replaceChildren(scene);
 

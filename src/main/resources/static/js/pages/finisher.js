@@ -1,11 +1,16 @@
 import { ROOMS } from '../common/collection-data.js';
-import { avatar, findFinisher } from '../common/hall-of-fame-data.js';
+import { avatar, loadFinisher } from '../common/hall-of-fame-data.js';
 
 const HALL_OF_FAME_URL = '/pages/hall-of-fame.html';
 const TROPHY_SRC = '/images/home/icon-ranking.webp';
 
-// 완주자 명단은 아직 예시 데이터다 (hall-of-fame-data.js). 주소의 ?no= 가 완주 번호다.
-const finisher = findFinisher(Number(new URLSearchParams(window.location.search).get('no')));
+// 주소의 ?no= 가 완주 번호다. 서버에서 그 완주자를 받아 온다.
+// 없는 번호면 '찾을 수 없어요', 잠깐 못 받아 온 것이면 '다시 불러오기'를 보여 준다.
+let loadError = false;
+const finisher = await loadFinisher(Number(new URLSearchParams(window.location.search).get('no'))).catch(() => {
+  loadError = true;
+  return null;
+});
 const root = document.querySelector('#finisher');
 
 function element(tag, className, text) {
@@ -38,6 +43,18 @@ function backButton() {
 
 function renderNotFound() {
   const box = element('section', 'finisher__notice');
+  if (loadError) {
+    const retry = element('button', 'art-button', '다시 불러오기');
+    retry.type = 'button';
+    retry.addEventListener('click', () => window.location.reload());
+    box.append(
+      element('h1', 'finisher__name', '프로필을 불러오지 못했어요'),
+      element('p', 'finisher__notice-text', '잠시 뒤 다시 시도해 주세요'),
+      retry,
+    );
+    root.replaceChildren(backButton(), box);
+    return;
+  }
   const link = element('a', 'art-button', '명예의 전당으로');
   link.href = HALL_OF_FAME_URL;
   box.append(
@@ -75,7 +92,7 @@ function renderProfile() {
   const total = ROOMS.reduce((sum, room) => sum + room.regions.length, 0);
 
   const header = element('header', 'finisher__header');
-  const photo = avatar(finisher.name, finisher.no);
+  const photo = avatar(finisher.name);
   photo.classList.add('finisher__photo');
 
   const number = element('p', 'finisher__number art-badge');

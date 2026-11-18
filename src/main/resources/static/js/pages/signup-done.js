@@ -2,15 +2,24 @@
 import { getMe } from '../api/auth-api.js';
 import { clearNextPath, loadSignedUpNickname, nextPath } from '../common/auth-flow.js';
 import { ROOMS } from '../common/collection-data.js';
+import { avatarImage } from '../common/explorer-avatar.js';
 
 const nicknameWrap = document.querySelector('#done-nickname-wrap');
 const nicknameText = document.querySelector('#done-nickname');
 const start = document.querySelector('#done-start');
 
+// 위 동그라미 그림을 명예의 전당 프로필과 같은 유물 그림으로 바꾼다.
+function showEmblem(name) {
+  const art = document.querySelector('.done-emblem__art');
+  art.src = avatarImage(name);
+  art.classList.add('done-emblem__art--artifact');
+}
+
 function showNickname(nickname) {
   if (!nickname) return;
   nicknameText.textContent = nickname;
   nicknameWrap.hidden = false;
+  showEmblem(nickname);
 }
 
 // 첫 전시실을 추천 출발 장소로 보여 준다.
