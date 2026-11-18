@@ -113,6 +113,29 @@ class HallOfFameServiceTest {
     }
 
     @Test
+    void 게스트로_나눠_모은_카드가_로그인으로_합쳐지면_완주_번호를_받는다() {
+        Member member = memberRepository.store(Member.create(2L, "merge@example.com", "encoded", "합친사람"));
+        Visitor phone = visitorService.resolve(null).visitor();
+        Visitor tablet = visitorService.resolve(null).visitor();
+        int half = collectibles.size() / 2;
+        collectibles.subList(0, half).forEach(exhibit -> cardService.issueCard(phone, null, exhibit.getId()));
+        collectibles.subList(half, collectibles.size()).forEach(exhibit -> cardService.issueCard(tablet, null, exhibit.getId()));
+        assertThat(hallOfFameService.getHallOfFame(phone, null).total()).isZero();
+
+        visitorService.linkToMember(phone, member);
+        cardService.syncFinisher(phone, member.getId());
+        visitorService.linkToMember(tablet, member);
+        cardService.syncFinisher(tablet, member.getId());
+        // 이미 완주했으면 다시 불러도 번호가 늘지 않는다.
+        cardService.syncFinisher(tablet, member.getId());
+
+        HallOfFameResponseDTO hall = hallOfFameService.getHallOfFame(tablet, member.getId());
+        assertThat(hall.total()).isEqualTo(1);
+        assertThat(hall.myNo()).isEqualTo(1L);
+        assertThat(hall.finishers().getFirst().name()).isEqualTo("합친사람");
+    }
+
+    @Test
     void 없는_완주_번호는_찾을_수_없다() {
         assertThatThrownBy(() -> hallOfFameService.getFinisher(99L))
                 .isInstanceOf(HallOfFameException.class);

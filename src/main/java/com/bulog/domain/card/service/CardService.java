@@ -65,6 +65,18 @@ public class CardService {
         return CardConverter.toAcquisitionResponse(issuedCard, true);
     }
 
+    /** 로그인으로 방문자 기록이 합쳐진 뒤 호출: 합친 카드로 완주했으면 완주 번호를 준다. */
+    @Transactional
+    public void syncFinisher(Visitor visitor, Long memberId) {
+        Visitor lockedVisitor = visitorService.lockVisitor(visitor.getId());
+        List<Long> ownerVisitorIds = visitorService.getVisitorIds(lockedVisitor, memberId);
+        hallOfFameService.finishIfComplete(
+                lockedVisitor,
+                ownerVisitorIds,
+                cardCollectionStore.findAllByVisitor_IdIn(ownerVisitorIds)
+        );
+    }
+
     @Transactional(readOnly = true)
     public ArchiveResponseDTO getArchive(Visitor visitor, Long authenticatedMemberId) {
         List<Long> ownerVisitorIds = visitorService.getVisitorIds(

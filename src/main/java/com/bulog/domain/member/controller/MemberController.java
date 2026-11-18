@@ -1,5 +1,6 @@
 package com.bulog.domain.member.controller;
 
+import com.bulog.domain.card.service.CardService;
 import com.bulog.domain.member.converter.MemberConverter;
 import com.bulog.domain.member.dto.req.MemberLoginRequestDTO;
 import com.bulog.domain.member.dto.req.MemberSignupRequestDTO;
@@ -45,6 +46,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final VisitorService visitorService;
+    private final CardService cardService;
     private final VisitorCookieManager visitorCookieManager;
     private final SecurityContextRepository securityContextRepository;
 
@@ -151,5 +153,7 @@ public class MemberController {
         if (resolution.tokenIssued()) {
             visitorCookieManager.write(response, resolution.rawToken());
         }
+        // 다른 기기에서 모은 카드와 합쳐져 모두 모았으면 이때 완주 번호를 준다.
+        cardService.syncFinisher(resolution.visitor(), authenticatedMember.member().getId());
     }
 }

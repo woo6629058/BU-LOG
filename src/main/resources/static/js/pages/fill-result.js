@@ -9,7 +9,7 @@ const exhibitId = params.get('exhibitId');
 const isNew = params.get('new') !== '0';
 const isPreview = params.get('preview') === '1';
 // 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
-const { rooms: ROOMS, records } = await loadCollection();
+const { rooms: ROOMS, records, failed: loadFailed } = await loadCollection();
 const hit = findRegion(ROOMS, exhibitId);
 const root = document.querySelector('#result');
 
@@ -62,6 +62,20 @@ function renderUnknown() {
     element('h1', 'result__title', '어떤 유물인지 알 수 없어요'),
     element('p', 'result__text', '주소가 바르지 않거나 없는 유물이에요.'),
     linkButton('홈으로 가기', '/', 'primary'),
+  );
+  root.replaceChildren(box);
+}
+
+// 기록을 받아 오지 못했을 때: 채웠는지 알 수 없으니 다시 시도하게 한다.
+function renderLoadFailed() {
+  const box = element('section', 'result__notice');
+  const retry = element('button', 'art-button', '다시 불러오기');
+  retry.type = 'button';
+  retry.addEventListener('click', () => window.location.reload());
+  box.append(
+    element('h1', 'result__title', '기록을 불러오지 못했어요'),
+    element('p', 'result__text', '잠시 뒤 다시 시도해 주세요.'),
+    retry,
   );
   root.replaceChildren(box);
 }
@@ -130,5 +144,6 @@ function renderResult({ room, region }) {
 }
 
 if (!hit) renderUnknown();
+else if (!isPreview && loadFailed) renderLoadFailed();
 else if (!isPreview && !acquiredSet(records).has(exhibitId)) renderNotFilled(hit);
 else renderResult(hit);

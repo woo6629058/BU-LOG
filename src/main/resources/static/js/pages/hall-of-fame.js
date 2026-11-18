@@ -7,15 +7,17 @@ import { avatar, loadHallOfFame, recordIcon } from '../common/hall-of-fame-data.
 mountTabBar({ active: 'ranking' });
 
 // 명예의 전당(완주자·실시간 기록)과 내 수집 기록·닉네임을 서버에서 받는다.
-// 명예의 전당을 못 받으면 빈 화면으로 두고 안내 문구를 보여 준다.
+// 처음 온 방문자는 첫 요청에서 방문자 쿠키를 받으므로, 수집 기록을 먼저 받은 뒤 나머지를 함께 부른다
+// (동시에 부르면 요청마다 다른 방문자가 만들어질 수 있다).
+// 명예의 전당을 못 받으면 0명·빈 기록 대신 '불러오지 못했어요'를 보여 주고, 다음 갱신 때 다시 시도한다.
 const EMPTY_HALL = { total: 0, today: 0, myNo: null, myName: null, finishers: [], records: [] };
-const [{ rooms, records }, member, loadedHall] = await Promise.all([
-  loadCollection(),
+const { rooms, records } = await loadCollection();
+const [member, loadedHall] = await Promise.all([
   getMe().catch(() => null),
   loadHallOfFame().catch(() => null),
 ]);
 let hall = loadedHall ?? EMPTY_HALL;
-const loadFailed = loadedHall === null;
+let loadFailed = loadedHall === null;
 // 실시간 기록을 다시 받아 오는 간격
 const REFRESH_MS = 30000;
 
@@ -30,9 +32,10 @@ function element(tag, className, text) {
 
 function renderSummary({ animate = true } = {}) {
   const total = document.querySelector('#hof-total');
-  if (animate) countUp(total, hall.total);
+  if (loadFailed) total.textContent = '-';
+  else if (animate) countUp(total, hall.total);
   else total.textContent = hall.total;
-  document.querySelector('#hof-total-label').textContent = `${hall.total}명`;
+  document.querySelector('#hof-total-label').textContent = loadFailed ? '완주자 수를 불러오지 못했어요' : `${hall.total}명`;
   document.querySelector('#hof-today').textContent = hall.today > 0 ? `오늘 +${hall.today}명` : '';
 }
 
@@ -50,7 +53,7 @@ function renderEmptyList() {
 let shownFinisherKey = null;
 
 function renderList() {
-  const key = hall.finishers.map((finisher) => finisher.no).join(',');
+  const key = `${loadFailed}:${hall.finishers.map((finisher) => finisher.no).join(',')}`;
   if (key === shownFinisherKey) return;
   shownFinisherKey = key;
   const list = document.querySelector('#hof-list');
@@ -102,6 +105,10 @@ function renderMe() {
 // 완주했으면 내 완주 번호, 아직이면 지금 완주했을 때 받을 번호
 function renderMeNext(remaining) {
   const next = document.querySelector('#hof-me-next');
+  if (loadFailed && !hall.myNo) {
+    next.hidden = true;
+    return;
+  }
   if (hall.myNo) next.textContent = `No.${hall.myNo} 완주`;
   else if (remaining > 0) next.textContent = `완주하면 No.${hall.total + 1}`;
   next.hidden = !hall.myNo && remaining <= 0;
@@ -135,7 +142,7 @@ let currentFilter = FILTERS[0];
 function showRecords(filter = currentFilter, { keepScroll = false } = {}) {
   currentFilter = filter;
   const shown = hall.records.filter(filter.match);
-  if (shown.length === 0) recordList.replaceChildren(element('li', 'hof-sheet__empty', '아직 기록이 없어요'));
+  if (shown.length === 0) recordList.replaceChildren(element('li', 'hof-sheet__empty', loadFailed ? '기록을 불러오지 못했어요' : '아직 기록이 없어요'));
   else recordList.replaceChildren(...shown.map(renderRecord));
   if (!keepScroll) recordList.scrollTop = 0;
   recordStatus.textContent = `${filter.label} 기록 ${shown.length}개`;
@@ -183,6 +190,8 @@ function setTickerRecords(list, { announceNew = false } = {}) {
   if (announceNew) tickerPending.push(...list.filter((record) => record.id > lastRecordId).reverse());
   lastRecordId = Math.max(lastRecordId, newest);
   tickerCycle = [...list].reverse();
+  // 기록이 칸 수 이하면 새 기록은 대기열로 한 번만 보여 주고, 되풀이 목록에서 다시 고르지 않는다.
+  if (announceNew && tickerCycle.length <= TICKER_SLOTS) tickerCursor = tickerCycle.length;
 }
 
 function nextTickerRecord() {
@@ -221,7 +230,7 @@ function pushTickerRecord() {
 
 // 기록이 하나도 없을 때 멈춰 있는 안내 알약
 function showTickerPlaceholder() {
-  const pill = tickerPill(recordIcon('fill'), '아직 기록이 없어요. 첫 그림을 채워 보세요');
+  const pill = tickerPill(recordIcon('fill'), loadFailed ? '기록을 불러오지 못했어요' : '아직 기록이 없어요. 첫 그림을 채워 보세요');
   pill.classList.add('is-placeholder');
   pill.dataset.slot = '0';
   tickerItems.replaceChildren(pill);
@@ -244,7 +253,11 @@ async function refresh() {
   if (document.hidden) return;
   const next = await loadHallOfFame().catch(() => null);
   if (!next) return;
+  const recovered = loadFailed;
+  loadFailed = false;
   hall = next;
+  // 처음에 못 받았다가 이번에 받았으면 기록이 없을 때의 안내 알약도 정상 문구로 바꾼다.
+  if (recovered && hall.records.length === 0) showTickerPlaceholder();
   renderSummary({ animate: false });
   renderList();
   const { filled, total } = summarizeAll(rooms, acquiredSet(records));
@@ -259,4 +272,4 @@ renderMe();
 renderFilters();
 showRecords(FILTERS[0]);
 startTicker();
-if (!loadFailed) setInterval(refresh, REFRESH_MS);
+setInterval(refresh, REFRESH_MS);

@@ -113,7 +113,7 @@ export async function loadHallOfFame() {
   };
 }
 
-// 완주 번호로 완주자 한 명. 없으면 null.
+// 완주 번호로 완주자 한 명. 번호가 잘못됐거나 없는 번호(404)면 null, 그 밖의 오류는 그대로 던진다.
 export async function loadFinisher(no) {
   if (!Number.isInteger(no) || no < 1) return null;
   try {

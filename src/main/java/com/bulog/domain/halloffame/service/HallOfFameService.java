@@ -18,6 +18,7 @@ import com.bulog.domain.visitor.entity.Visitor;
 import com.bulog.domain.visitor.service.VisitorService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class HallOfFameService {
      * 새로 받은 카드를 기록한다.
      * 그림 채움은 항상, 전시실 완료는 그 전시실 카드를 모두 모았을 때, 완주는 수집 대상 카드를 모두 모았을 때 남긴다.
      *
-     * @param ownerCards 이 사람이 가진 카드 전부 (방금 받은 카드 포함)
+     * @param ownerCards 이 사람이 카드를 받기 전에 가지고 있던 카드 (방금 받은 issuedCard는 들어 있지 않고, 판정할 때 따로 더한다)
      */
     @Transactional
     public void recordNewCard(
@@ -79,17 +80,42 @@ public class HallOfFameService {
             hallRecordStore.store(HallRecord.roomDone(visitor, room, acquiredAt));
         }
 
-        boolean finished = collectibles.stream().allMatch(candidate -> owned.contains(candidate.getId()));
-        if (!finished || finisherStore.findFirstByVisitor_IdInOrderByIdAsc(ownerVisitorIds).isPresent()) {
-            return;
-        }
+        List<CardCollection> allCards = new ArrayList<>(ownerCards);
+        allCards.add(issuedCard);
+        finishIfComplete(visitor, ownerVisitorIds, allCards, collectibles);
+    }
+
+    /**
+     * 로그인으로 여러 방문자의 카드가 합쳐졌을 때: 합친 카드가 수집 대상을 모두 채우면 그때 완주 번호를 준다.
+     * 이미 완주 번호가 있으면 그대로 둔다.
+     *
+     * @param ownerCards 이 사람(합쳐진 방문자 전부)이 가진 카드
+     */
+    @Transactional
+    public void finishIfComplete(Visitor visitor, List<Long> ownerVisitorIds, Collection<CardCollection> ownerCards) {
+        finishIfComplete(visitor, ownerVisitorIds, ownerCards, exhibitCatalog.findAllCollectible());
+    }
+
+    // 완주 시각은 수집 대상 카드 중 마지막으로 받은 시각, 탐험 시간은 첫 카드부터 그때까지
+    private void finishIfComplete(
+            Visitor visitor,
+            List<Long> ownerVisitorIds,
+            Collection<CardCollection> ownerCards,
+            List<Exhibit> collectibles
+    ) {
         Set<String> collectibleIds = collectibles.stream().map(Exhibit::getId).collect(Collectors.toSet());
-        LocalDateTime startedAt = ownerCards.stream()
+        List<LocalDateTime> acquiredTimes = ownerCards.stream()
                 .filter(card -> collectibleIds.contains(card.getExhibitId()))
                 .map(CardCollection::getAcquiredAt)
-                .min(LocalDateTime::compareTo)
-                .orElse(acquiredAt);
-        Finisher finisher = finisherStore.store(Finisher.create(null, visitor, startedAt, acquiredAt));
+                .toList();
+        Set<String> owned = ownerCards.stream().map(CardCollection::getExhibitId).collect(Collectors.toSet());
+        if (collectibleIds.isEmpty() || !owned.containsAll(collectibleIds)
+                || finisherStore.findFirstByVisitor_IdInOrderByIdAsc(ownerVisitorIds).isPresent()) {
+            return;
+        }
+        LocalDateTime startedAt = acquiredTimes.stream().min(LocalDateTime::compareTo).orElseThrow();
+        LocalDateTime finishedAt = acquiredTimes.stream().max(LocalDateTime::compareTo).orElseThrow();
+        Finisher finisher = finisherStore.store(Finisher.create(null, visitor, startedAt, finishedAt));
         hallRecordStore.store(HallRecord.finish(finisher));
     }
 

@@ -1,6 +1,7 @@
 package com.bulog.domain.halloffame.service;
 
 import com.bulog.domain.visitor.entity.Visitor;
+import java.util.Locale;
 
 /** 명예의 전당에 보이는 이름: 로그인한 회원은 닉네임, 게스트는 "게스트 0000". */
 public final class ExplorerName {
@@ -25,6 +26,6 @@ public final class ExplorerName {
 
     static String guestNumber(Long visitorId) {
         long number = Math.floorMod(visitorId * GUEST_NUMBER_MULTIPLIER, GUEST_NUMBER_RANGE);
-        return String.format("%04d", number);
+        return String.format(Locale.ROOT, "%04d", number);
     }
 }
