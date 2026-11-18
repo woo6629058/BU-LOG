@@ -230,12 +230,7 @@ async function lookUpExhibit(exhibitId) {
     const exhibit = unwrap(await getExhibit(exhibitId));
     navigator.vibrate?.(60); // 지원하는 폰에서만 짧게 진동
 
-    // TODO(조장과 확인): 서버가 잠금 여부(locked)와 해제 조건(unlockHint)을 보내주면 그대로 동작
-    if (exhibit.locked) {
-      showLocked(exhibit);
-    } else {
-      showFound(exhibitId, exhibit);
-    }
+    showFound(exhibitId, exhibit);
   } catch (error) {
     if (error.status === 404) {
       flashError('등록되지 않은 유물이에요', 'QR 코드를 다시 확인해 주세요');
@@ -254,10 +249,10 @@ function buildMeta(exhibit) {
   return [place, numberText].filter(Boolean).join(' · ');
 }
 
-function fillThumbnail(exhibit, showImage) {
+function fillThumbnail(exhibit) {
   els.resultImage.hidden = true;
   els.resultImage.removeAttribute('src');
-  if (showImage && exhibit.imageUrl) {
+  if (exhibit.imageUrl) {
     els.resultImage.onload = () => { els.resultImage.hidden = false; };
     els.resultImage.onerror = () => { els.resultImage.hidden = true; };
     els.resultImage.src = exhibit.imageUrl;
@@ -311,8 +306,7 @@ function openResultSheet() {
 function showFound(exhibitId, exhibit) {
   els.frame.dataset.state = 'found';
   resetGuide();
-  els.resultBox.classList.remove('qr-result--locked');
-  fillThumbnail(exhibit, true);
+  fillThumbnail(exhibit);
 
   els.resultMeta.textContent = buildMeta(exhibit);
   els.resultTitle.textContent = `${withObjectParticle(exhibit.name ?? '유물')} 찾았어요!`;
@@ -322,21 +316,6 @@ function showFound(exhibitId, exhibit) {
     stopCamera();
     window.location.href = exhibitPageUrl(exhibitId);
   };
-  openResultSheet();
-}
-
-// 01-3 잠긴 유물
-function showLocked(exhibit) {
-  els.frame.dataset.state = 'locked';
-  resetGuide();
-  els.resultBox.classList.add('qr-result--locked');
-  fillThumbnail(exhibit, false);
-
-  els.resultMeta.textContent = buildMeta(exhibit);
-  els.resultTitle.textContent = '아직 열리지 않은 유물이에요';
-  els.resultDesc.textContent = exhibit.unlockHint ?? '앞 전시실의 유물을 먼저 모으면 열려요';
-  els.resultAction.textContent = '다시 스캔하기';
-  els.resultAction.onclick = backToScanning;
   openResultSheet();
 }
 

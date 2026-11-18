@@ -1,4 +1,4 @@
-/* 홈 화면과 같은 글꼴 (11/11 회의: 홈 화면 글꼴만 쓰기)
+/* 홈 화면과 같은 글꼴만 쓴다
  *   Baloo 2 750 — 숫자 / 티머니 둥근바람 ExtraBold — 큰 한글 제목
  *   SUIT 800 — 작은 제목·버튼·배지 / Noto Sans KR 600 — 본문
  *   Baloo 2, Noto Sans KR는 HTML의 Google Fonts 링크로 불러옴 */
@@ -32,7 +32,6 @@
   --qr-onggi: #7a4a2e;        /* 옹기 갈색: 사진 자리 */
   --qr-scan: #e9b850;         /* 스캔 중 네모 (노랑) */
   --qr-found: #4fb56f;        /* 인식 완료 네모 (초록) */
-  --qr-locked: #e3a03f;       /* 잠긴 유물 네모 (주황) */
   --qr-error: #f19a7c;        /* 에러 문구 */
   margin: 0;
   font-family: "Noto Sans KR", Pretendard, system-ui, sans-serif;
@@ -139,7 +138,6 @@
 }
 
 .qr-frame[data-state="found"] { --frame-color: var(--qr-found); }
-.qr-frame[data-state="locked"] { --frame-color: var(--qr-locked); }
 .qr-frame[data-state="checking"] { transform: translate(-50%, -50%) scale(0.97); }
 
 .qr-frame__corner {
@@ -193,15 +191,10 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
-.qr-frame[data-state="found"] .qr-frame__badge,
-.qr-frame[data-state="locked"] .qr-frame__badge { display: block; animation: qr-pop 0.3s ease-out; }
+.qr-frame[data-state="found"] .qr-frame__badge { display: block; animation: qr-pop 0.3s ease-out; }
 
 .qr-frame[data-state="found"] .qr-frame__badge {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E");
-}
-
-.qr-frame[data-state="locked"] .qr-frame__badge {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3' fill='none' stroke='white' stroke-width='2.5'/%3E%3C/svg%3E");
 }
 
 @keyframes qr-pop {
@@ -433,11 +426,6 @@
   stroke-linejoin: round;
 }
 
-.qr-result__icon--lock { display: none; fill: #fff; }
-.qr-result--locked .qr-result__thumb { background: #ddd2c5; }
-.qr-result--locked .qr-result__icon--photo { display: none; }
-.qr-result--locked .qr-result__icon--lock { display: block; }
-.qr-result__icon--lock path { fill: none; }
 
 .qr-result__text { min-width: 0; }
 
@@ -448,7 +436,6 @@
   color: var(--qr-brown);
 }
 
-.qr-result--locked .qr-result__meta { color: var(--qr-muted); }
 .qr-result__meta:empty { display: none; }
 
 .qr-result__title {
@@ -615,7 +602,7 @@
   background: #fff;
 }
 /* =========================================================
-   글꼴 통일 (11/11 회의: 홈 화면 글꼴만 쓰기)
+   글꼴 통일 (홈 화면 글꼴만 쓰기)
    ========================================================= */
 .qr-page {
   --font-number: "Baloo 2", "SUIT", system-ui, sans-serif;

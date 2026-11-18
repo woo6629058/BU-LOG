@@ -1,4 +1,4 @@
-/* 홈 화면과 같은 글꼴 (11/11 회의: 홈 화면 글꼴만 쓰기)
+/* 홈 화면과 같은 글꼴만 쓴다
  *   Baloo 2 750 — 숫자 / 티머니 둥근바람 ExtraBold — 큰 한글 제목
  *   SUIT 800 — 작은 제목·버튼·배지 / Noto Sans KR 600 — 본문
  *   Baloo 2, Noto Sans KR는 HTML의 Google Fonts 링크로 불러옴 */
@@ -37,7 +37,7 @@
   background: var(--ex-bg);
 }
 
-/* 공통 머리말·꼬리말: 피그마 02에 없어서 이 화면에서만 숨김 (회의 결과에 따라 이 줄 삭제) */
+/* 공통 머리말·꼬리말: 피그마 02에 없어서 이 화면에서만 숨김 */
 .exhibit-page #site-header,
 .exhibit-page #site-footer { display: none; }
 
@@ -368,7 +368,7 @@
   background: #F4BFA3;
 }
 /* =========================================================
-   글꼴 통일 (11/11 회의: 홈 화면 글꼴만 쓰기)
+   글꼴 통일 (홈 화면 글꼴만 쓰기)
    ========================================================= */
 .exhibit-page {
   --font-number: "Baloo 2", "SUIT", system-ui, sans-serif;
