@@ -1,11 +1,11 @@
 import { ROOMS } from '../common/collection-data.js';
-import { avatar, findFinisher } from '../common/hall-of-fame-data.js';
+import { avatar, loadFinisher } from '../common/hall-of-fame-data.js';
 
 const HALL_OF_FAME_URL = '/pages/hall-of-fame.html';
 const TROPHY_SRC = '/images/home/icon-ranking.webp';
 
-// 완주자 명단은 아직 예시 데이터다 (hall-of-fame-data.js). 주소의 ?no= 가 완주 번호다.
-const finisher = findFinisher(Number(new URLSearchParams(window.location.search).get('no')));
+// 주소의 ?no= 가 완주 번호다. 서버에서 그 완주자를 받아 온다 (못 받으면 '찾을 수 없어요').
+const finisher = await loadFinisher(Number(new URLSearchParams(window.location.search).get('no'))).catch(() => null);
 const root = document.querySelector('#finisher');
 
 function element(tag, className, text) {
@@ -75,7 +75,7 @@ function renderProfile() {
   const total = ROOMS.reduce((sum, room) => sum + room.regions.length, 0);
 
   const header = element('header', 'finisher__header');
-  const photo = avatar(finisher.name, finisher.no);
+  const photo = avatar(finisher.name);
   photo.classList.add('finisher__photo');
 
   const number = element('p', 'finisher__number art-badge');

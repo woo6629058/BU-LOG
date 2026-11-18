@@ -16,9 +16,10 @@ const exhibitId = params.get('exhibitId');
 const demoKey = params.get('demo');
 const exhibitPageUrl = exhibitId ? `/pages/exhibit.html?id=${encodeURIComponent(exhibitId)}` : '/';
 
-function fillResultUrl(id, newlyAcquired) {
+// 체험 모드는 카드를 받지 않으므로 preview=1을 붙여 채우기 화면을 미리 보기로 연다.
+function fillResultUrl(id, newlyAcquired, preview = false) {
   const again = newlyAcquired === false ? '&new=0' : '';
-  return `/pages/fill-result.html?exhibitId=${encodeURIComponent(id)}${again}`;
+  return `/pages/fill-result.html?exhibitId=${encodeURIComponent(id)}${again}${preview ? '&preview=1' : ''}`;
 }
 
 // ---------------------------------------------------------
@@ -888,7 +889,7 @@ function handleCorrect(result) {
   );
 
   const fillId = demo ? (demo.fillId ?? DEMO_FILL_ID) : exhibitId;
-  finishQuiz('그림 채우러 가기', fillResultUrl(fillId, result.card?.newlyAcquired));
+  finishQuiz('그림 채우러 가기', fillResultUrl(fillId, result.card?.newlyAcquired, Boolean(demo)));
 }
 
 function handleWrong(result) {

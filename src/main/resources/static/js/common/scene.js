@@ -19,14 +19,9 @@ export function describeScene(room, acquired) {
   return `${room.sceneTitle} 그림, ${total}칸 중 ${filled}칸 채움`;
 }
 
-// 빈 구역 링크의 읽기용 이름
-const regionLinkLabel = (item) => `${item.order}번 ${item.title}, 비어 있음, 채워 보기`;
-
-function renderReveal(room, acquired, label, regionHref) {
+function renderReveal(room, acquired, label) {
   const { width, height, lockedSrc, colorSrc } = room.scene;
-  // 구역 링크가 있으면 img 역할 대신 group으로 두어 안쪽 링크가 읽히게 한다.
-  const role = regionHref ? 'group' : 'img';
-  const root = svg('svg', { viewBox: `0 0 ${width} ${height}`, role, 'aria-label': label });
+  const root = svg('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': label });
   const defs = svg('defs', {});
   root.append(defs, svg('image', { href: lockedSrc, width, height }));
 
@@ -47,25 +42,15 @@ function renderReveal(room, acquired, label, regionHref) {
     const outline = svg('path', { d: item.path, class: 'scene__outline', 'data-exhibit-id': item.exhibitId });
     root.append(fill, outline);
   }
-
-  // 빈 구역 링크는 모든 그림 위에 둔다.
-  for (const item of room.regions) {
-    const href = !acquired.has(item.exhibitId) && regionHref?.(item);
-    if (!href) continue;
-    const link = svg('a', { href, class: 'scene__link', 'aria-label': regionLinkLabel(item) });
-    link.append(svg('path', { d: item.path, class: 'scene__hit' }));
-    root.append(link);
-  }
   return root;
 }
 
 // 전시실 그림을 만든다. focusExhibitId가 그 전시실 구역이면 그 구역을 잠깐 강조한다.
-// regionHref(region)가 주소를 주면 빈 구역을 그 주소로 가는 링크로 만든다.
-export function renderScene(room, acquired, { focusExhibitId = null, label = describeScene(room, acquired), regionHref = null } = {}) {
+export function renderScene(room, acquired, { focusExhibitId = null, label = describeScene(room, acquired) } = {}) {
   const figure = document.createElement('figure');
   figure.className = `scene scene--${room.scene.type}`;
   figure.style.aspectRatio = `${room.scene.width} / ${room.scene.height}`;
-  figure.append(renderReveal(room, acquired, label, regionHref));
+  figure.append(renderReveal(room, acquired, label));
   if (focusExhibitId) highlightRegion(figure, focusExhibitId);
   return figure;
 }

@@ -188,6 +188,31 @@
   list-style: none;
 }
 
+/* 완주자가 아직 없을 때 */
+.hof__empty {
+  padding: 22px 16px;
+  border: 1.5px dashed var(--art-line);
+  border-radius: 16px;
+  text-align: center;
+  background: var(--art-surface);
+}
+
+.hof__empty-title {
+  margin: 0 0 4px;
+  color: var(--art-ink);
+  font-family: var(--font-label);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.hof__empty-text {
+  margin: 0;
+  color: var(--art-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
 /* 완주자 한 줄: 완주 번호 · 프로필 동그라미 · 이름과 완주 시각 · 화살표. 누르면 완주자 프로필로 간다. */
 .hof-finisher {
   display: flex;
@@ -629,6 +654,14 @@ html:has(.hof-sheet[open]) {
   box-shadow: 0 2px 8px rgba(205, 107, 55, 0.14);
 }
 
+/* 기록이 아직 없을 때 */
+.hof-sheet__empty {
+  padding: 24px 0;
+  color: var(--art-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
 .hof-sheet__list {
   display: flex;
   flex: 1;
@@ -684,6 +717,17 @@ html:has(.hof-sheet[open]) {
   width: 18px;
   height: 18px;
   object-fit: contain;
+}
+
+/* 그림 채움·전시실 완료: 유물 그림·전시실 그림을 동그라미에 크게 */
+.hof-record__icon img.is-artifact {
+  width: 22px;
+  height: 22px;
+}
+
+.hof-ticker__pill img.is-artifact {
+  width: 15px;
+  height: 15px;
 }
 
 .hof-record__body {

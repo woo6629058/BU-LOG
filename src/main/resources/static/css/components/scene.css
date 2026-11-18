@@ -45,25 +45,6 @@
   animation: scene-outline 2s ease-out forwards;
 }
 
-/* 빈 구역 링크 (그림 도감): 평소엔 보이지 않고, 가리키거나 키보드로 고르면 빛난다 */
-.scene__hit {
-  fill: transparent;
-  stroke: transparent;
-  stroke-width: 6;
-  cursor: pointer;
-  transition: fill 0.15s ease, stroke 0.15s ease;
-}
-
-.scene__link {
-  outline: none;
-}
-
-.scene__link:hover .scene__hit,
-.scene__link:focus-visible .scene__hit {
-  fill: rgba(255, 248, 236, 0.28);
-  stroke: var(--scene-glow);
-}
-
 /* 채우기 연출: 밝게 빛나며 나타났다가 제자리 색으로 */
 .scene__fill.is-filling {
   animation: scene-fill 0.8s ease-out;

@@ -268,6 +268,18 @@
 .art-avatar[data-tone="3"] { background: #D8E5F2; }
 .art-avatar[data-tone="4"] { background: #F8E7B9; }
 
+/* 유물 그림 프로필: 동그라미 안에 배경 없는 유물 그림을 넣는다 */
+.art-avatar--artifact { overflow: hidden; }
+
+/* 그림 비율이 제각각이라 가로·세로 모두 동그라미 크기로 제한한다 (퍼센트 높이는 grid 안에서 풀리지 않을 수 있어 크기 변수로 계산) */
+.art-avatar--artifact img {
+  width: auto;
+  height: auto;
+  max-width: calc(var(--avatar-size, 36px) * 0.62);
+  max-height: calc(var(--avatar-size, 36px) * 0.62);
+  object-fit: contain;
+}
+
 /* =========================================================
    모션: 모바일 앱처럼 누름 반응, 목록 등장, 막대 채우기, 화면 전환
    길이·곡선은 아래 토큰 하나로 맞춘다. 움직임 줄이기 설정이면 모두 끈다.
