@@ -30,6 +30,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +52,7 @@ public class MemberController {
     private final CardService cardService;
     private final VisitorCookieManager visitorCookieManager;
     private final SecurityContextRepository securityContextRepository;
+    private final TokenBasedRememberMeServices rememberMeServices;
 
     @GetMapping("/csrf")
     public ApiResponse<CsrfTokenResponseDTO> getCsrfToken(CsrfToken csrfToken) {
@@ -112,6 +114,8 @@ public class MemberController {
             HttpServletResponse response
     ) {
         new SecurityContextLogoutHandler().logout(request, response, authentication);
+        // 로그인 상태 유지 쿠키도 지운다 (안 지우면 다음 요청에서 다시 자동 로그인됨)
+        rememberMeServices.logout(request, response, authentication);
         VisitorResolution anonymousVisitor = visitorService.createAnonymousVisitor();
         visitorCookieManager.write(response, anonymousVisitor.rawToken());
         return ApiResponse.of(MemberSuccessCode.MEMBER_LOGGED_OUT, null);
@@ -141,6 +145,8 @@ public class MemberController {
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
         securityContextRepository.saveContext(context, request, response);
+        // 세션이 끝나도 2주 동안 자동 로그인되게 로그인 상태 유지 쿠키를 준다 (RememberMeConfig)
+        rememberMeServices.loginSuccess(request, response, authentication);
     }
 
     private void linkVisitor(

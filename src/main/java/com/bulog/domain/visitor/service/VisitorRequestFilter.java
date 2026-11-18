@@ -69,6 +69,14 @@ public class VisitorRequestFilter extends OncePerRequestFilter {
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof MemberPrincipal principal)) {
+            // 로그인이 풀렸는데(세션 만료·브라우저 재시작) 방문자는 계정에 이어져 있으면,
+            // 로그아웃할 때처럼 새 게스트로 시작한다. 그대로 두면 게스트 화면에서 모은 기록이 그 계정 이름으로 남는다.
+            // 계정에 남은 기록은 다시 로그인하면 이 새 게스트 기록과 함께 합쳐진다.
+            if (visitor.getMember() != null) {
+                VisitorResolution anonymous = visitorService.createAnonymousVisitor();
+                visitorCookieManager.write(response, anonymous.rawToken());
+                return anonymous.visitor();
+            }
             return visitor;
         }
 
