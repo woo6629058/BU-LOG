@@ -1,4 +1,4 @@
-/* 홈 화면과 같은 글꼴 (11/11 회의: 홈 화면 글꼴만 쓰기)
+/* 홈 화면과 같은 글꼴만 쓴다
  *   Baloo 2 750 — 숫자 / 티머니 둥근바람 ExtraBold — 큰 한글 제목
  *   SUIT 800 — 작은 제목·버튼·배지 / Noto Sans KR 600 — 본문
  *   Baloo 2, Noto Sans KR는 HTML의 Google Fonts 링크로 불러옴 */
@@ -80,29 +80,6 @@
   margin-left: -6px;
   font-size: 20px;
   text-decoration: none;
-}
-
-.quiz-chances {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 12px;
-  color: var(--qz-muted);
-}
-
-.quiz-chances__dots { display: inline-flex; gap: 4px; }
-
-.quiz-chance {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--qz-brown);
-}
-
-.quiz-chance--used {
-  background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--qz-line);
 }
 
 /* ---------- 유물 이름, 질문 ---------- */
@@ -450,14 +427,13 @@
 }
 
 .quiz-close { color: #2B211A; }
-.quiz-chances { font-size: 12px; color: #8A7B6E; }
 
 .quiz-label { font-size: 13px; font-weight: 400; line-height: 16px; color: #C0603A; }
 
 .quiz-question {
   margin-bottom: 14px;
   font-family: var(--font-title);
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 400;
   line-height: 140%;
   color: #2B211A;
@@ -480,11 +456,11 @@
 .quiz-options { gap: 10px; }
 
 .quiz-option {
-  min-height: 65px;
-  padding: 16px;
+  min-height: 54px;
+  padding: 12px 14px;
   border: 1.5px solid #EFE2CC;
-  border-radius: 22px;
-  font-size: 17px;
+  border-radius: 18px;
+  font-size: 15px;
   font-weight: 400;
   color: #2B211A;
   background: #FFFFFF;
@@ -492,9 +468,9 @@
 .quiz-option:hover:not(:disabled) { border-color: #F2B79B; }
 
 .quiz-option__letter {
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
   font-weight: 400;
   color: #4A2E1E;
   background: #F6EADB;
@@ -516,9 +492,9 @@
 }
 
 /* 채점 결과 상자 */
-.quiz-feedback { border-radius: 22px; }
-.quiz-feedback__title { font-weight: 400; font-size: 16px; }
-.quiz-feedback__message { font-size: 14px; }
+.quiz-feedback { border-radius: 18px; }
+.quiz-feedback__title { font-weight: 400; font-size: 15px; }
+.quiz-feedback__message { font-size: 13px; }
 
 /* 자물쇠 글꼴은 맨 아래 "글꼴 통일" 구역 */
 .quiz-lock__number { font-family: var(--font-title); font-weight: 400; }
@@ -526,13 +502,13 @@
 
 /* 하단 버튼: 피치색 알약 */
 .quiz-cta {
-  padding: 12px 24px calc(34px + env(safe-area-inset-bottom));
+  padding: 10px 18px calc(16px + env(safe-area-inset-bottom));
   background: linear-gradient(180deg, rgba(255, 245, 228, 0) 0%, var(--qz-bg) 35%);
 }
 .quiz-cta__button {
-  min-height: 56px;
+  min-height: 48px;
   border-radius: 999px;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 400;
   color: #4A2E1E;
   background: #F4BFA3;
@@ -619,7 +595,7 @@
 .quiz-stamp__note {
   margin: 8px 0 0;
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: #5A3A26;
 }
@@ -639,7 +615,7 @@
   .quiz-stamp__seal { animation: none; }
 }
 /* =========================================================
-   글꼴 통일 (11/11 회의: 홈 화면 글꼴만 쓰기)
+   글꼴 통일 (홈 화면 글꼴만 쓰기)
    ========================================================= */
 .quiz-page {
   --font-number: "Baloo 2", "SUIT", system-ui, sans-serif;
@@ -658,7 +634,6 @@
 
 /* 작은 제목·버튼·배지: SUIT */
 .quiz-label,
-.quiz-chances,
 .quiz-demo-badge,
 .quiz-option,
 .quiz-option__letter,
@@ -692,7 +667,7 @@
 /* Noto Sans KR가 손글씨보다 넓어서 안내 알약이 두 줄이 되지 않게 조금 줄임 */
 .quiz-notice { font-size: 13px; letter-spacing: -0.02em; }
 /* =========================================================
-   유물 사진 카드 (11/16 회의: 객관식·자물쇠에도 사진이 보이게)
+   유물 사진 카드 (객관식·자물쇠에도 사진이 보이게)
    폴라로이드 사진을 마스킹테이프로 붙인 느낌. 누르면 크게 보기
    ========================================================= */
 .quiz-photo {
@@ -765,7 +740,7 @@
 }
 
 /* =========================================================
-   찾아 누르기 (11/16 회의: 새 게임)
+   찾아 누르기
    사진을 자르지 않고 그대로 보여 줘야 누른 자리가 정확함
    ========================================================= */
 .quiz-find {
@@ -825,7 +800,7 @@
 }
 
 /* =========================================================
-   순서 맞추기 (11/16 회의: 4번째 게임)
+   순서 맞추기
    카드를 끌어서 위→아래 순서로 놓음
    ========================================================= */
 .quiz-order {
