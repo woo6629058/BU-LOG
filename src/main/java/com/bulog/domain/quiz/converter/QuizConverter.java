@@ -16,7 +16,13 @@ public final class QuizConverter {
                 .map(option -> new QuizOptionResponseDTO(option.getId(), option.getContent()))
                 .toList();
 
-        return new QuizResponseDTO(quiz.getId(), quiz.getQuestion(), options);
+        return new QuizResponseDTO(
+                quiz.getId(),
+                quiz.getQuestion(),
+                quiz.getHint(),
+                quiz.getDialLabelList(),
+                options
+        );
     }
 
     public static QuizAttemptResponseDTO toAttemptResponse(

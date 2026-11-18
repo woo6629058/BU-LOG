@@ -83,38 +83,8 @@ const DEMO_QUIZZES = {
   },
 };
 
-// ---------------------------------------------------------
-// [회의 시연용] 관찰 미션 초안 24개 (11/16 회의: 유물 정보는 누리집·서버 기준, 전시실마다 게임 4종)
-// 주소: quiz.html?demo=유물id  (예: ?demo=ongi2-sojutgori)
-// 서버에 진짜 미션이 들어가면 이 부분은 지움
-// ---------------------------------------------------------
-const MISSION_DRAFTS = {
-  'ongi1-faith-jar': {"exhibit": {"name": "신앙항아리", "exhibitionRoom": "옹기1전시실"}, "quiz": {"question": "신앙항아리를 관찰해서 자물쇠를 열어 보세요", "options": [{"id": 1001, "content": "221"}, {"id": 1002, "content": "212"}, {"id": 1003, "content": "121"}, {"id": 1004, "content": "222"}], "hint": "앞에서 보이는 십자가, 어깨의 물결무늬 줄, 뚜껑 손잡이를 차례로 세어 보세요.", "imageUrl": "/images/exhibits/ongi1-faith-jar.jpg", "dialLabels": ["십자가", "물결띠", "뚜껑 손잡이"]}, "answerOptionId": 1001, "explanation": "십자가 2개, 물결무늬 2줄, 뚜껑 손잡이 1개예요. 점말의 천주교인들은 옹기에 십자가를 그려 신앙을 담았어요.", "fillId": "ongi1-faith-jar"},
-  'ongi1-jubyeong': {"exhibit": {"name": "주병", "exhibitionRoom": "옹기1전시실"}, "quiz": {"question": "주병의 입구는 어떤 모양일까요?", "options": [{"id": 1011, "content": "짧은 목에 바깥으로 벌어짐"}, {"id": 1012, "content": "길고 가느다란 목"}, {"id": 1013, "content": "뚜껑이 덮여 있음"}, {"id": 1014, "content": "옆에 주둥이가 달림"}], "hint": "병의 맨 위를 잘 보세요.", "imageUrl": "/images/exhibits/ongi1-jubyeong.jpg"}, "answerOptionId": 1011, "explanation": "짧은 목 끝이 바깥으로 살짝 벌어져 있어서 따를 때 흘러내리지 않아요.", "fillId": "ongi1-jubyeong"},
-  'ongi1-seongju-danji': {"exhibit": {"name": "성주단지", "exhibitionRoom": "옹기1전시실"}, "quiz": {"question": "성주단지 뚜껑의 손잡이를 찾아 눌러 보세요", "options": [{"id": 1021, "content": "spot:50,25,7"}, {"id": 1022, "content": "spot:20,55,9"}], "hint": "뚜껑 한가운데를 보세요.", "imageUrl": "/images/exhibits/ongi1-seongju-danji.jpg"}, "answerOptionId": 1021, "explanation": "뚜껑 가운데에 작고 둥근 꼭지가 손잡이 역할을 해요.", "fillId": "ongi1-seongju-danji"},
-  'ongi1-flower-jar': {"exhibit": {"name": "화초문항아리", "exhibitionRoom": "옹기1전시실"}, "quiz": {"question": "항아리를 위에서 아래로 보며 순서대로 놓아 보세요", "options": [{"id": 1031, "content": "order:주황빛 입구 테두리>꽃송이>길게 뻗은 잎"}, {"id": 1032, "content": "order:꽃송이>주황빛 입구 테두리>길게 뻗은 잎"}, {"id": 1033, "content": "order:길게 뻗은 잎>꽃송이>주황빛 입구 테두리"}], "hint": "맨 위 입구부터 차례로 내려와 보세요.", "imageUrl": "/images/exhibits/ongi1-flower-jar.jpg"}, "answerOptionId": 1031, "explanation": "맨 위 주황빛 입구 아래로 꽃송이가 피고, 그 아래로 잎이 길게 뻗어 있어요.", "fillId": "ongi1-flower-jar"},
-  'ongi2-kongnamul-siru': {"exhibit": {"name": "콩나물시루", "exhibitionRoom": "옹기2전시실"}, "quiz": {"question": "콩나물시루는 무엇 위에 올려져 있을까요?", "options": [{"id": 1041, "content": "나무 막대를 걸친 큰 그릇"}, {"id": 1042, "content": "바닥에 바로"}, {"id": 1043, "content": "돌 받침"}, {"id": 1044, "content": "네모 나무판"}], "hint": "시루 아래쪽을 보세요.", "imageUrl": "/images/exhibits/ongi2-kongnamul-siru.jpg"}, "answerOptionId": 1041, "explanation": "큰 그릇에 나무 막대를 걸치고 시루를 올려, 흘러내린 물을 받았어요.", "fillId": "ongi2-kongnamul-siru"},
-  'ongi2-pattern-jar': {"exhibit": {"name": "문양항아리", "exhibitionRoom": "옹기2전시실"}, "quiz": {"question": "항아리를 위에서 아래로 보며 순서대로 놓아 보세요", "options": [{"id": 1051, "content": "order:입구>작은 고리 무늬>큰 고리 무늬"}, {"id": 1052, "content": "order:작은 고리 무늬>입구>큰 고리 무늬"}, {"id": 1053, "content": "order:입구>큰 고리 무늬>작은 고리 무늬"}], "hint": "고리 무늬의 크기를 비교해 보세요.", "imageUrl": "/images/exhibits/ongi2-pattern-jar.jpg"}, "answerOptionId": 1051, "explanation": "입구 바로 아래에 작은 고리, 그 아래 몸통에 큰 고리가 그려져 있어요.", "fillId": "ongi2-pattern-jar"},
-  'ongi2-sojutgori': {"exhibit": {"name": "소줏고리", "exhibitionRoom": "옹기2전시실"}, "quiz": {"question": "술이 나오는 주둥이, 위쪽 통의 물결무늬 줄, 위아래로 쌓인 층을 세어 자물쇠를 열어 보세요", "options": [{"id": 1061, "content": "122"}, {"id": 1062, "content": "112"}, {"id": 1063, "content": "212"}, {"id": 1064, "content": "121"}], "hint": "위쪽 통 옆으로 길게 뻗은 것이 주둥이예요. 물결무늬는 위쪽 통에 있어요.", "imageUrl": "/images/exhibits/ongi2-sojutgori.jpg", "dialLabels": ["주둥이", "물결무늬", "층"]}, "answerOptionId": 1061, "explanation": "주둥이 1개, 위쪽 통의 물결무늬 2줄, 위아래 2층이에요. 아래에서 술을 데우면 올라온 김이 식으면서 맺힌 방울이 주둥이로 흘러나와 소주가 돼요.", "fillId": "ongi2-sojutgori"},
-  'ongi2-janggun': {"exhibit": {"name": "장군", "exhibitionRoom": "옹기2전시실"}, "quiz": {"question": "장군에 물이나 술을 붓는 입구를 찾아 눌러 보세요", "options": [{"id": 1071, "content": "spot:50,53,12"}, {"id": 1072, "content": "spot:50,18,8"}], "hint": "원래는 눕혀서 쓰던 그릇이에요.", "imageUrl": "/images/exhibits/ongi2-janggun.jpg"}, "answerOptionId": 1071, "explanation": "눕혀서 쓰는 그릇이라 입구가 몸통 옆면에 있어요.", "fillId": "ongi2-janggun"},
-  'local-half-moon-knife': {"exhibit": {"name": "반달돌칼", "exhibitionRoom": "부천향토역사관"}, "quiz": {"question": "돌칼 수, 돌칼 1개당 구멍 수, 총 구멍 수를 세어 자물쇠를 열어 보세요", "options": [{"id": 1081, "content": "224"}, {"id": 1082, "content": "222"}, {"id": 1083, "content": "244"}, {"id": 1084, "content": "214"}], "hint": "돌칼 1개에 구멍이 몇 개인지 먼저 세어 보세요.", "imageUrl": "/images/exhibits/local-half-moon-knife.jpg", "dialLabels": ["돌칼", "1개당 구멍", "총 구멍"]}, "answerOptionId": 1081, "explanation": "반달돌칼 2점에 구멍이 2개씩, 모두 4개예요. 구멍에 끈을 끼워 손에 걸고 이삭을 땄어요.", "fillId": "local-half-moon-knife"},
-  'local-spindle-whorl': {"exhibit": {"name": "가락바퀴", "exhibitionRoom": "부천향토역사관"}, "quiz": {"question": "두 가락바퀴 중 검은색 가락바퀴를 찾아 눌러 보세요", "options": [{"id": 1091, "content": "spot:72,50,15"}, {"id": 1092, "content": "spot:28,50,15"}], "hint": "두 개의 색을 비교해 보세요.", "imageUrl": "/images/exhibits/local-spindle-whorl.jpg"}, "answerOptionId": 1091, "explanation": "오른쪽이 검은색, 왼쪽이 갈색이에요. 가운데 구멍에 막대를 끼워 실을 꼬았어요.", "fillId": "local-spindle-whorl"},
-  'local-inhwamun-togibyeong': {"exhibit": {"name": "인화문 토기병", "exhibitionRoom": "부천향토역사관"}, "quiz": {"question": "토기병을 위에서 아래로 보며 순서대로 놓아 보세요", "options": [{"id": 1101, "content": "order:꽃잎처럼 벌어진 입구>가는 목>납작한 몸통>굽(받침)"}, {"id": 1102, "content": "order:가는 목>꽃잎처럼 벌어진 입구>납작한 몸통>굽(받침)"}, {"id": 1103, "content": "order:꽃잎처럼 벌어진 입구>납작한 몸통>가는 목>굽(받침)"}], "hint": "맨 위 입구부터 바닥까지 내려와 보세요.", "imageUrl": "/images/exhibits/local-inhwamun-togibyeong.jpg"}, "answerOptionId": 1101, "explanation": "꽃잎처럼 벌어진 입구, 가는 목, 납작한 몸통, 굽 순서예요.", "fillId": "local-inhwamun-togibyeong"},
-  'local-cheonghwa-hap': {"exhibit": {"name": "청화백자연화문합", "exhibitionRoom": "부천향토역사관"}, "quiz": {"question": "뚜껑 윗면에 그려진 무늬는 어떤 모양일까요?", "options": [{"id": 1111, "content": "작은 동그라미가 가득"}, {"id": 1112, "content": "연꽃잎이 빙 둘러져 있음"}, {"id": 1113, "content": "가로 줄무늬"}, {"id": 1114, "content": "아무 무늬 없음"}], "hint": "잔이 아니라 뚜껑 윗면을 보세요.", "imageUrl": "/images/exhibits/local-cheonghwa-hap.jpg"}, "answerOptionId": 1111, "explanation": "뚜껑에는 작은 동그라미가 가득 그려져 있어요. 연꽃 씨앗이 박힌 연밥을 표현한 거예요. 잔에는 연잎을 그렸어요.", "fillId": "local-cheonghwa-hap"},
-  'europe-meissen-plate': {"exhibit": {"name": "마이센 마크가 있는 접시 액자", "exhibitionRoom": "유럽자기전시실"}, "quiz": {"question": "쌍칼 마크, AR 글자, Meissen 글씨를 세어 자물쇠를 열어 보세요", "options": [{"id": 1121, "content": "712"}, {"id": 1122, "content": "711"}, {"id": 1123, "content": "612"}, {"id": 1124, "content": "722"}], "hint": "교차한 쌍칼 마크, AR 글자, 필기체 Meissen 글씨를 차례로 세어 보세요. 아래쪽 'Meissener Porzellan'은 세지 않아요.", "imageUrl": "/images/exhibits/europe-meissen-plate.jpg", "dialLabels": ["쌍칼", "AR", "Meissen"]}, "answerOptionId": 1121, "explanation": "쌍칼 마크 7개, AR 글자 1개, 필기체 Meissen 글씨 2개예요. 초창기엔 아우구스투스 왕의 머리글자 AR을, 1723년부터는 작센 지방의 쌍칼을 새겼어요.", "fillId": "europe-meissen-plate"},
-  'europe-sevres-vase': {"exhibit": {"name": "세브르 평화의 화병", "exhibitionRoom": "유럽자기전시실"}, "quiz": {"question": "화병 그림 속 하얀 새를 찾아 눌러 보세요", "options": [{"id": 1131, "content": "spot:45,47,9"}, {"id": 1132, "content": "spot:50,22,8"}], "hint": "화병 몸통 가운데 그림을 보세요.", "imageUrl": "/images/exhibits/europe-sevres-vase.jpg"}, "answerOptionId": 1131, "explanation": "가운데 그림의 하얀 새는 평화를 상징하는 비둘기예요. 흰 흙을 여러 겹 얇게 발라 그렸어요.", "fillId": "europe-sevres-vase"},
-  'europe-worcester-vase': {"exhibit": {"name": "우스터 '물안개 피는 호수' 화병", "exhibitionRoom": "유럽자기전시실"}, "quiz": {"question": "화병을 위에서 아래로 보며 순서대로 놓아 보세요", "options": [{"id": 1141, "content": "order:금색 입구>호수 그림>금색 받침"}, {"id": 1142, "content": "order:호수 그림>금색 입구>금색 받침"}, {"id": 1143, "content": "order:금색 입구>금색 받침>호수 그림"}], "hint": "맨 위 입구부터 바닥까지 내려와 보세요.", "imageUrl": "/images/exhibits/europe-worcester-vase.jpg"}, "answerOptionId": 1141, "explanation": "맨 위에 금색 입구, 몸통에 호수 그림, 맨 아래에 금색 받침이 있어요.", "fillId": "europe-worcester-vase"},
-  'europe-flora-danica': {"exhibit": {"name": "로열 코펜하겐 플로라다니카 디너서비스", "exhibitionRoom": "유럽자기전시실"}, "quiz": {"question": "접시 가장자리 테두리는 어떤 모양일까요?", "options": [{"id": 1151, "content": "금색 톱니 모양"}, {"id": 1152, "content": "파란 물결 모양"}, {"id": 1153, "content": "무늬 없는 하얀 테두리"}, {"id": 1154, "content": "빨간 줄 한 줄"}], "hint": "접시 맨 바깥쪽을 보세요.", "imageUrl": "/images/exhibits/europe-flora-danica.jpg"}, "answerOptionId": 1151, "explanation": "접시 가장자리를 금색 톱니 모양이 두르고 있어요. 접시마다 덴마크의 야생식물이 뿌리까지 그려져 있어요.", "fillId": "europe-flora-danica"},
-  'edu-gwageo-answer': {"exhibit": {"name": "과거시험답안지", "exhibitionRoom": "교육전시실"}, "quiz": {"question": "검은 글씨 위에 주황빛 붓으로 크게 덧쓴 글자를 찾아 눌러 보세요", "options": [{"id": 1161, "content": "spot:52,50,22"}, {"id": 1162, "content": "spot:71,60,7"}], "hint": "답안지 가운데를 비스듬히 가로지르는 색을 찾아보세요.", "imageUrl": "/images/exhibits/edu-gwageo-answer.jpg"}, "answerOptionId": 1161, "explanation": "주황빛 큰 글자는 채점 표시예요. 채점관은 붉은 먹으로 붙은 답안지엔 '당(當)', 떨어진 답안지엔 '락(落)'을 크게 써 놓았어요.", "fillId": "edu-gwageo-answer"},
-  'edu-high-korean': {"exhibit": {"name": "고등국어", "exhibitionRoom": "교육전시실"}, "quiz": {"question": "이 책이 쉽게 망가지지 않도록 덧댄 것은 무엇일까요?", "options": [{"id": 1171, "content": "책등을 감싼 검은 천"}, {"id": 1172, "content": "모서리에 박은 쇠붙이"}, {"id": 1173, "content": "표지에 씌운 투명 비닐"}, {"id": 1174, "content": "책을 묶은 가죽 끈"}], "hint": "책을 펼칠 때 가장 많이 접히는 곳, 책의 왼쪽 옆면을 보세요.", "imageUrl": "/images/exhibits/edu-high-korean.jpg"}, "answerOptionId": 1171, "explanation": "책등이 검은 천으로 감싸져 있어요. 책을 펼 때마다 접히는 책등이 닳지 않도록 천을 덧대어 튼튼하게 만들었어요.", "fillId": "edu-high-korean"},
-  'edu-school-bell': {"exhibit": {"name": "학교종", "exhibitionRoom": "교육전시실"}, "quiz": {"question": "학교종 전시를 위에서 아래로 보며 순서대로 놓아 보세요", "options": [{"id": 1181, "content": "order:종을 거는 고리>종>종 속의 추>학교종 노래 악보"}, {"id": 1182, "content": "order:종>종을 거는 고리>종 속의 추>학교종 노래 악보"}, {"id": 1183, "content": "order:종을 거는 고리>종>학교종 노래 악보>종 속의 추"}], "hint": "종 아래로 무엇이 늘어져 있는지 보세요.", "imageUrl": "/images/exhibits/edu-school-bell.jpg"}, "answerOptionId": 1181, "explanation": "고리에 종이 걸려 있고, 종 아래로 추가 내려오며, 맨 앞 아래에 악보가 놓여 있어요.", "fillId": "edu-school-bell"},
-  'edu-diploma': {"exhibit": {"name": "졸업장", "exhibitionRoom": "교육전시실"}, "quiz": {"question": "졸업장에 적힌 번호(제○호)로 자물쇠를 열어 보세요", "options": [{"id": 1191, "content": "435"}, {"id": 1192, "content": "453"}, {"id": 1193, "content": "345"}, {"id": 1194, "content": "534"}], "hint": "四는 4, 三은 3, 五는 5예요.", "imageUrl": "/images/exhibits/edu-diploma.jpg", "dialLabels": ["백", "십", "일"]}, "answerOptionId": 1191, "explanation": "졸업장 왼쪽에 \"제四三五호\", 435호라고 적혀 있어요.", "fillId": "edu-diploma"},
-  'stone-gwantong': {"exhibit": {"name": "추상석(관통석)", "exhibitionRoom": "수석전시실"}, "quiz": {"question": "돌을 뚫고 지나가는 구멍을 찾아 눌러 보세요", "options": [{"id": 1201, "content": "spot:46,37,8"}, {"id": 1202, "content": "spot:50,80,10"}], "hint": "돌 가운데 위쪽을 보세요.", "imageUrl": "/images/exhibits/stone-gwantong.jpg"}, "answerOptionId": 1201, "explanation": "물과 바람이 오랜 시간 깎아 돌을 관통한 구멍이에요.", "fillId": "stone-gwantong"},
-  'stone-dohyeong-sansu': {"exhibit": {"name": "도형산수경석", "exhibitionRoom": "수석전시실"}, "quiz": {"question": "돌은 무엇 위에 놓여 있을까요?", "options": [{"id": 1211, "content": "모래를 깐 네모 쟁반"}, {"id": 1212, "content": "둥근 나무 받침"}, {"id": 1213, "content": "물이 담긴 그릇"}, {"id": 1214, "content": "바닥에 바로"}], "hint": "돌 아래를 보세요.", "imageUrl": "/images/exhibits/stone-dohyeong-sansu.jpg"}, "answerOptionId": 1211, "explanation": "모래를 깐 네모 쟁반 위에 산처럼 놓여 있어요.", "fillId": "stone-dohyeong-sansu"},
-  'stone-sansu-munyang': {"exhibit": {"name": "산수문양석", "exhibitionRoom": "수석전시실"}, "quiz": {"question": "돌 위의 무늬는 무슨 색 선으로 그려져 있을까요?", "options": [{"id": 1221, "content": "검은색"}, {"id": 1222, "content": "빨간색"}, {"id": 1223, "content": "흰색"}, {"id": 1224, "content": "파란색"}], "hint": "산 모양 줄무늬를 보세요.", "imageUrl": "/images/exhibits/stone-sansu-munyang.jpg"}, "answerOptionId": 1221, "explanation": "황갈색 돌에 검은 줄무늬가 산수처럼 보여요.", "fillId": "stone-sansu-munyang"},
-  'stone-sunflower': {"exhibit": {"name": "해바라기문양석", "exhibitionRoom": "수석전시실"}, "quiz": {"question": "해바라기문양석을 위에서 아래로 보며 순서대로 놓아 보세요", "options": [{"id": 1231, "content": "order:큰 해바라기 무늬>작은 둥근 무늬>나무 받침"}, {"id": 1232, "content": "order:작은 둥근 무늬>큰 해바라기 무늬>나무 받침"}, {"id": 1233, "content": "order:큰 해바라기 무늬>나무 받침>작은 둥근 무늬"}], "hint": "큰 무늬 아래를 잘 보세요.", "imageUrl": "/images/exhibits/stone-sunflower.jpg"}, "answerOptionId": 1231, "explanation": "큰 해바라기 무늬 아래에 작은 둥근 무늬가 있고, 돌은 나무 받침 위에 세워져 있어요.", "fillId": "stone-sunflower"},
-};
-const demo = DEMO_QUIZZES[demoKey] ?? MISSION_DRAFTS[demoKey] ?? null;
+// 관찰 미션 24개는 서버에 있음 (CuratedQuizzes.java). 주소: quiz.html?exhibitId=유물id
+const demo = DEMO_QUIZZES[demoKey] ?? null;
 const DEMO_FILL_ID = 'ongi2-sojutgori'; // 그림 도감의 소줏고리 자리
 
 // 2. 화면 자리(HTML 태그) 미리 찾아두기
@@ -847,10 +817,23 @@ function showFeedback(type, title, message = '') {
   els.feedbackTitle.textContent = title;
   els.feedbackMessage.textContent = message;
   els.feedback.hidden = false;
+  syncHintButton();
 }
 
 function hideFeedback() {
   els.feedback.hidden = true;
+  syncHintButton();
+}
+
+// 힌트가 열려 있으면 버튼이 "힌트 닫기"가 됨
+function isHintOpen() {
+  return !els.feedback.hidden && els.feedback.classList.contains('quiz-feedback--hint');
+}
+
+function syncHintButton() {
+  const open = isHintOpen();
+  els.hint.textContent = open ? '힌트 닫기' : '힌트 보기';
+  els.hint.setAttribute('aria-expanded', String(open));
 }
 
 // 게임에서 무언가 바뀌면 제출 버튼을 켜거나 끔
@@ -978,8 +961,13 @@ els.submit.addEventListener('click', handleSubmit);
 // ---------------------------------------------------------
 // 힌트 (서버가 hint를 보내줄 때만 보임. 체험 모드에는 있음)
 // ---------------------------------------------------------
+// 한 번 더 누르면 닫힘
 els.hint.addEventListener('click', () => {
   if (!state.quiz?.hint) return;
+  if (isHintOpen()) {
+    hideFeedback();
+    return;
+  }
   state.usedHint = true;
   showFeedback('hint', '힌트', state.quiz.hint);
 });

@@ -1,38 +1,29 @@
 package com.bulog.domain.quiz.repository;
 
+import com.bulog.domain.quiz.curation.CuratedQuizzes;
 import com.bulog.domain.quiz.entity.Quiz;
-import com.bulog.domain.quiz.entity.QuizOption;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+/**
+ * DB 없이 켜는 local 프로필용 퀴즈 저장소.
+ * 운영 서버와 같은 관찰 미션 24개(CuratedQuizzes)를 메모리에 둔다. 퀴즈 ID는 1~24.
+ */
 @Repository
 @Profile("local")
 public class LocalQuizRepository implements QuizReader {
 
-    // local 프로필 확인용 샘플 퀴즈. 샘플 카드에 없는 유물이라 정답을 맞히면 새로 채우는 흐름을 볼 수 있다.
-    // 실제 관찰 미션 24개는 따로 만든다.
-    private static final Quiz FLOWER_JAR_QUIZ = Quiz.create(
-            1L,
-            "ongi1-flower-jar",
-            "화초문항아리의 몸통에는 어떤 무늬가 그려져 있을까요?",
-            "화초문항아리는 몸통에 꽃과 풀 무늬를 그려 넣은 옹기입니다.",
-            List.of(
-                    QuizOption.create(11L, "꽃과 풀", true, 1),
-                    QuizOption.create(12L, "물고기", false, 2),
-                    QuizOption.create(13L, "구름", false, 3)
-            )
-    );
+    private static final Map<Long, Quiz> QUIZZES_BY_ID = IntStream.range(0, CuratedQuizzes.ALL.size())
+            .mapToObj(index -> CuratedQuizzes.ALL.get(index).toLocalQuiz(index + 1L))
+            .collect(Collectors.toUnmodifiableMap(Quiz::getId, Function.identity()));
 
-    private static final Map<Long, Quiz> QUIZZES_BY_ID = Map.of(
-            FLOWER_JAR_QUIZ.getId(), FLOWER_JAR_QUIZ
-    );
-
-    private static final Map<String, Quiz> QUIZZES_BY_EXHIBIT_ID = Map.of(
-            FLOWER_JAR_QUIZ.getExhibitId(), FLOWER_JAR_QUIZ
-    );
+    private static final Map<String, Quiz> QUIZZES_BY_EXHIBIT_ID = QUIZZES_BY_ID.values().stream()
+            .collect(Collectors.toUnmodifiableMap(Quiz::getExhibitId, Function.identity()));
 
     @Override
     public Optional<Quiz> findById(Long quizId) {
