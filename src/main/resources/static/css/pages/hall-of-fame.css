@@ -149,6 +149,9 @@
   white-space: nowrap;
 }
 
+/* 오늘 완주자가 없으면 문구가 비므로 알약도 숨긴다 */
+.hof-summary__today:empty { display: none; }
+
 /* 최근 완주자 목록 */
 /* 좁은 화면에서는 안내 문장이 제목 아랫줄로 내려간다. */
 .hof__section-header {
