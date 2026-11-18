@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -26,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
         name = "finishers",
-        uniqueConstraints = @UniqueConstraint(name = "uk_finisher_visitor", columnNames = "visitor_id")
+        uniqueConstraints = @UniqueConstraint(name = "uk_finisher_visitor", columnNames = "visitor_id"),
+        // 오늘 완주자 수를 셀 때 쓴다.
+        indexes = @Index(name = "idx_finisher_finished_at", columnList = "finished_at")
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Finisher extends BaseEntity {

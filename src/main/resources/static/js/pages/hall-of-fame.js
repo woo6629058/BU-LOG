@@ -18,8 +18,8 @@ const [member, loadedHall] = await Promise.all([
 ]);
 let hall = loadedHall ?? EMPTY_HALL;
 let loadFailed = loadedHall === null;
-// 실시간 기록을 다시 받아 오는 간격
-const REFRESH_MS = 30000;
+// 실시간 기록을 다시 받아 오는 간격 (알약이 3.2초마다 흘러가서 10초면 끊김 없이 이어져 보임)
+const REFRESH_MS = 10000;
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -251,10 +251,15 @@ function startTicker() {
   }, TICKER_STEP_MS);
 }
 
-// 30초마다 새로 받아 온다. 새 기록은 실시간 기록 알약에 먼저 떠오른다.
+// 10초마다 새로 받아 온다. 새 기록은 실시간 기록 알약에 먼저 떠오른다.
+// 앞 요청이 아직 안 끝났으면 겹쳐 부르지 않는다 (탭 복귀와 주기 갱신이 겹칠 때).
+let refreshing = false;
+
 async function refresh() {
-  if (document.hidden) return;
+  if (document.hidden || refreshing) return;
+  refreshing = true;
   const next = await loadHallOfFame().catch(() => null);
+  refreshing = false;
   if (!next) return;
   const recovered = loadFailed;
   loadFailed = false;
@@ -280,3 +285,7 @@ renderFilters();
 showRecords(FILTERS[0]);
 startTicker();
 setInterval(refresh, REFRESH_MS);
+// 다른 탭에 있다가 돌아오면 10초를 기다리지 않고 바로 새로 받아 온다.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) refresh();
+});
