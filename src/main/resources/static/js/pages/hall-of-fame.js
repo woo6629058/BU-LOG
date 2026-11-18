@@ -258,8 +258,14 @@ let refreshing = false;
 async function refresh() {
   if (document.hidden || refreshing) return;
   refreshing = true;
-  const next = await loadHallOfFame().catch(() => null);
-  refreshing = false;
+  let next = null;
+  try {
+    next = await loadHallOfFame();
+  } catch {
+    next = null;
+  } finally {
+    refreshing = false;
+  }
   if (!next) return;
   const recovered = loadFailed;
   loadFailed = false;

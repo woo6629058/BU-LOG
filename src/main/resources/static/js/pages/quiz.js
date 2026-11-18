@@ -913,6 +913,8 @@ async function handleSubmit() {
   state.submitting = true;
   els.submit.disabled = true;
   els.submit.textContent = '채점 중...';
+  // 채점 결과는 지금 고른 보기에 표시되므로, 채점 중에는 다른 보기를 고르지 못하게 잠근다.
+  els.game.inert = true;
 
   try {
     const result = await grade(answer.optionId);
@@ -931,6 +933,7 @@ async function handleSubmit() {
     els.submit.disabled = false;
   } finally {
     state.submitting = false;
+    els.game.inert = false;
   }
 }
 

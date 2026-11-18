@@ -101,8 +101,12 @@ function toRecord(item) {
 
 // total: 전체 완주자 수, today: 오늘 완주한 수, myNo: 내 완주 번호(완주 전이면 null), myName: 명단에 보이는 내 이름
 // finishers: 최근 완주한 순서, records: 최근 기록 순서
+// 응답이 오래 걸리면 8초 뒤 끊는다 (본문 받기까지 포함). 끊기면 오류로 처리돼 다음 갱신 때 다시 시도한다.
+const HALL_TIMEOUT_MS = 8000;
+
 export async function loadHallOfFame() {
-  const { result } = await getHallOfFame();
+  const signal = typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(HALL_TIMEOUT_MS) : undefined;
+  const { result } = await getHallOfFame({ signal });
   return {
     total: result.total,
     today: result.today,
