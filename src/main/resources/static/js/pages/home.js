@@ -2,9 +2,11 @@ import { getMe, logout } from '../api/auth-api.js';
 import { clearGuestChoice, hasChosenGuest } from '../common/auth-flow.js';
 import { mountTabBar } from '../common/tab-bar.js';
 import { countUp, rise } from '../common/motion.js';
+import { mountHomeCarousel } from './home-carousel.js';
 import {
   acquiredSet,
   describeNextGoal,
+  findClosestRoom,
   loadCollection,
   progressPercent,
   summarizeAll,
@@ -12,6 +14,7 @@ import {
 } from '../common/collection-data.js';
 
 mountTabBar({ active: 'home' });
+mountHomeCarousel(document.querySelector('.home-carousel'));
 
 // 로그인 버튼: 게스트는 로그인 화면으로 이동하고, 로그인한 회원은 닉네임과 로그아웃 버튼을 함께 본다.
 const account = document.querySelector('.home__account');
@@ -83,6 +86,10 @@ function renderProgress() {
   document.querySelector('#home-count-label').textContent = `${total}칸 중 ${filled}칸 채움`;
   document.querySelector('#home-progress-fill').style.width = `${progressPercent(filled, total)}%`;
   document.querySelector('#home-hint').textContent = describeNextGoal(ROOMS, acquired);
+  const nextGoal = findClosestRoom(ROOMS, acquired);
+  document.querySelector('#home-banner-progress .home-banner__link').href = nextGoal
+    ? `/pages/picture-book.html?room=${encodeURIComponent(nextGoal.room.id)}`
+    : '/pages/picture-book.html';
 }
 
 function renderRoom({ room, filled, total, complete }, index) {
