@@ -54,20 +54,104 @@
       </div>
     </header>
 
-    <section class="home-progress" aria-labelledby="home-progress-label">
-      <img class="home-progress__jars" src="/images/home/progress-jars.webp" alt="" width="204" height="144">
-      <img class="home-progress__sprig" src="/images/home/tuft.webp" alt="" width="89" height="47">
-      <div class="home-progress__body">
-        <div class="home-progress__row">
-          <h2 class="home-progress__label" id="home-progress-label">채운 유물</h2>
-          <p class="home-progress__count">
-            <span aria-hidden="true"><strong id="home-filled">0</strong> / <span id="home-total">0</span></span>
-            <span class="visually-hidden" id="home-count-label"></span>
-          </p>
-        </div>
-        <div class="home-progress__bar" aria-hidden="true"><span class="art-fill" id="home-progress-fill"></span></div>
-        <p class="home-progress__hint" id="home-hint"></p>
+    <section class="home-carousel" aria-label="박물관 탐험 안내" aria-roledescription="캐러셀">
+      <div class="home-carousel__viewport" data-carousel-slides>
+        <section class="home-banner home-banner--progress" id="home-banner-progress" data-carousel-slide data-carousel-title="나의 수집 기록" role="group" aria-roledescription="슬라이드" aria-label="1 / 4, 나의 수집 기록">
+          <a class="home-banner__link" href="/pages/picture-book.html">
+            <div class="home-banner__copy">
+              <p class="home-banner__eyebrow"><span></span> 나의 수집 기록</p>
+              <h2 class="home-banner__title">한 칸의 발견,<br>한 장의 이야기</h2>
+              <p class="home-banner__description">유물을 모으며 나만의<br>박물관을 완성해요.</p>
+            </div>
+            <div class="home-banner__art home-banner__art--jars" aria-hidden="true">
+              <span class="home-banner__sun"></span>
+              <img class="home-banner__jars" src="/images/home/progress-jars.webp" alt="" width="204" height="144">
+              <img class="home-banner__sprig" src="/images/home/progress-sprig.webp" alt="" width="80" height="100">
+              <span class="home-banner__spark home-banner__spark--one">✦</span>
+              <span class="home-banner__spark home-banner__spark--two">✧</span>
+            </div>
+            <div class="home-banner__progress">
+              <div class="home-banner__progress-row">
+                <p class="home-banner__count">
+                  <span aria-hidden="true"><strong id="home-filled">0</strong><span class="home-banner__count-total"> / <span id="home-total">24</span></span><span class="home-banner__count-unit"> 유물 수집</span></span>
+                  <span class="visually-hidden" id="home-count-label">수집 기록 불러오는 중</span>
+                </p>
+                <span class="home-banner__progress-cta">도감 보기 <span aria-hidden="true">↗</span></span>
+              </div>
+              <div class="home-banner__bar" aria-hidden="true"><span class="art-fill" id="home-progress-fill"></span></div>
+              <p class="home-banner__hint" id="home-hint">나의 수집 기록을 불러오고 있어요.</p>
+            </div>
+          </a>
+        </section>
+
+        <section class="home-banner home-banner--mission" id="home-banner-mission" data-carousel-slide data-carousel-title="QR 관찰 미션" role="group" aria-roledescription="슬라이드" aria-label="2 / 4, QR 관찰 미션" hidden inert>
+          <a class="home-banner__link" href="/pages/qr-scan.html">
+            <div class="home-banner__copy">
+              <p class="home-banner__eyebrow"><span></span> 오늘의 작은 발견</p>
+              <h2 class="home-banner__title">눈앞의 유물에<br>한 걸음 더 가까이</h2>
+              <p class="home-banner__description">전시물 옆 QR을 찍고<br>관찰 미션을 풀어 보세요.</p>
+            </div>
+            <div class="home-banner__art home-banner__art--mission" aria-hidden="true">
+              <span class="home-banner__sun"></span>
+              <img class="home-banner__bell" src="/images/artifacts/edu-school-bell.webp" alt="" width="160" height="180">
+              <span class="home-banner__scan-corners"></span>
+              <span class="home-banner__qr-stamp"><img src="/images/home/icon-qr.webp" alt="" width="99" height="81"></span>
+              <span class="home-banner__spark home-banner__spark--one">✦</span>
+            </div>
+            <span class="home-banner__cta">QR 찍으러 가기 <span aria-hidden="true">↗</span></span>
+          </a>
+        </section>
+
+        <section class="home-banner home-banner--book" id="home-banner-book" data-carousel-slide data-carousel-title="여섯 전시실 그림 도감" role="group" aria-roledescription="슬라이드" aria-label="3 / 4, 여섯 전시실 그림 도감" hidden inert>
+          <a class="home-banner__link" href="/pages/picture-book.html">
+            <div class="home-banner__copy">
+              <p class="home-banner__eyebrow"><span></span> 여섯 전시실, 여섯 이야기</p>
+              <h2 class="home-banner__title">빈칸을 채우면<br>펼쳐지는 풍경</h2>
+              <p class="home-banner__description">옹기 마을부터 유럽의 식탁까지,<br>유물로 그림을 완성해요.</p>
+            </div>
+            <div class="home-banner__art home-banner__art--book" aria-hidden="true">
+              <img class="home-banner__picture home-banner__picture--back" src="/images/scenes/ongi1-color.webp" alt="" width="850" height="793">
+              <img class="home-banner__picture home-banner__picture--front" src="/images/scenes/europe-color.webp" alt="" width="850" height="793">
+              <span class="home-banner__spark home-banner__spark--two">✦</span>
+            </div>
+            <span class="home-banner__cta">그림 도감 펼치기 <span aria-hidden="true">↗</span></span>
+          </a>
+        </section>
+
+        <section class="home-banner home-banner--showcase" id="home-banner-showcase" data-carousel-slide data-carousel-title="나만의 진열장" role="group" aria-roledescription="슬라이드" aria-label="4 / 4, 나만의 진열장" hidden inert>
+          <a class="home-banner__link" href="/pages/showcase.html">
+            <div class="home-banner__copy">
+              <p class="home-banner__eyebrow"><span></span> 나만의 작은 박물관</p>
+              <h2 class="home-banner__title">오늘 만난 유물,<br>오래 간직하도록</h2>
+              <p class="home-banner__description">미션으로 모은 유물들을<br>내 진열장에서 다시 만나요.</p>
+            </div>
+            <div class="home-banner__art home-banner__art--showcase" aria-hidden="true">
+              <span class="home-banner__arch"></span>
+              <img class="home-banner__vase" src="/images/artifacts/europe-sevres-vase.webp" alt="" width="140" height="200">
+              <img class="home-banner__jar" src="/images/artifacts/ongi1-flower-jar.webp" alt="" width="120" height="150">
+              <span class="home-banner__shelf"></span>
+              <span class="home-banner__spark home-banner__spark--one">✦</span>
+            </div>
+            <span class="home-banner__cta">내 진열장 보기 <span aria-hidden="true">↗</span></span>
+          </a>
+        </section>
       </div>
+
+      <div class="home-carousel__controls" hidden>
+        <div class="home-carousel__dots" role="group" aria-label="배너 선택">
+          <button class="home-carousel__dot" type="button" data-carousel-dot aria-label="1번 배너: 나의 수집 기록" aria-controls="home-banner-progress" aria-current="true"></button>
+          <button class="home-carousel__dot" type="button" data-carousel-dot aria-label="2번 배너: QR 관찰 미션" aria-controls="home-banner-mission"></button>
+          <button class="home-carousel__dot" type="button" data-carousel-dot aria-label="3번 배너: 여섯 전시실 그림 도감" aria-controls="home-banner-book"></button>
+          <button class="home-carousel__dot" type="button" data-carousel-dot aria-label="4번 배너: 나만의 진열장" aria-controls="home-banner-showcase"></button>
+        </div>
+        <div class="home-carousel__navigation">
+          <span class="home-carousel__counter" aria-hidden="true"><strong data-carousel-current>01</strong> / 04</span>
+          <button class="home-carousel__button" type="button" data-carousel-prev aria-label="이전 배너"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 7-5 5 5 5"/></svg></button>
+          <button class="home-carousel__button" type="button" data-carousel-next aria-label="다음 배너"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 7 5 5-5 5"/></svg></button>
+          <button class="home-carousel__button home-carousel__toggle" type="button" data-carousel-toggle aria-label="배너 자동 재생 멈추기"><span class="home-carousel__play-icon" aria-hidden="true"></span><span class="visually-hidden" data-carousel-toggle-label>멈춤</span></button>
+        </div>
+      </div>
+      <p class="visually-hidden" data-carousel-status aria-live="polite" aria-atomic="true"></p>
     </section>
 
     <section class="home__rooms" aria-labelledby="home-rooms-title">
