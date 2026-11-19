@@ -6,6 +6,7 @@ import { mountHomeCarousel } from './home-carousel.js';
 import {
   acquiredSet,
   describeNextGoal,
+  findClosestRoom,
   loadCollection,
   progressPercent,
   summarizeAll,
@@ -85,6 +86,10 @@ function renderProgress() {
   document.querySelector('#home-count-label').textContent = `${total}칸 중 ${filled}칸 채움`;
   document.querySelector('#home-progress-fill').style.width = `${progressPercent(filled, total)}%`;
   document.querySelector('#home-hint').textContent = describeNextGoal(ROOMS, acquired);
+  const nextGoal = findClosestRoom(ROOMS, acquired);
+  document.querySelector('#home-banner-progress .home-banner__link').href = nextGoal
+    ? `/pages/picture-book.html?room=${encodeURIComponent(nextGoal.room.id)}`
+    : '/pages/picture-book.html';
 }
 
 function renderRoom({ room, filled, total, complete }, index) {
