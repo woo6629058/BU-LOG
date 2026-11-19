@@ -75,16 +75,6 @@ public class Quiz extends BaseEntity {
             String exhibitId,
             String question,
             String explanation,
-            List<QuizOption> options
-    ) {
-        return new Quiz(id, exhibitId, question, explanation, null, null, options);
-    }
-
-    public static Quiz create(
-            Long id,
-            String exhibitId,
-            String question,
-            String explanation,
             String hint,
             List<String> dialLabels,
             List<QuizOption> options

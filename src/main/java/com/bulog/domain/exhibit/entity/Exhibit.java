@@ -4,6 +4,7 @@ import com.bulog.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -12,7 +13,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "exhibits")
+// 소장품 3,687건 중 수집 대상 24개만 자주 읽어서(도감·명예의 전당·채점) 수집 대상 조회용 인덱스를 둔다.
+@Table(name = "exhibits", indexes = @Index(name = "idx_exhibit_collectible_card", columnList = "collectible, card_number"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Exhibit extends BaseEntity {
 

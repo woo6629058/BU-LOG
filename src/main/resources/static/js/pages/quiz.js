@@ -4,12 +4,10 @@ import { submitQuizAnswer } from '../api/quiz-api.js';
 
 mountLayout();
 
-// 디자인 규칙: 기회는 2번 (서버가 남은 기회를 보내주게 되면 그 값으로 바꾸기)
-const MAX_CHANCES = 2;
+// 디자인 규칙: 틀려도 기회 제한 없이 다시 도전한다
 
 // 1. 주소에서 정보 꺼내기
 //   ?exhibitId=ongi2-sojutgori  → 서버의 진짜 퀴즈
-//   ?demo=유물id (예: ongi2-sojutgori) → 서버 없이 미션 24개 체험 (회의·시연용)
 //   ?demo=choice | count | handle | lock → 예전 예시 문제
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
@@ -92,9 +90,6 @@ const DEMO_FILL_ID = 'ongi2-sojutgori'; // 그림 도감의 소줏고리 자리
 const els = {
   close: document.querySelector('#quiz-close'),
   topbar: document.querySelector('.quiz-topbar'),
-  chancesWrap: document.querySelector('#quiz-chances-wrap'),
-  chances: document.querySelector('#quiz-chances'),
-  chancesText: document.querySelector('#quiz-chances-text'),
   exhibitName: document.querySelector('#quiz-exhibit-name'),
   gallery: document.querySelector('#quiz-gallery'),
   galleryWrap: document.querySelector('#quiz-gallery-wrap'),
@@ -113,8 +108,8 @@ els.close.href = exhibitPageUrl;
 const state = {
   quiz: null,             // 서버(또는 체험 모드)에서 받은 퀴즈
   game: null,             // 지금 화면에 그린 게임 (아래 GAME_RENDERERS가 만든 것)
-  chancesLeft: MAX_CHANCES,
-  usedHint: false,        // 힌트를 봤는지 (11/16 회의: 황금·일반 구분 없앰, 지금은 기록만)
+  wrongCount: 0,          // 틀린 횟수 (기회 제한은 없음, '한 번에 정답' 문구에만 씀)
+  usedHint: false,        // 힌트를 봤는지 (지금은 기록만)
   submitting: false,      // 채점 중이면 버튼 두 번 못 누르게
   nextUrl: null,          // 끝나면 버튼을 눌렀을 때 갈 주소
 };
@@ -193,7 +188,7 @@ function shuffle(items) {
   return copy;
 }
 
-// 객관식·자물쇠 위에 띄우는 유물 사진 카드 (11/16 회의: 사진이 보이면 좋겠다)
+// 객관식·자물쇠 위에 띄우는 유물 사진 카드
 // 스티커 게임은 이미 사진 위에서 하니까 여기서는 안 씀
 // 누르면 크게 보기 ↔ 원래 크기
 function renderPhotoCard(quiz) {
@@ -228,7 +223,7 @@ function renderMultipleChoice(quiz, container, onChange) {
   list.setAttribute('role', 'radiogroup');
   list.setAttribute('aria-label', '보기');
 
-  // 들어올 때마다 보기 순서를 섞음 (11/16 회의). 채점은 보기 id로 하니까 순서와 상관없음
+  // 들어올 때마다 보기 순서를 섞음. 채점은 보기 id로 하니까 순서와 상관없음
   const ordered = shuffle(quiz.options); // 화면에 보이는 순서. 아래에서 버튼을 찾을 때도 이 순서를 씀
   const buttons = ordered.map((option, index) => {
     const button = element('button', 'quiz-option');
@@ -520,7 +515,7 @@ function renderStamp(quiz, container, onChange) {
   };
 }
 
-// D. 찾아 누르기: 사진에서 한 곳을 찾아 누름 (11/16 회의에서 추가)
+// D. 찾아 누르기: 사진에서 한 곳을 찾아 누름
 // 보기 = "spot:가로%,세로%,반지름%". 반지름은 사진 가로 길이 기준 %
 // 정답 자리를 누르면 정답 보기 id, 헷갈리는 자리를 누르면 그 보기 id, 아무 데나 누르면 null(오답)
 function renderFind(quiz, container, onChange) {
@@ -618,7 +613,7 @@ function renderFind(quiz, container, onChange) {
   };
 }
 
-// F. 순서 맞추기: 카드를 끌어서 순서대로 놓음 (11/16 회의: 4번째 게임)
+// F. 순서 맞추기: 카드를 끌어서 순서대로 놓음
 // 실물을 위에서 아래로 훑어봐야 풀 수 있음. 끌기가 어려우면 ▲▼ 버튼으로도 옮김
 function renderOrder(quiz, container, onChange) {
   const parse = (text) => String(text).trim().slice(ORDER_PREFIX.length).split(ORDER_SEPARATOR).map((part) => part.trim());
@@ -804,15 +799,6 @@ function renderLock(quiz, container, onChange) {
 // ---------------------------------------------------------
 // 화면 표시 도우미
 // ---------------------------------------------------------
-function renderChances() {
-  const dots = [];
-  for (let i = 0; i < MAX_CHANCES; i += 1) {
-    dots.push(element('span', i < state.chancesLeft ? 'quiz-chance' : 'quiz-chance quiz-chance--used'));
-  }
-  els.chances.replaceChildren(...dots);
-  els.chancesText.textContent = `${state.chancesLeft}번`;
-}
-
 function showFeedback(type, title, message = '') {
   els.feedback.className = `quiz-feedback quiz-feedback--${type}`;
   els.feedbackTitle.textContent = title;
@@ -856,7 +842,6 @@ function finishQuiz(buttonText, nextUrl) {
 // 퀴즈를 못 불러왔을 때
 function showLoadError(message) {
   els.question.textContent = '퀴즈를 불러오지 못했어요';
-  els.chancesWrap.hidden = true;
   els.game.replaceChildren();
   showFeedback('error', '다시 확인해 주세요', message);
   finishQuiz('유물 소개로 돌아가기', exhibitPageUrl);
@@ -876,9 +861,8 @@ function renderLabel(exhibit) {
 // 채점
 // ---------------------------------------------------------
 function handleCorrect(result) {
-  // 정답 연출은 게임마다 맞힌 자리에서 (11/17: 화면 전체 꽃가루는 07 수집 완료에서만)
-  // (11/16 회의: 황금·일반 유물 구분은 없앰)
-  const firstTry = state.chancesLeft === MAX_CHANCES;
+  // 정답 연출은 게임마다 맞힌 자리에서 (화면 전체 꽃가루는 그림 채우기 화면에서만)
+  const firstTry = state.wrongCount === 0;
   state.game.markCorrect();
   navigator.vibrate?.([40, 60, 40]); // 지원하는 폰에서만 짧게 진동
 
@@ -892,25 +876,18 @@ function handleCorrect(result) {
   finishQuiz('그림 채우러 가기', fillResultUrl(fillId, result.card?.newlyAcquired, Boolean(demo)));
 }
 
-function handleWrong(result) {
+// 틀려도 기회 제한 없이 다시 도전한다.
+// 해설은 정답을 알려 주므로 맞혔을 때만 보여 준다.
+function handleWrong() {
   state.game.markWrong();
   shake(els.game);
   navigator.vibrate?.(120);
 
-  state.chancesLeft -= 1;
-  renderChances();
-
-  if (state.chancesLeft > 0) {
-    // 아직 기회가 남음: 해설은 정답을 알려줄 수 있어서 보여주지 않음
-    showFeedback('wrong', '아쉬워요!', `기회가 ${state.chancesLeft}번 남았어요. 유물을 다시 살펴보세요.`);
-    els.submit.textContent = '정답 제출';
-    els.submit.disabled = true;
-    return;
-  }
-
-  // 기회를 다 씀
-  showFeedback('wrong', '이번엔 아쉬워요', result.explanation ?? '유물을 다시 살펴보고 도전해 보세요.');
-  finishQuiz('유물 소개로 돌아가기', exhibitPageUrl);
+  state.wrongCount += 1;
+  const hintTip = state.quiz?.hint ? ' 막히면 힌트를 확인해 보세요.' : '';
+  showFeedback('wrong', '아쉬워요!', `유물을 다시 살펴보고 도전해 보세요.${hintTip}`);
+  els.submit.textContent = '정답 제출';
+  els.submit.disabled = true;
 }
 
 // 답을 채점함: 체험 모드는 화면에서, 진짜는 서버에서
@@ -936,13 +913,15 @@ async function handleSubmit() {
   state.submitting = true;
   els.submit.disabled = true;
   els.submit.textContent = '채점 중...';
+  // 채점 결과는 지금 고른 보기에 표시되므로, 채점 중에는 다른 보기를 고르지 못하게 잠근다.
+  els.game.inert = true;
 
   try {
     const result = await grade(answer.optionId);
     if (result.correct) {
       handleCorrect(result);
     } else {
-      handleWrong(result);
+      handleWrong();
     }
   } catch (error) {
     // 403은 보통 보안 토큰(CSRF) 문제
@@ -954,6 +933,7 @@ async function handleSubmit() {
     els.submit.disabled = false;
   } finally {
     state.submitting = false;
+    els.game.inert = false;
   }
 }
 
@@ -992,13 +972,12 @@ function startGame(quiz) {
     if (photo) els.game.prepend(photo);
   }
   els.hint.hidden = !quiz.hint;
-  renderChances();
   updateSubmit();
 }
 
 function startDemo() {
   const badge = element('span', 'quiz-demo-badge', '체험 모드');
-  els.topbar.insertBefore(badge, els.chancesWrap);
+  els.topbar.append(badge);
   els.close.href = '/';
   renderLabel(demo.exhibit);
   const fallbackImage = demo.exhibit.name === '소줏고리' ? '/images/exhibits/ongi2-sojutgori.jpg' : null;

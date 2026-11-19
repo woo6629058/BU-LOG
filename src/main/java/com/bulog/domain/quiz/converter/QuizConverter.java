@@ -30,6 +30,7 @@ public final class QuizConverter {
             boolean correct,
             CardAcquisitionResponseDTO card
     ) {
-        return new QuizAttemptResponseDTO(correct, quiz.getExplanation(), card);
+        // 해설에는 정답이 들어 있어서 맞혔을 때만 보낸다.
+        return new QuizAttemptResponseDTO(correct, correct ? quiz.getExplanation() : null, card);
     }
 }

@@ -36,6 +36,8 @@ class QuizServiceTest {
             "sample-exhibit",
             "이 전시물이 제작된 시대는 언제일까요?",
             "상감청자는 고려 시대를 대표하는 도자기입니다.",
+            null,
+            null,
             List.of(
                     QuizOption.create(11L, "고려", true, 1),
                     QuizOption.create(12L, "조선", false, 2)
@@ -94,7 +96,8 @@ class QuizServiceTest {
         QuizAttemptResponseDTO response = quizService.grade(1L, 12L, visitor, null);
 
         assertThat(response.correct()).isFalse();
-        assertThat(response.explanation()).contains("고려 시대");
+        // 오답에는 정답이 담긴 해설을 보내지 않는다.
+        assertThat(response.explanation()).isNull();
         assertThat(response.card()).isNull();
     }
 

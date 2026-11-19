@@ -46,7 +46,7 @@ e뮤지엄 공공데이터로 받은 소장품 정보를 관람 흐름에 맞춘
 | --- | --- |
 | Backend | Java 21, Spring Boot 4.1.2, Gradle (Groovy) |
 | Data | Spring Data JPA, MySQL 8.4 |
-| Security | Spring Security, CSRF 토큰, 세션·HttpOnly 쿠키 |
+| Security | Spring Security, CSRF 토큰, 세션·HttpOnly 쿠키, 로그인 상태 유지(Remember-Me) |
 | Frontend | HTML, CSS, JavaScript (ES Modules), jsQR |
 | External | e뮤지엄 Open API (공공데이터포털) |
 | Test | JUnit 5, Mockito, Spring Boot Test |
@@ -115,20 +115,17 @@ docs                # API 명세, 전시물 QR PDF (docs/qr)
 
 ### 프론트 개발 (`local` 프로필)
 
-기본 `local` 프로필은 DB·JPA 연결을 끄고 실행합니다. 화면 작업은 이 방법으로 확인합니다.
+기본 `local` 프로필은 DB 없이 실행합니다.
 
 ```bash
 ./gradlew bootRun
 ```
 
-터미널에 `SPRING_PROFILES_ACTIVE`가 다른 값으로 설정돼 있으면 `SPRING_PROFILES_ACTIVE=local ./gradlew bootRun`으로 실행합니다.
-실행 중에 JS·CSS를 고쳤다면 서버를 다시 켜야 반영됩니다.
-
 <http://localhost:8080>에서 확인합니다.
 
-### 백엔드 개발 (`dev` 프로필, MySQL)
+### 백엔드 개발 (`dev` 프로필)
 
-API·DB 작업은 로컬 MySQL에 연결해 확인합니다.
+로컬 MySQL에 연결해 실행합니다.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS bulog
@@ -145,8 +142,8 @@ DB_USERNAME=your_local_user
 DB_PASSWORD=your_local_password
 ```
 
-Spring Boot는 `.env`를 자동으로 읽지 않으므로 IDE 실행 설정에 넣거나 터미널에서 불러옵니다.
-`DB_URL`의 `&`가 셸 명령 구분자로 처리되지 않도록 로컬 `.env`에서는 값을 작은따옴표로 감쌉니다. IDE 실행 설정에는 따옴표 없이 넣고, 서버의 `/opt/bulog/.env`(`docker --env-file`)도 따옴표를 값으로 읽으므로 감싸지 않습니다.
+`.env`는 자동으로 읽지 않으므로 IDE 실행 설정에 넣거나 터미널에서 불러옵니다.
+`DB_URL`은 로컬 `.env`에서만 작은따옴표로 감싸고, IDE 설정과 서버 `/opt/bulog/.env`에는 따옴표 없이 넣습니다.
 
 ```bash
 set -a
@@ -158,7 +155,9 @@ set +a
 ### e뮤지엄 소장품 동기화
 
 `EMUSEUM_API_SERVICE_KEY`(공공데이터포털 인증키)를 설정하고 `EMUSEUM_SYNC_ENABLED=true`로 한 번 실행하면 부천시립박물관 소장품을 DB에 저장합니다.
-`e뮤지엄 소장품 동기화 완료` 로그를 확인한 뒤에는 다시 `false`로 바꿉니다. 동기화는 `local` 프로필에서는 실행되지 않습니다.
+`e뮤지엄 소장품 동기화 완료` 로그를 확인한 뒤 다시 `false`로 바꿉니다 (`local` 프로필에서는 실행되지 않음).
+
+수집 대상 유물 24개(`CuratedExhibits`)와 관찰 미션 24개(`CuratedQuizzes`)는 서버가 켜질 때 자동으로 등록됩니다.
 
 ### 테스트
 
@@ -190,8 +189,8 @@ EC2 (Ubuntu)   : Nginx(80 → 443 리다이렉트, 443 HTTPS) → bulog 컨테�
 - 서버 설정 파일: `/opt/bulog/.env` (예시는 `.env.example`, Git에 올리지 않습니다)
 - 배포 스크립트: [`deploy/deploy.sh`](deploy/deploy.sh) → 서버의 `/opt/bulog/deploy.sh`
 - Nginx 설정: [`deploy/nginx/bulog.conf`](deploy/nginx/bulog.conf) → 서버의 `/etc/nginx/sites-available/bulog`
-- HTTPS 인증서: Let's Encrypt(Certbot). 서버의 `certbot.timer`가 만료 전에 자동 갱신하며, `certbot renew --dry-run`으로 확인합니다.
-- 운영 `COOKIE_SECURE`는 `true`입니다. HTTPS가 아닌 주소로 접속하면 방문자·로그인 쿠키가 저장되지 않습니다.
+- HTTPS 인증서: Let's Encrypt(Certbot), 자동 갱신
+- 운영 `COOKIE_SECURE=true` (HTTPS에서만 쿠키 저장)
 - 서버 접속: AWS 콘솔 → EC2 → 인스턴스 → 연결 → Session Manager
 
 ---
