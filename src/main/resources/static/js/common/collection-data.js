@@ -37,7 +37,6 @@ export const ROOMS = [
     id: 'ongi1',
     name: '옹기1전시실',
     shortName: '옹기1',
-    description: '점말 가마터와 옹기가 쓰이던 모습',
     sceneTitle: '점말 옹기가마터',
     scene: scene('ongi1'),
     regions: [
@@ -51,7 +50,6 @@ export const ROOMS = [
     id: 'ongi2',
     name: '옹기2전시실',
     shortName: '옹기2',
-    description: '생활 속 옹기와 발효 과학',
     sceneTitle: '옹기와 생활문화',
     scene: scene('ongi2'),
     regions: [
@@ -65,7 +63,6 @@ export const ROOMS = [
     id: 'local',
     name: '부천향토역사관',
     shortName: '향토역사관',
-    description: '고강동 선사유물 · 화유옹주 묘 유물',
     sceneTitle: '선사에서 조선까지',
     scene: scene('local'),
     regions: [
@@ -79,7 +76,6 @@ export const ROOMS = [
     id: 'europe',
     name: '유럽자기전시실',
     shortName: '유럽자기',
-    description: '독일 · 프랑스 · 영국의 자기',
     sceneTitle: '유럽 다이닝 룸',
     scene: scene('europe'),
     regions: [
@@ -93,7 +89,6 @@ export const ROOMS = [
     id: 'education',
     name: '교육전시실',
     shortName: '교육',
-    description: '서당부터 7차 교육과정까지',
     sceneTitle: '추억의 교실',
     scene: scene('education'),
     regions: [
@@ -107,7 +102,6 @@ export const ROOMS = [
     id: 'stone',
     name: '수석전시실',
     shortName: '수석',
-    description: '자연이 빚은 돌의 아름다움',
     sceneTitle: '돌에 담긴 산수 풍경',
     scene: scene('stone'),
     regions: [
