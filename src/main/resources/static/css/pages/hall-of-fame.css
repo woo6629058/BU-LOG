@@ -639,6 +639,10 @@ html:has(.hof-sheet[open]) {
   background: var(--art-bg);
   box-shadow: 0 -6px 24px rgba(74, 46, 31, 0.18);
   font-weight: 600;
+  /* 세로 배치는 닫히는 동안에도 유지돼야 해서 [open] 이 아닌 여기에 둔다.
+     (닫힐 때 display 는 움직임이 끝날 때까지 flex 로 남는데, 이 값이 [open] 에만 있으면 내려가는 동안 가로로 흐트러진다) */
+  flex-direction: column;
+  gap: 12px;
   /* 닫힐 때: 열릴 때보다 빠르게 내려간다. display·overlay 는 움직임이 끝난 뒤에 바뀐다. */
   transform: translateY(100%);
   transition:
@@ -649,8 +653,6 @@ html:has(.hof-sheet[open]) {
 
 .hof-sheet[open] {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
   transform: none;
   transition:
     transform var(--motion-page) var(--ease-out),
