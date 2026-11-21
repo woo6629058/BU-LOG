@@ -40,13 +40,34 @@ function renderSummary({ animate = true } = {}) {
 }
 
 // 완주자가 없거나 못 받아 왔을 때 목록 자리에 보이는 문구
+// 아직 아무도 완주하지 않았으면 트로피 그림과 QR 스캔으로 가는 버튼을 함께 보여 준다.
 function renderEmptyList() {
   const li = element('li', 'hof__empty');
+  if (!loadFailed) {
+    const trophy = element('img', 'hof__empty-trophy');
+    trophy.src = '/images/home/trophy-color.webp';
+    trophy.alt = '';
+    li.append(trophy);
+  }
   li.append(
     element('p', 'hof__empty-title', loadFailed ? '명단을 불러오지 못했어요' : '아직 완주한 탐험가가 없어요'),
     element('p', 'hof__empty-text', loadFailed ? '잠시 뒤 다시 열어 주세요' : '여섯 전시실 그림을 모두 채우고 첫 번째 완주자가 되어 보세요!'),
   );
+  if (!loadFailed) {
+    const scan = element('a', 'hof__empty-action art-button', 'QR 스캔하러 가기');
+    scan.href = '/pages/qr-scan.html';
+    li.append(scan);
+  }
   return li;
+}
+
+// 완주자가 없으면 '완주한 탐험가들이에요'·'누르면 프로필' 문구가 맞지 않아 바꾸거나 숨긴다.
+function renderListText() {
+  const empty = hall.finishers.length === 0;
+  document.querySelector('#hof-intro').textContent = empty && !loadFailed
+    ? '전시실 그림을 모두 완성하면 이곳에 이름이 올라가요'
+    : '전시실 그림을 모두 완성한 탐험가들이에요';
+  document.querySelector('#hof-list-meta').hidden = empty;
 }
 
 // 지금 보이는 명단 (같으면 다시 그리지 않아 떠오르는 움직임이 되풀이되지 않게 한다)
@@ -56,6 +77,7 @@ function renderList() {
   const key = `${loadFailed}:${hall.finishers.map((finisher) => finisher.no).join(',')}`;
   if (key === shownFinisherKey) return;
   shownFinisherKey = key;
+  renderListText();
   const list = document.querySelector('#hof-list');
   if (hall.finishers.length === 0) list.replaceChildren(renderEmptyList());
   else list.replaceChildren(...hall.finishers.map(renderFinisher));
