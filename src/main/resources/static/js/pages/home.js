@@ -108,7 +108,7 @@ function renderRoom({ room, filled, total, complete }, index) {
   thumb.height = 56;
 
   const text = element('span', 'home-room__text');
-  text.append(element('span', 'home-room__name', room.name), element('span', 'home-room__desc', room.description));
+  text.append(element('span', 'home-room__name', room.name), element('span', 'home-room__desc', room.sceneTitle));
 
   const status = element('span', 'home-room__status');
   const count = element('span', 'home-room__count', complete ? '완료' : `${filled} / ${total}`);

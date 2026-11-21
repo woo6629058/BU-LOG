@@ -530,14 +530,27 @@
   object-position: center bottom;
   /* 유물 아래 옅은 그림자 */
   background: radial-gradient(50% 13% at 50% 92%, #F3E6D3 55%, rgba(243, 230, 211, 0) 100%);
+  /* 그림 비율이 달라 상자에 맞추기만 하면 크기가 들쭉날쭉해 보여, 화면에서 보며 아이콘별로 키운다. */
+  transform: scale(var(--thumb-scale, 1));
+  transform-origin: center bottom;
 }
 
-/* 옹기 항아리는 풀밭이 함께 그려져 있어 그림자 없이 크게 놓는다. */
+.home-room__thumb--stone { --thumb-scale: 1.05; }
+
+/* 장독과 접시는 크게 키워 바닥선 대신 카드 세로 가운데에 놓는다.
+   접시는 가운데 아이보리가 바탕과 섞여 같은 높이의 수석보다 작아 보이므로 더 키운다. */
+.home-room__thumb--ongi2,
+.home-room__thumb--europe {
+  margin-bottom: 0;
+  padding-block: calc(2 * var(--u));
+  transform-origin: center;
+}
+
+.home-room__thumb--ongi2 { --thumb-scale: 1.2; }
+.home-room__thumb--europe { --thumb-scale: 1.15; }
+
+/* 흙가마는 풀밭이 함께 그려져 있어 그림자를 깔지 않는다. */
 .home-room__thumb--ongi1 {
-  width: calc(112 * var(--u));
-  height: calc(88 * var(--u));
-  margin: 0 calc(36 * var(--u)) 0 calc(8 * var(--u));
-  padding-bottom: 0;
   background: none;
 }
 
