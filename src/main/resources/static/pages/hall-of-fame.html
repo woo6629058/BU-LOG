@@ -35,7 +35,7 @@
     <header class="hof__header">
       <p class="hof-live"><span class="hof-live__dot" aria-hidden="true"></span>LIVE</p>
       <h1 class="hof__title">명예의 전당</h1>
-      <p class="hof__intro">전시실 그림을 모두 완성한 탐험가들이에요</p>
+      <p class="hof__intro" id="hof-intro">전시실 그림을 모두 완성한 탐험가들이에요</p>
     </header>
 
     <section class="hof-summary" aria-labelledby="hof-summary-label">
@@ -53,7 +53,7 @@
     <section class="hof__finishers" aria-labelledby="hof-list-title">
       <div class="hof__section-header">
         <h2 class="hof__section-title" id="hof-list-title">최근 완주한 탐험가</h2>
-        <p class="hof__section-meta">누르면 프로필을 볼 수 있어요</p>
+        <p class="hof__section-meta" id="hof-list-meta">누르면 프로필을 볼 수 있어요</p>
       </div>
       <ol class="hof__list" id="hof-list"></ol>
     </section>
@@ -65,18 +65,22 @@
     <span class="visually-hidden">실시간 기록 전체 보기</span>
   </button>
 
-  <!-- 내 기록: 탭바 바로 위에 고정 -->
+  <!-- 내 기록: 탭바 바로 위에 고정. 누르면 내 프로필(완주 전이면 미리보기)이 열린다. -->
   <aside class="hof-me" aria-label="내 기록">
-    <p class="hof-me__count">
-      <span aria-hidden="true"><strong id="hof-me-filled">0</strong><span class="hof-me__total">/<span id="hof-me-total">0</span></span></span>
-      <span class="visually-hidden" id="hof-me-count-label"></span>
-    </p>
-    <span id="hof-me-avatar"></span>
-    <div class="hof-me__text">
-      <p class="hof-me__name-row"><span class="hof-me__name" id="hof-me-name"></span><span class="hof-me__badge">나</span></p>
-      <p class="hof-me__hint" id="hof-me-hint"></p>
-    </div>
-    <p class="hof-me__next" id="hof-me-next" hidden></p>
+    <a class="hof-me__link art-pressable" id="hof-me-link" href="/pages/finisher.html?me">
+      <p class="hof-me__count">
+        <span aria-hidden="true"><strong id="hof-me-filled">0</strong><span class="hof-me__total">/<span id="hof-me-total">0</span></span></span>
+        <span class="visually-hidden" id="hof-me-count-label"></span>
+      </p>
+      <span id="hof-me-avatar"></span>
+      <div class="hof-me__text">
+        <p class="hof-me__name-row"><span class="hof-me__name" id="hof-me-name"></span><span class="hof-me__badge">나</span></p>
+        <p class="hof-me__hint" id="hof-me-hint"></p>
+      </div>
+      <p class="hof-me__next" id="hof-me-next" hidden></p>
+      <span class="visually-hidden">내 프로필 보기</span>
+      <span class="hof-me__chevron"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg></span>
+    </a>
   </aside>
 
   <!-- 실시간 기록 시트: 아래에서 올라오는 창 -->

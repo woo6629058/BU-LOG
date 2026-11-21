@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="모든 전시실 그림을 완성한 탐험가의 완주 기록을 보는 BU:LOG 완주자 프로필">
+  <meta name="description" content="모든 전시실 그림을 완성한 탐험가의 완주 기록과, 완주하면 받게 될 내 프로필 미리보기를 보는 BU:LOG 탐험가 프로필">
   <title>탐험가 프로필 | BU:LOG</title>
   <!-- 화면 전환 방향: 새 화면이 그려지기 전에 실행돼야 해서 일반 스크립트로 불러온다 -->
   <script src="/js/common/page-transition.js"></script>
@@ -15,13 +15,17 @@
   <link rel="stylesheet" href="/css/common.css">
   <link rel="stylesheet" href="/css/components/mobile-layout.css">
   <link rel="stylesheet" href="/css/components/art-theme.css">
+  <!-- 내 프로필 미리보기(?me)의 전시실 그림 -->
+  <link rel="stylesheet" href="/css/components/scene.css">
   <link rel="stylesheet" href="/css/pages/finisher.css">
   <!-- 아래 모듈이 가져오는 모듈을 한 번에 미리 받는다 (가져오기 단계마다 기다리지 않게) -->
   <link rel="modulepreload" href="/js/common/collection-data.js">
+  <link rel="modulepreload" href="/js/common/scene.js">
   <link rel="modulepreload" href="/js/common/hall-of-fame-data.js">
   <link rel="modulepreload" href="/js/common/explorer-avatar.js">
   <link rel="modulepreload" href="/js/api/hall-of-fame-api.js">
   <link rel="modulepreload" href="/js/api/archive-api.js">
+  <link rel="modulepreload" href="/js/api/auth-api.js">
   <link rel="modulepreload" href="/js/api/api-client.js">
   <script type="module" src="/js/pages/finisher.js" blocking="render"></script>
 </head>

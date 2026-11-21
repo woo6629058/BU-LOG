@@ -26,7 +26,7 @@ function shortWhen(date, now = new Date()) {
 const fullWhen = (date) => `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${clock(date)}`;
 
 // 탐험 시간: 11분 48초 / 1시간 5분
-function formatDuration(totalSeconds) {
+export function formatDuration(totalSeconds) {
   const seconds = Math.max(0, Math.round(totalSeconds ?? 0));
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -116,6 +116,10 @@ export async function loadHallOfFame() {
     records: (result.records ?? []).map(toRecord),
   };
 }
+
+// 명단·내 기록·내 프로필에 보이는 내 이름: 서버가 준 이름(회원 닉네임·게스트 0000), 못 받았으면 회원 닉네임, 그것도 없으면 '게스트'.
+// 같은 이름이어야 프로필 그림도 같게 나온다.
+export const explorerName = (hall, member) => hall?.myName ?? member?.nickname ?? '게스트';
 
 // 완주 번호로 완주자 한 명. 번호가 잘못됐거나 없는 번호(404)면 null, 그 밖의 오류는 그대로 던진다.
 export async function loadFinisher(no) {

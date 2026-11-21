@@ -13,7 +13,8 @@
   --hof-backdrop: rgba(43, 26, 16, 0.45);
   /* 고정된 막대 높이: 본문 아래 여백과 서로의 위치를 이 값으로 맞춘다. */
   --hof-me-height: 64px;
-  --hof-ticker-height: 124px;
+  /* 실시간 기록 알약 2개 높이 (칸 하나에 34px). 명단을 덜 가리게 3개 대신 2개만 보여 준다. */
+  --hof-ticker-height: 90px;
   /* 탭바 실제 높이 (art-theme.css 의 탭바와 같은 계산) */
   --hof-tab-height: max(48px, var(--tab-bar-height, 72px));
 }
@@ -191,13 +192,38 @@
   list-style: none;
 }
 
-/* 완주자가 아직 없을 때 */
+/* 완주자가 아직 없을 때: 목록이 남은 높이를 차지하고, 안내 카드는 그 가운데에 둔다 (고정 막대 위 빈 공간을 메운다). */
+.hof__finishers {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.hof__list:has(.hof__empty) {
+  flex: 1;
+  justify-content: center;
+}
+
 .hof__empty {
-  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
   border: 1.5px dashed var(--art-line);
-  border-radius: 16px;
+  border-radius: 20px;
   text-align: center;
   background: var(--art-surface);
+}
+
+.hof__empty-trophy {
+  width: 84px;
+  height: 84px;
+  margin-bottom: 12px;
+  object-fit: contain;
+}
+
+.hof__empty-action {
+  margin-top: 16px;
 }
 
 .hof__empty-title {
@@ -214,6 +240,8 @@
   font-size: 12px;
   line-height: 1.5;
   word-break: keep-all;
+  /* 두 줄이 될 때 마지막 줄에 한 단어만 남지 않게 */
+  text-wrap: balance;
 }
 
 /* 완주자 한 줄: 완주 번호 · 프로필 동그라미 · 이름과 완주 시각 · 화살표. 누르면 완주자 프로필로 간다. */
@@ -307,7 +335,8 @@
   color: var(--art-muted);
 }
 
-.hof-finisher__chevron svg {
+.hof-finisher__chevron svg,
+.hof-me__chevron svg {
   width: 18px;
   height: 18px;
   fill: none;
@@ -322,28 +351,57 @@
   position: fixed;
   z-index: 14;
   right: 0;
-  /* 내 기록 막대의 둥근 윗모서리 뒤까지 바탕을 깐다. */
-  bottom: calc(var(--hof-tab-height) + var(--hof-me-height) - 22px);
+  /* 내 기록 막대의 둥근 윗모서리 뒤까지 바탕을 깐다 (막대와 겹치는 높이 --ticker-overlap). */
+  bottom: calc(var(--hof-tab-height) + var(--hof-me-height) - var(--ticker-overlap));
   left: 0;
   width: 100%;
   max-width: var(--layout-width);
-  height: calc(var(--hof-ticker-height) + 22px);
+  height: calc(var(--hof-ticker-height) + var(--ticker-overlap));
   margin-inline: auto;
   padding: 0;
   border: 0;
   /* 맨 위 알약 뒤로 목록 글자가 비치지 않게 위쪽에서 빨리 진해진다. */
   background: linear-gradient(rgba(254, 245, 228, 0), rgba(254, 245, 228, 0.94) 18%, var(--art-bg) 32%);
+  /* 눌리는 곳은 아래 ::after 띠뿐: 그 위(흐린 이전 알약 자리)를 누르면 뒤의 완주자 목록이 눌린다. */
+  pointer-events: none;
   cursor: pointer;
+  /* 내 기록 막대 뒤에 깔리는 높이: 위치·높이·누르는 띠가 모두 이 값을 쓴다. */
+  --ticker-overlap: 22px;
+  /* 알약 자리: 칸 아래 여백(막대 뒤에 깔린 높이 포함) · 알약 높이 · 칸 간격. 누르는 띠 높이도 이 값으로 계산한다. */
+  --pill-bottom: 30px;
+  --pill-height: 28px;
+  --pill-step: 34px;
+  /* 누르는 띠가 덮는 알약 수 (기록이 1개 이하이거나 화면이 낮으면 1) */
+  --tap-pills: 2;
 }
 
+/* 누르는 영역: 보이는 알약을 덮고 맨 위 알약 윗변보다 6px 위까지.
+   내 기록 막대 뒤에 깔린 아래쪽(--ticker-overlap)은 어차피 눌리지 않으므로 빼서, 초점 테두리가 모두 보이게 한다.
+   가상 요소를 누르면 클릭 대상은 버튼이라 시트가 열리고, 키보드 초점·Enter 는 그대로 버튼이 받는다. */
+.hof-ticker::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: var(--ticker-overlap);
+  left: 0;
+  height: calc(var(--pill-bottom) - var(--ticker-overlap) + var(--pill-height) + var(--pill-step) * (var(--tap-pills) - 1) + 6px);
+  border-radius: 16px;
+  pointer-events: auto;
+}
+
+/* 초점 테두리는 실제로 눌리는 띠에 그린다. */
 .hof-ticker:focus-visible {
+  outline: none;
+}
+
+.hof-ticker:focus-visible::after {
   outline: 3px solid var(--art-orange);
-  outline-offset: -6px;
+  outline-offset: -3px;
 }
 
 .hof-ticker__items {
   position: absolute;
-  inset: 0 16px 30px;
+  inset: 0 16px var(--pill-bottom);
 }
 
 /* 알약 하나. 칸(data-slot)마다 34px씩 위에 놓이고 위로 갈수록 흐려진다. */
@@ -357,7 +415,7 @@
   align-items: center;
   gap: 6px;
   max-width: 100%;
-  height: 28px;
+  height: var(--pill-height);
   padding: 0 12px 0 10px;
   border: 1px solid var(--art-line);
   border-radius: 999px;
@@ -368,15 +426,14 @@
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
-  transform: translate(-50%, calc(var(--slot) * -34px));
+  transform: translate(-50%, calc(var(--slot) * var(--pill-step) * -1));
   transition: transform 520ms var(--ease-out), opacity 520ms ease;
 }
 
 .hof-ticker__pill[data-slot="-1"] { --slot: -0.7; opacity: 0; }
 .hof-ticker__pill[data-slot="0"] { opacity: 1; }
 .hof-ticker__pill[data-slot="1"] { --slot: 1; opacity: 0.55; }
-.hof-ticker__pill[data-slot="2"] { --slot: 2; opacity: 0.28; }
-.hof-ticker__pill[data-slot="3"] { --slot: 2.7; opacity: 0; }
+.hof-ticker__pill[data-slot="2"] { --slot: 1.7; opacity: 0; }
 
 .hof-ticker__pill svg,
 .hof-ticker__pill img {
@@ -412,15 +469,16 @@
   opacity: 1;
 }
 
-/* 화면이 낮으면 명단이 가려지지 않게 알약을 2개, 더 낮으면 1개만 보여 준다. (칸 하나에 34px) */
-@media (max-height: 759px) {
-  .page-hof { --hof-ticker-height: 90px; }
-  .hof-ticker__pill[data-slot="2"] { opacity: 0; }
-}
+/* 기록이 1개 이하면(기록이 없을 때의 안내 알약 포함) 알약 1개 높이로 바탕과 누르는 영역을 줄인다. data-ticker-pills 는 hall-of-fame.js 가 붙인다. */
+.page-hof[data-ticker-pills="1"] { --hof-ticker-height: 56px; }
+.page-hof[data-ticker-pills="1"] .hof-ticker { --tap-pills: 1; }
 
+/* 화면이 낮으면 명단이 가려지지 않게 알약을 1개만 보여 준다. (칸 하나에 34px) */
 @media (max-height: 619px) {
   .page-hof { --hof-ticker-height: 56px; }
   .hof-ticker__pill[data-slot="1"] { opacity: 0; }
+  /* 알약이 1개뿐이라 누르는 영역도 그 알약까지만 */
+  .hof-ticker { --tap-pills: 1; }
 }
 
 /* ---------- 내 기록 막대: 탭바 바로 위에 고정. 탭바의 둥근 윗모서리 뒤까지 살구색을 깐다. ---------- */
@@ -430,18 +488,43 @@
   right: 0;
   bottom: calc(var(--hof-tab-height) - 24px);
   left: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   max-width: var(--layout-width);
   height: calc(var(--hof-me-height) + 24px);
   margin-inline: auto;
-  padding: 0 16px 24px 20px;
+  padding-bottom: 24px;
   border-radius: 22px 22px 0 0;
-  color: var(--art-ink);
   background: var(--art-button);
   box-shadow: 0 -4px 14px rgba(140, 97, 56, 0.18);
   font-weight: 600;
+}
+
+/* 막대 전체가 내 프로필로 가는 링크 */
+.hof-me__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--hof-me-height);
+  padding: 0 8px 0 20px;
+  border-radius: 22px 22px 0 0;
+  color: var(--art-ink);
+  text-decoration: none;
+}
+
+.hof-me__link:focus-visible {
+  outline: 3px solid var(--art-orange);
+  outline-offset: -3px;
+}
+
+/* 화살표는 남은 칸 안내 글자 자리를 덜 먹게 작게, 붙여서 둔다 (360px 폭에서 완주하면 No.100 까지 잘리지 않게). */
+.hof-me__chevron {
+  display: flex;
+  flex-shrink: 0;
+  margin-left: -6px;
+}
+
+.hof-me__chevron svg {
+  width: 16px;
+  height: 16px;
 }
 
 .hof-me .art-avatar {
@@ -556,6 +639,10 @@ html:has(.hof-sheet[open]) {
   background: var(--art-bg);
   box-shadow: 0 -6px 24px rgba(74, 46, 31, 0.18);
   font-weight: 600;
+  /* 세로 배치는 닫히는 동안에도 유지돼야 해서 [open] 이 아닌 여기에 둔다.
+     (닫힐 때 display 는 움직임이 끝날 때까지 flex 로 남는데, 이 값이 [open] 에만 있으면 내려가는 동안 가로로 흐트러진다) */
+  flex-direction: column;
+  gap: 12px;
   /* 닫힐 때: 열릴 때보다 빠르게 내려간다. display·overlay 는 움직임이 끝난 뒤에 바뀐다. */
   transform: translateY(100%);
   transition:
@@ -566,8 +653,6 @@ html:has(.hof-sheet[open]) {
 
 .hof-sheet[open] {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
   transform: none;
   transition:
     transform var(--motion-page) var(--ease-out),
