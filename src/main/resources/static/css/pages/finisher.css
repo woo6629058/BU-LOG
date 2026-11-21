@@ -180,9 +180,12 @@
   margin: 0;
 }
 
-.finisher__picture-image {
+/* 완성 그림(완주자)과 채워 가는 그림(내 프로필 미리보기, scene.css)을 같은 액자로 */
+.finisher__picture-image,
+.finisher__scene {
   width: 100%;
   height: auto;
+  overflow: hidden;
   border: 3px solid var(--art-surface);
   border-radius: 12px;
   box-shadow: 0 2px 8px var(--art-shadow);

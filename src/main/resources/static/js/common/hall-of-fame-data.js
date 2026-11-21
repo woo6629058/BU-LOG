@@ -26,7 +26,7 @@ function shortWhen(date, now = new Date()) {
 const fullWhen = (date) => `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${clock(date)}`;
 
 // 탐험 시간: 11분 48초 / 1시간 5분
-function formatDuration(totalSeconds) {
+export function formatDuration(totalSeconds) {
   const seconds = Math.max(0, Math.round(totalSeconds ?? 0));
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
