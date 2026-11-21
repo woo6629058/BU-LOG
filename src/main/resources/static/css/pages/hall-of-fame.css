@@ -419,8 +419,7 @@
 .hof-ticker__pill[data-slot="-1"] { --slot: -0.7; opacity: 0; }
 .hof-ticker__pill[data-slot="0"] { opacity: 1; }
 .hof-ticker__pill[data-slot="1"] { --slot: 1; opacity: 0.55; }
-.hof-ticker__pill[data-slot="2"] { --slot: 2; opacity: 0; }
-.hof-ticker__pill[data-slot="3"] { --slot: 2.7; opacity: 0; }
+.hof-ticker__pill[data-slot="2"] { --slot: 1.7; opacity: 0; }
 
 .hof-ticker__pill svg,
 .hof-ticker__pill img {

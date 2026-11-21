@@ -201,11 +201,9 @@ sheet.addEventListener('click', (event) => {
 });
 
 /* 떠오르는 실시간 기록: 알약을 2개 보여 준다. 새 기록이 맨 아래 칸에 떠오르면 나머지는 한 칸씩 위로 밀리며 흐려진다.
-   칸 번호(data-slot): -1 떠오르기 전 / 0·1 보이는 칸 / 2·3 사라지는 중(투명). 움직임은 hall-of-fame.css 에 있다. */
+   칸 번호(data-slot): -1 떠오르기 전 / 0·1 보이는 칸 / 2 사라지는 중. 움직임은 hall-of-fame.css 에 있다. */
 
-const TICKER_SLOTS = 3;
-// 그중 보이는 알약 수 (나머지 칸은 hall-of-fame.css 에서 투명)
-const TICKER_VISIBLE = 2;
+const TICKER_SLOTS = 2;
 const TICKER_STEP_MS = 3200;
 const tickerItems = document.querySelector('#hof-ticker-items');
 // 되풀이해 흘려보낼 기록(오래된 것부터)과, 새로 받아 와서 먼저 보여 줄 기록
@@ -222,7 +220,7 @@ function setTickerRecords(list, { announceNew = false } = {}) {
   // 기록이 칸 수 이하면 새 기록은 대기열로 한 번만 보여 주고, 되풀이 목록에서 다시 고르지 않는다.
   if (announceNew && tickerCycle.length <= TICKER_SLOTS) tickerCursor = tickerCycle.length;
   // 보이는 알약 수(기록이 없으면 안내 알약 1개)에 맞춰 바탕 높이를 바꾼다 (hall-of-fame.css 의 data-ticker-pills).
-  document.body.dataset.tickerPills = String(Math.min(Math.max(list.length, 1), TICKER_VISIBLE));
+  document.body.dataset.tickerPills = String(Math.min(Math.max(list.length, 1), TICKER_SLOTS));
 }
 
 function nextTickerRecord() {
