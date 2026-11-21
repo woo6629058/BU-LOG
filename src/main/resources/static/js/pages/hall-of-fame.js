@@ -129,6 +129,8 @@ function renderMe() {
 
 // 완주했으면 내 완주 번호, 아직이면 지금 완주했을 때 받을 번호
 function renderMeNext(remaining) {
+  // 내 기록 막대: 완주했으면 내 프로필, 아직이면 내 프로필 미리보기로 간다.
+  document.querySelector('#hof-me-link').href = hall.myNo ? `/pages/finisher.html?no=${hall.myNo}` : '/pages/finisher.html?me';
   const next = document.querySelector('#hof-me-next');
   if (loadFailed && !hall.myNo) {
     next.hidden = true;
