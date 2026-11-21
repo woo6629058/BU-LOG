@@ -1,6 +1,6 @@
 import { getMe } from '../api/auth-api.js';
 import { ROOMS, acquiredSet, loadCollection, summarizeAll, summarizeRoom } from '../common/collection-data.js';
-import { avatar, formatDuration, loadFinisher, loadHallOfFame } from '../common/hall-of-fame-data.js';
+import { avatar, explorerName, formatDuration, loadFinisher, loadHallOfFame } from '../common/hall-of-fame-data.js';
 import { renderScene } from '../common/scene.js';
 
 const HALL_OF_FAME_URL = '/pages/hall-of-fame.html';
@@ -93,103 +93,118 @@ function picture(room) {
   return li;
 }
 
-function renderProfile() {
-  document.title = `${finisher.name} | BU:LOG`;
-  const total = ROOMS.reduce((sum, room) => sum + room.regions.length, 0);
+// 트로피를 붙인 번호 배지 (No.3 완주자 / 완주하면 No.4)
+function numberBadge(text) {
+  const number = element('p', 'finisher__number art-badge');
+  number.append(trophy(), text);
+  return number;
+}
+
+// 완주자 프로필과 내 프로필 미리보기가 함께 쓰는 틀: 머리말(프로필 그림·이름·배지) → 숫자 두 칸 → 그림 목록.
+// 미리보기가 진짜 프로필과 같은 모양으로 남도록 화면 구성은 여기 한 곳에만 둔다.
+function renderLayout({ title, eyebrow, name, badges, message = null, stats, galleryTitle, pictures }) {
+  document.title = title;
 
   const header = element('header', 'finisher__header');
-  const photo = avatar(finisher.name);
+  const photo = avatar(name);
   photo.classList.add('finisher__photo');
+  const badgeRow = element('div', 'finisher__badges');
+  badgeRow.append(...badges);
+  header.append(element('p', 'finisher__eyebrow', eyebrow), photo, element('h1', 'finisher__name', name), badgeRow);
+  if (message) header.append(element('p', 'finisher__message', `“${message}”`));
 
-  const number = element('p', 'finisher__number art-badge');
-  number.append(trophy(), `No.${finisher.no} 완주자`);
-  const badges = element('div', 'finisher__badges');
-  badges.append(number, element('p', 'finisher__date', finisher.finishedAt));
-
-  header.append(element('p', 'finisher__eyebrow', '탐험가 프로필'), photo, element('h1', 'finisher__name', finisher.name), badges);
-  if (finisher.message) header.append(element('p', 'finisher__message', `“${finisher.message}”`));
-
-  const stats = element('dl', 'finisher__stats');
-  stats.append(stat('채운 유물', `${total} / ${total}`), stat('탐험 시간', finisher.duration));
+  const statList = element('dl', 'finisher__stats');
+  statList.append(...stats.map(([label, value]) => stat(label, value)));
 
   const gallery = element('section', 'finisher__gallery');
   gallery.setAttribute('aria-labelledby', 'finisher-gallery-title');
-  const title = element('h2', 'finisher__gallery-title', `완성한 그림 ${ROOMS.length}장`);
-  title.id = 'finisher-gallery-title';
-  const pictures = element('ul', 'finisher__pictures');
-  pictures.append(...ROOMS.map(picture));
-  gallery.append(title, pictures);
+  const heading = element('h2', 'finisher__gallery-title', galleryTitle);
+  heading.id = 'finisher-gallery-title';
+  const list = element('ul', 'finisher__pictures');
+  list.append(...pictures);
+  gallery.append(heading, list);
 
-  root.replaceChildren(backButton(), header, stats, gallery);
+  root.replaceChildren(backButton(), header, statList, gallery);
+}
+
+function renderProfile() {
+  const total = ROOMS.reduce((sum, room) => sum + room.regions.length, 0);
+  renderLayout({
+    title: `${finisher.name} | BU:LOG`,
+    eyebrow: '탐험가 프로필',
+    name: finisher.name,
+    badges: [numberBadge(`No.${finisher.no} 완주자`), element('p', 'finisher__date', finisher.finishedAt)],
+    message: finisher.message,
+    stats: [['채운 유물', `${total} / ${total}`], ['탐험 시간', finisher.duration]],
+    galleryTitle: `완성한 그림 ${ROOMS.length}장`,
+    pictures: ROOMS.map(picture),
+  });
 }
 
 /* 내 프로필 미리보기 (?me): 완주하면 받게 될 프로필을 같은 틀로, 아직 채우지 않은 칸은 빈 채로 보여 준다. */
 
-// 내 수집 기록·이름·다음 완주 번호. 수집 기록을 못 받으면 null.
-// 처음 온 방문자는 첫 요청에서 방문자 쿠키를 받으므로 수집 기록을 먼저 받은 뒤 나머지를 함께 부른다.
+// 로그인 확인이 늦어도 화면이 멈추지 않게 8초 뒤에는 게스트로 본다 (명예의 전당 요청과 같은 제한).
+const ME_TIMEOUT_MS = 8000;
+const withTimeout = (promise, ms) => Promise.race([promise, new Promise((resolve) => { setTimeout(() => resolve(null), ms); })]);
+
+// 내 수집 기록·이름·다음 완주 번호. 수집 기록을 못 받으면 null, 이미 완주했으면 { myNo } 만.
+// 처음 온 방문자는 첫 요청에서 방문자 쿠키를 받으므로 수집 기록을 먼저 받은 뒤 나머지를 부른다.
 async function loadPreview() {
   const { rooms, records, failed } = await loadCollection();
   if (failed) return null;
-  const [member, hall] = await Promise.all([
-    getMe().catch(() => null),
-    loadHallOfFame().catch(() => null),
-  ]);
-  const times = records.map((record) => new Date(record.acquiredAt)).filter((date) => !Number.isNaN(date.getTime()));
+  const hall = await loadHallOfFame().catch(() => null);
+  if (hall?.myNo) return { myNo: hall.myNo };
+  // 회원 닉네임은 명예의 전당이 이름을 못 줄 때만 쓰므로 그때만 물어본다.
+  const member = hall?.myName ? null : await withTimeout(getMe().catch(() => null), ME_TIMEOUT_MS);
+  const times = records.map((record) => new Date(record.acquiredAt).getTime()).filter((time) => !Number.isNaN(time));
   return {
-    name: hall?.myName ?? member?.nickname ?? '게스트',
-    myNo: hall?.myNo ?? null,
+    name: explorerName(hall, member),
+    myNo: null,
     nextNo: hall ? hall.total + 1 : null,
     rooms,
     acquired: acquiredSet(records),
-    firstAcquiredAt: times.length > 0 ? new Date(Math.min(...times)) : null,
+    firstAcquiredAt: times.length > 0 ? Math.min(...times) : null,
+    lastAcquiredAt: times.length > 0 ? Math.max(...times) : null,
   };
 }
 
-// 채운 구역만 색칠된 전시실 그림과 이름·채운 수
+// 채운 구역만 색칠된 전시실 그림과 이름·채운 수.
+// 화면 낭독기가 그림 설명과 아래 이름을 두 번 읽지 않게, 설명은 그림에 한 번만 붙이고 이름 줄은 읽지 않게 한다.
 function previewPicture(room, acquired) {
   const { filled, total } = summarizeRoom(room, acquired);
-  const scene = renderScene(room, acquired);
+  const scene = renderScene(room, acquired, { label: `${room.name} 그림, ${total}칸 중 ${filled}칸 채움` });
   scene.classList.add('finisher__scene');
+  const caption = element('figcaption', 'finisher__picture-name', `${room.name} ${filled}/${total}`);
+  caption.setAttribute('aria-hidden', 'true');
   const figure = element('figure', 'finisher__picture');
-  figure.append(scene, element('figcaption', 'finisher__picture-name', `${room.name} ${filled}/${total}`));
+  figure.append(scene, caption);
   const li = element('li');
   li.append(figure);
   return li;
 }
 
-function renderPreview({ name, nextNo, rooms, acquired, firstAcquiredAt }) {
-  document.title = '내 프로필 미리보기 | BU:LOG';
+function renderPreview({ name, nextNo, rooms, acquired, firstAcquiredAt, lastAcquiredAt }) {
   const { filled, total } = summarizeAll(rooms, acquired);
   const remaining = total - filled;
 
-  const header = element('header', 'finisher__header');
-  const photo = avatar(name);
-  photo.classList.add('finisher__photo');
-
   // 다 채웠는데 아직 완주 번호가 없으면(기록 중) 번호를 약속하지 않는다.
-  const badges = element('div', 'finisher__badges');
-  if (nextNo && remaining > 0) {
-    const number = element('p', 'finisher__number art-badge');
-    number.append(trophy(), `완주하면 No.${nextNo}`);
-    badges.append(number);
-  }
-  badges.append(element('p', 'finisher__date', remaining > 0 ? `완주까지 ${remaining}개 남았어요` : '모든 그림을 완성했어요'));
+  const badges = [];
+  if (nextNo && remaining > 0) badges.push(numberBadge(`완주하면 No.${nextNo}`));
+  badges.push(element('p', 'finisher__date', remaining > 0 ? `완주까지 ${remaining}개 남았어요` : '모든 그림을 완성했어요'));
 
-  header.append(element('p', 'finisher__eyebrow', '내 프로필 미리보기'), photo, element('h1', 'finisher__name', name), badges);
+  // 탐험 시간은 진짜 프로필처럼 첫 카드부터 잰다. 다 채웠으면 마지막 카드에서 멈춘다 (완주 기록과 같은 값).
+  const end = remaining > 0 ? Date.now() : lastAcquiredAt;
+  const elapsed = firstAcquiredAt === null ? '아직 시작 전' : formatDuration((end - firstAcquiredAt) / 1000);
 
-  const stats = element('dl', 'finisher__stats');
-  const elapsed = firstAcquiredAt ? formatDuration((Date.now() - firstAcquiredAt.getTime()) / 1000) : '아직 시작 전';
-  stats.append(stat('채운 유물', `${filled} / ${total}`), stat('탐험 시간', elapsed));
-
-  const gallery = element('section', 'finisher__gallery');
-  gallery.setAttribute('aria-labelledby', 'finisher-gallery-title');
-  const title = element('h2', 'finisher__gallery-title', `채워 가는 그림 ${rooms.length}장`);
-  title.id = 'finisher-gallery-title';
-  const pictures = element('ul', 'finisher__pictures');
-  pictures.append(...rooms.map((room) => previewPicture(room, acquired)));
-  gallery.append(title, pictures);
-
-  root.replaceChildren(backButton(), header, stats, gallery);
+  renderLayout({
+    title: '내 프로필 미리보기 | BU:LOG',
+    eyebrow: '내 프로필 미리보기',
+    name,
+    badges,
+    stats: [['채운 유물', `${filled} / ${total}`], ['탐험 시간', elapsed]],
+    galleryTitle: `채워 가는 그림 ${rooms.length}장`,
+    pictures: rooms.map((room) => previewPicture(room, acquired)),
+  });
 }
 
 if (previewMode) {

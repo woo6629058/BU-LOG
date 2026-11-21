@@ -2,7 +2,7 @@ import { getMe } from '../api/auth-api.js';
 import { mountTabBar } from '../common/tab-bar.js';
 import { countUp, rise } from '../common/motion.js';
 import { acquiredSet, loadCollection, summarizeAll } from '../common/collection-data.js';
-import { avatar, loadHallOfFame, recordIcon } from '../common/hall-of-fame-data.js';
+import { avatar, explorerName, loadHallOfFame, recordIcon } from '../common/hall-of-fame-data.js';
 
 mountTabBar({ active: 'ranking' });
 
@@ -112,7 +112,7 @@ function renderMe() {
   const { filled, total } = summarizeAll(rooms, acquiredSet(records));
   const remaining = total - filled;
   // 명단과 같은 이름(게스트는 '게스트 0000')을 써서 프로필 그림도 같게 나온다.
-  const name = hall.myName ?? member?.nickname ?? '게스트';
+  const name = explorerName(hall, member);
 
   document.querySelector('#hof-me-filled').textContent = filled;
   document.querySelector('#hof-me-total').textContent = total;
