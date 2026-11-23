@@ -29,6 +29,7 @@ const scene = (roomId) => ({
   height: 793,
   lockedSrc: `/images/scenes/${roomId}-locked.webp`,
   colorSrc: `/images/scenes/${roomId}-color.webp`,
+  originalSrc: `/images/scenes/${roomId}-original.webp`, // 번호·구역선이 없는 원화. 완주 화면에서 쓴다.
 });
 
 // 구역 번호는 그림 속 이름표 번호이자 서버 카드 번호 순서다 (전시실마다 1~4번).

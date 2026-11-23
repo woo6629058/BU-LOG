@@ -185,3 +185,77 @@
   line-height: 1.6;
   word-break: keep-all;
 }
+
+/* 완주 단계: 24번째 칸을 채우면 결과 화면이 여섯 전시실 원화(금색 액자)와 명예의 전당 버튼으로 바뀐다. */
+.result__gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.result__frame {
+  margin: 0;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--art-gold);
+  box-shadow: 0 4px 12px var(--art-shadow);
+  animation: result-frame-in 0.45s ease-out calc(var(--i, 0) * 90ms) both;
+}
+
+.result__frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--art-surface);
+}
+
+.result__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.result__stats[hidden] {
+  display: none;
+}
+
+/* 배지를 받기 전: 자리만 차지하고 보이지 않는다 (받은 뒤 버튼이 밀리지 않게). */
+.result__stats.is-pending {
+  visibility: hidden;
+}
+
+/* 색종이 캔버스: 모바일 칸 안에서만, 내용 뒤(배경 위)로 지나간다. 누름을 가로채지 않는다. */
+.result__confetti {
+  position: fixed;
+  z-index: 0;
+  top: 0;
+  left: 50%;
+  width: var(--layout-width, 100%);
+  height: 100vh;
+  height: 100dvh;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.result.is-all-clear > :not(.result__confetti, .visually-hidden) {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes result-frame-in {
+  from { opacity: 0; transform: scale(0.94); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result__frame {
+    animation: none;
+  }
+
+  .result__confetti {
+    display: none;
+  }
+}
