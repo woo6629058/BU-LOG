@@ -12,7 +12,7 @@ export function mountHomeCarousel(root) {
   const current = root.querySelector('[data-carousel-current]');
   const status = root.querySelector('[data-carousel-status]');
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const interval = 6000;
+  const interval = 3500;
   let index = 0;
   let autoplay = !motionPreference.matches;
   let hovered = false;
