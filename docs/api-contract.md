@@ -74,7 +74,7 @@
     "sourceName": "부천시박물관 3D 전시실, 부천시박물관 누리집",
     "sourceUrl": "https://my.matterport.com/show/?m=ckQy8JMv3Xj",
     "exhibitionRoom": "옹기1전시실",
-    "cardNumber": 1,
+    "exhibitNumber": 1,
     "visitOrder": 1,
     "collectible": true
   }
@@ -102,7 +102,7 @@
 
 - `keyword`: 전시물 이름 검색
 - `exhibitionRoom`: 전시실 이름 필터
-- `collectible`: 카드 수집 대상 여부
+- `collectible`: 수집 대상 여부
 - `page`: 0부터 시작하는 페이지 번호, 기본값 `0`
 - `size`: 페이지당 개수, 기본값 `20`, 최대 `100`
 
@@ -120,7 +120,7 @@
         "imageUrl": "/api/exhibits/PS0100346400100000100000/image",
         "museumName": "부천시립박물관",
         "exhibitionRoom": "교육박물관",
-        "cardNumber": 1,
+        "exhibitNumber": 1,
         "visitOrder": 1,
         "collectible": true
       }
@@ -133,9 +133,9 @@
 }
 ```
 
-e뮤지엄에서 가져온 전체 소장품과 실제 카드 수집 대상으로 선정한 소장품을 함께 관리합니다.
-`collectible=true` 조건을 사용하면 카드 수집 대상만 조회할 수 있습니다. 전시실·카드 번호·관람
-순서는 카드 대상으로 선정할 때 입력합니다.
+e뮤지엄에서 가져온 전체 소장품과 실제 수집 대상으로 선정한 소장품을 함께 관리합니다.
+`collectible=true` 조건을 사용하면 수집 대상만 조회할 수 있습니다. 전시실·유물 번호·관람
+순서는 수집 대상으로 선정할 때 입력합니다.
 
 ## 전시물 이미지
 
@@ -202,8 +202,8 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
   "result": {
     "correct": true,
     "explanation": "십자가 2개, 물결무늬 2줄, 뚜껑 손잡이 1개예요. ...",
-    "card": {
-      "cardId": 7,
+    "collection": {
+      "recordId": 7,
       "exhibitId": "ongi1-faith-jar",
       "newlyAcquired": true
     }
@@ -212,8 +212,8 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 ```
 
 제출한 선택지가 해당 퀴즈에 속하지 않으면 `400 Bad Request`를 반환합니다. 정답인 경우
-현재 방문자에게 카드가 발급됩니다. 이미 같은 카드를 가지고 있다면 기존 `cardId`와
-`newlyAcquired: false`를 반환합니다. 오답 응답에는 `explanation`과 `card`가 포함되지 않습니다(해설에 정답이 들어 있어서 맞혔을 때만 보냅니다).
+현재 방문자의 수집 기록이 생깁니다. 이미 같은 유물을 모았다면 기존 `recordId`와
+`newlyAcquired: false`를 반환합니다. 오답 응답에는 `explanation`과 `collection`이 포함되지 않습니다(해설에 정답이 들어 있어서 맞혔을 때만 보냅니다).
 틀려도 시도 횟수 제한은 없습니다.
 
 ## 닉네임 사용 가능 여부
@@ -274,7 +274,7 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 | `marketingAgreed` | 선택 동의(마케팅 정보 수신), 생략하면 `false` |
 
 동의 시각은 회원 정보에 저장되며 응답에는 포함하지 않습니다.
-회원가입과 동시에 로그인됩니다. 가입 전 게스트로 획득한 카드는 생성된 회원 계정에
+회원가입과 동시에 로그인됩니다. 가입 전 게스트로 모은 유물은 생성된 회원 계정에
 연결됩니다.
 
 | 오류 코드 | 상황 |
@@ -297,7 +297,7 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 ```
 
 성공 응답 코드는 `MEMBER_200_001`입니다. 로그인 전 현재 브라우저에서 게스트로 획득한
-카드는 로그인한 회원에게 연결됩니다. 이메일 또는 비밀번호가 올바르지 않으면
+유물은 로그인한 회원에게 연결됩니다. 이메일 또는 비밀번호가 올바르지 않으면
 `MEMBER_401_001`을 반환합니다.
 
 가입·로그인에 성공하면 세션 쿠키와 함께 로그인 상태 유지 쿠키(`bulog_remember`, 2주, HttpOnly)를 발급합니다.
@@ -328,21 +328,21 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 ```json
 {
   "isSuccess": true,
-  "code": "COMMON_200",
-  "message": "요청에 성공했습니다.",
+  "code": "COLLECTION_200_001",
+  "message": "아카이브 조회에 성공했습니다.",
   "result": {
     "acquiredCount": 1,
     "totalCount": 24,
-    "cards": [
+    "items": [
       {
-        "cardId": 7,
+        "recordId": 7,
         "exhibitId": "ongi1-faith-jar",
         "name": "신앙항아리",
         "era": "근대",
         "description": "부천의 '점말'은 병인박해를 피해 천주교인들이 모여살면서 옹기를 만들던 곳이다. ...",
         "imageUrl": "/images/exhibits/ongi1-faith-jar.jpg",
         "exhibitionRoom": "옹기1전시실",
-        "cardNumber": 1,
+        "exhibitNumber": 1,
         "acquired": true,
         "acquiredAt": "2026-11-03T10:00:00"
       }
@@ -351,22 +351,22 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 }
 ```
 
-게스트는 현재 브라우저 방문자의 카드만 조회합니다. 로그인 회원은 해당 계정에 연결된
+게스트는 현재 브라우저 방문자의 수집 기록만 조회합니다. 로그인 회원은 해당 계정에 연결된
 여러 브라우저의 방문 기록을 전시물 기준으로 합쳐서 조회합니다. 미획득 전시물도
-`acquired: false`로 반환하며 이때 `cardId`, `acquiredAt`은 응답에서 제외됩니다.
-카드는 수집 대상 유물 24개가 `cardNumber`(카드 번호 = 관람 순서) 순서로 옵니다. 화면은 `exhibitionRoom`으로 전시실을 나눕니다.
+`acquired: false`로 반환하며 이때 `recordId`, `acquiredAt`은 응답에서 제외됩니다.
+`items`는 수집 대상 유물 24개가 `exhibitNumber`(유물 번호 = 관람 순서) 순서로 옵니다. 화면은 `exhibitionRoom`으로 전시실을 나눕니다.
 
-## 카드 상세
+## 수집 기록 상세
 
-`GET /api/cards/{cardId}`
+`GET /api/collections/{recordId}`
 
 ```json
 {
   "isSuccess": true,
-  "code": "CARD_200_002",
-  "message": "카드 조회에 성공했습니다.",
+  "code": "COLLECTION_200_002",
+  "message": "수집 기록 조회에 성공했습니다.",
   "result": {
-    "cardId": 7,
+    "recordId": 7,
     "exhibitId": "ongi1-faith-jar",
     "name": "신앙항아리",
     "era": "근대",
@@ -377,7 +377,7 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 }
 ```
 
-현재 게스트 또는 로그인 회원이 소유하지 않은 카드에는 `CARD_404_001`을 반환합니다.
+현재 게스트 또는 로그인 회원이 소유하지 않은 수집 기록에는 `COLLECTION_404_001`을 반환합니다.
 
 ## 명예의 전당
 
@@ -406,10 +406,10 @@ e뮤지엄 이미지 주소에 포함된 접근 정보를 브라우저에 직접
 }
 ```
 
-- 완주: 수집 대상 유물 카드를 모두 모은 것. 마지막 카드를 받는 순간 완주 번호(`no`)가 붙고 바뀌지 않습니다.
+- 완주: 수집 대상 유물을 모두 모은 것. 마지막 유물을 모으는 순간 완주 번호(`no`)가 붙고 바뀌지 않습니다.
 - `total`: 전체 완주자 수, `today`: 오늘(서버 기준 한국 시각) 완주한 수, `myNo`: 내 완주 번호(완주 전이면 `null`), `myName`: 명단에 보이는 내 이름.
-- `finishers`: 최근에 완주한 순서로 20명. `durationSeconds`는 첫 카드부터 마지막 카드까지 걸린 시간(초)입니다.
-- `records`: 최근 기록 30개(최근 순서). `type`은 `FILL`(카드를 받아 그림 한 칸 채움), `ROOM_DONE`(한 전시실 카드를 모두 모음), `FINISH`(완주). 종류에 없는 칸은 응답에서 빠집니다.
+- `finishers`: 최근에 완주한 순서로 20명. `durationSeconds`는 첫 유물부터 마지막 유물까지 걸린 시간(초)입니다.
+- `records`: 최근 기록 30개(최근 순서). `type`은 `FILL`(유물을 모아 그림 한 칸 채움), `ROOM_DONE`(한 전시실 유물을 모두 모음), `FINISH`(완주). 종류에 없는 칸은 응답에서 빠집니다.
 - `name`: 로그인한 회원은 닉네임, 게스트는 `게스트 0000`(방문자마다 같은 네 자리 번호).
 - "오늘 16:27", "3분 전" 같은 문구는 화면이 만듭니다. 화면은 10초마다, 그리고 다른 탭에서 돌아왔을 때 다시 불러옵니다.
 
