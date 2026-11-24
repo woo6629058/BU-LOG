@@ -244,7 +244,7 @@ async function lookUpExhibit(exhibitId) {
 // 전시실이 없으면 박물관 이름으로 대신 표시
 function buildMeta(exhibit) {
   const place = exhibit.exhibitionRoom ?? exhibit.museumName;
-  const number = exhibit.cardNumber;
+  const number = exhibit.exhibitNumber;
   const numberText = number !== undefined && number !== null ? `No.${String(number).padStart(2, '0')}` : null;
   return [place, numberText].filter(Boolean).join(' · ');
 }
@@ -407,15 +407,15 @@ els.manualInput.addEventListener('input', () => {
 });
 
 // "8", "08", "No.08", "no 8" → 8 / 숫자가 아니면 null
-export function parseCardNumber(text) {
+export function parseExhibitNumber(text) {
   const match = String(text ?? '').trim().match(/^(?:no\.?\s*)?(\d{1,3})$/i);
   return match ? Number(match[1]) : null;
 }
 
 // 수집 대상 유물 목록에서 번호가 같은 유물의 id 찾기 (수집 대상은 24개라 한 번에 받아도 충분)
-async function findExhibitIdByNumber(cardNumber) {
+async function findExhibitIdByNumber(exhibitNumber) {
   const list = unwrap(await apiRequest('/exhibits?collectible=true&size=100'));
-  const exhibit = (list?.exhibits ?? []).find((item) => item.cardNumber === cardNumber);
+  const exhibit = (list?.exhibits ?? []).find((item) => item.exhibitNumber === exhibitNumber);
   return exhibit?.id ?? null;
 }
 
@@ -429,15 +429,15 @@ els.manualForm.addEventListener('submit', async (event) => {
   }
   hideSheets(); // 찾는 동안 안내 문구가 보이도록 시트를 닫음
 
-  const cardNumber = parseCardNumber(value);
-  if (cardNumber !== null) {
+  const exhibitNumber = parseExhibitNumber(value);
+  if (exhibitNumber !== null) {
     showGuide('유물을 찾고 있어요', '');
     try {
-      const exhibitId = await findExhibitIdByNumber(cardNumber);
+      const exhibitId = await findExhibitIdByNumber(exhibitNumber);
       if (exhibitId) {
         lookUpExhibit(exhibitId);
       } else {
-        flashError(`No.${String(cardNumber).padStart(2, '0')} 유물을 찾을 수 없어요`, 'QR 코드에 적힌 번호를 확인해 주세요');
+        flashError(`No.${String(exhibitNumber).padStart(2, '0')} 유물을 찾을 수 없어요`, 'QR 코드에 적힌 번호를 확인해 주세요');
       }
     } catch {
       flashError('유물 정보를 불러오지 못했어요', '잠시 후 다시 시도해 주세요');

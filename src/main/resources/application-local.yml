@@ -11,3 +11,7 @@ spring:
 logging:
   level:
     com.bulog: DEBUG
+app:
+  local:
+    # true로 켜면 샘플 수집 기록(방문자마다 7개)과 명예의 전당 예시 탐험가를 넣는다. 기본은 운영처럼 빈 상태
+    sample-data: ${BULOG_SAMPLE_DATA:false}

@@ -1,6 +1,5 @@
 // 그림 채우기 성공: 퀴즈 정답 뒤 퀴즈 화면이 ?exhibitId=…(이미 채운 구역이면 &new=0)로 보낸다.
-// 서버 기록(카드)에 있는 유물만 채워진 것으로 그린다. 아직 카드를 받지 않은 유물이면 미션 안내를 보여 준다.
-// 퀴즈 체험 모드(?demo=)에서 온 경우만 &preview=1 로 카드 없이 미리 본다 (저장은 안 됨).
+// 서버 수집 기록에 있는 유물만 채워진 것으로 그린다. 아직 모으지 않은 유물이면 미션 안내를 보여 준다.
 import { loadScene, playFill, regionRect, renderScene } from '../common/scene.js';
 import { acquiredSet, findRegion, loadCollection, summarizeAll, summarizeRoom } from '../common/collection-data.js';
 import { loadFinisher, loadHallOfFame } from '../common/hall-of-fame-data.js';
@@ -9,7 +8,6 @@ import { reducedMotion } from '../common/motion.js';
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
 const isNew = params.get('new') !== '0';
-const isPreview = params.get('preview') === '1';
 // 전시실 그림과 내 기록을 서버에서 받아 온다 (collection-data.js).
 const { rooms: ROOMS, records, failed: loadFailed } = await loadCollection();
 const hit = findRegion(ROOMS, exhibitId);
@@ -82,7 +80,7 @@ function renderLoadFailed() {
   root.replaceChildren(box);
 }
 
-// 아직 카드를 받지 않은 유물: 주소만 열어서는 채워지지 않는다.
+// 아직 모으지 않은 유물: 주소만 열어서는 채워지지 않는다.
 function renderNotFilled({ room, region }) {
   const box = element('section', 'result__notice');
   box.append(
@@ -95,7 +93,6 @@ function renderNotFilled({ room, region }) {
 
 function renderResult({ room, region }) {
   const acquired = acquiredSet(records);
-  if (isPreview) acquired.add(exhibitId);
   const { filled, total, complete } = summarizeRoom(room, acquired);
 
   // 새로 채운 구역은 비운 상태로 그린 뒤 채우기 연출을 재생한다.
@@ -202,9 +199,7 @@ async function renderAllClear() {
     return image;
   });
 
-  // 미리 보기는 저장되지 않아 완주 번호가 없으므로 배지 줄을 아예 두지 않는다.
   const stats = element('div', 'result__stats is-pending');
-  stats.hidden = isPreview;
   stats.setAttribute('aria-hidden', 'true');
   // 자리 잡기용 글자 (받으면 바뀐다): 배지 높이만큼 자리를 미리 차지한다.
   stats.append(
@@ -227,7 +222,7 @@ async function renderAllClear() {
   title.focus({ preventScroll: true });
   title.classList.add('is-popping');
   status.textContent = '모든 그림을 완성했어요';
-  if (!isPreview) fillFinisherStats(stats);
+  fillFinisherStats(stats);
   return images;
 }
 
@@ -307,6 +302,6 @@ function startConfetti(container) {
 }
 
 if (!hit) renderUnknown();
-else if (!isPreview && loadFailed) renderLoadFailed();
-else if (!isPreview && !acquiredSet(records).has(exhibitId)) renderNotFilled(hit);
+else if (loadFailed) renderLoadFailed();
+else if (!acquiredSet(records).has(exhibitId)) renderNotFilled(hit);
 else renderResult(hit);
