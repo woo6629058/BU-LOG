@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 완주자: 수집 대상 유물 카드를 모두 모은 사람.
+ * 완주자: 수집 대상 유물을 모두 모은 사람.
  * id가 완주 번호(No.1, No.2 …)다. 완주한 순간에 한 번 저장하고 바꾸지 않는다.
  */
 @Getter
@@ -38,16 +38,16 @@ public class Finisher extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** 마지막 카드를 받은 방문자. 로그인한 회원이면 이 방문자에 회원이 이어져 있다. */
+    /** 마지막 유물을 모은 방문자. 로그인한 회원이면 이 방문자에 회원이 이어져 있다. */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "visitor_id", nullable = false)
     private Visitor visitor;
 
-    /** 첫 카드를 받은 시각 */
+    /** 첫 유물을 모은 시각 */
     @Column(name = "started_at", nullable = false)
     private LocalDateTime startedAt;
 
-    /** 마지막 카드를 받은 시각 */
+    /** 마지막 유물을 모은 시각 */
     @Column(name = "finished_at", nullable = false)
     private LocalDateTime finishedAt;
 
@@ -68,7 +68,7 @@ public class Finisher extends BaseEntity {
         return new Finisher(id, visitor, startedAt, finishedAt);
     }
 
-    /** 탐험 시간: 첫 카드부터 마지막 카드까지 (초) */
+    /** 탐험 시간: 첫 유물부터 마지막 유물까지 (초) */
     public long getDurationSeconds() {
         return Duration.between(startedAt, finishedAt).toSeconds();
     }

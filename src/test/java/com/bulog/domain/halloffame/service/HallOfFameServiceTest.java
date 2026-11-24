@@ -3,8 +3,8 @@ package com.bulog.domain.halloffame.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.bulog.domain.card.repository.LocalCardCollectionRepository;
-import com.bulog.domain.card.service.CardService;
+import com.bulog.domain.collection.repository.LocalCollectionRecordRepository;
+import com.bulog.domain.collection.service.CollectionService;
 import com.bulog.domain.exhibit.entity.Exhibit;
 import com.bulog.domain.exhibit.repository.LocalExhibitRepository;
 import com.bulog.domain.halloffame.dto.res.HallOfFameResponseDTO;
@@ -37,8 +37,8 @@ class HallOfFameServiceTest {
             visitorService,
             memberRepository
     );
-    private final CardService cardService = new CardService(
-            new LocalCardCollectionRepository(),
+    private final CollectionService collectionService = new CollectionService(
+            new LocalCollectionRecordRepository(),
             exhibitRepository,
             visitorService,
             hallOfFameService
@@ -46,10 +46,10 @@ class HallOfFameServiceTest {
     private final List<Exhibit> collectibles = exhibitRepository.findAllCollectible();
 
     @Test
-    void 카드를_모두_모으면_완주_번호를_받는다() {
+    void 유물을_모두_모으면_완주_번호를_받는다() {
         Visitor guest = visitorService.resolve(null).visitor();
 
-        collectibles.forEach(exhibit -> cardService.issueCard(guest, null, exhibit.getId()));
+        collectibles.forEach(exhibit -> collectionService.collect(guest, null, exhibit.getId()));
 
         HallOfFameResponseDTO hall = hallOfFameService.getHallOfFame(guest, null);
         assertThat(hall.total()).isEqualTo(1);
@@ -62,16 +62,16 @@ class HallOfFameServiceTest {
     }
 
     @Test
-    void 전시실_카드를_모두_모으면_전시실_완료_기록이_남는다() {
+    void 전시실_유물을_모두_모으면_전시실_완료_기록이_남는다() {
         Visitor guest = visitorService.resolve(null).visitor();
         String room = collectibles.getFirst().getExhibitionRoom();
         List<Exhibit> roomExhibits = collectibles.stream()
                 .filter(exhibit -> room.equals(exhibit.getExhibitionRoom()))
                 .toList();
 
-        roomExhibits.forEach(exhibit -> cardService.issueCard(guest, null, exhibit.getId()));
-        // 이미 받은 카드를 다시 받아도 기록은 늘지 않는다.
-        cardService.issueCard(guest, null, roomExhibits.getFirst().getId());
+        roomExhibits.forEach(exhibit -> collectionService.collect(guest, null, exhibit.getId()));
+        // 이미 받은 유물을 다시 모아도 기록은 늘지 않는다.
+        collectionService.collect(guest, null, roomExhibits.getFirst().getId());
 
         List<HallRecordResponseDTO> records = hallOfFameService.getHallOfFame(guest, null).records();
         assertThat(records).hasSize(roomExhibits.size() + 1);
@@ -84,7 +84,7 @@ class HallOfFameServiceTest {
     @Test
     void 아직_완주하지_않았으면_내_번호가_없다() {
         Visitor guest = visitorService.resolve(null).visitor();
-        cardService.issueCard(guest, null, collectibles.getFirst().getId());
+        collectionService.collect(guest, null, collectibles.getFirst().getId());
 
         HallOfFameResponseDTO hall = hallOfFameService.getHallOfFame(guest, null);
         assertThat(hall.total()).isZero();
@@ -93,7 +93,7 @@ class HallOfFameServiceTest {
     }
 
     @Test
-    void 로그인한_회원은_닉네임으로_보이고_여러_방문자의_카드를_합쳐_완주한다() {
+    void 로그인한_회원은_닉네임으로_보이고_여러_방문자의_기록을_합쳐_완주한다() {
         Member member = memberRepository.store(Member.create(1L, "member@example.com", "encoded", "부록이"));
         Visitor phone = visitorService.resolve(null).visitor();
         Visitor tablet = visitorService.resolve(null).visitor();
@@ -102,8 +102,8 @@ class HallOfFameServiceTest {
 
         List<Exhibit> half = collectibles.subList(0, collectibles.size() / 2);
         List<Exhibit> rest = collectibles.subList(collectibles.size() / 2, collectibles.size());
-        half.forEach(exhibit -> cardService.issueCard(phone, member.getId(), exhibit.getId()));
-        rest.forEach(exhibit -> cardService.issueCard(tablet, member.getId(), exhibit.getId()));
+        half.forEach(exhibit -> collectionService.collect(phone, member.getId(), exhibit.getId()));
+        rest.forEach(exhibit -> collectionService.collect(tablet, member.getId(), exhibit.getId()));
 
         HallOfFameResponseDTO hall = hallOfFameService.getHallOfFame(phone, member.getId());
         assertThat(hall.myNo()).isEqualTo(1L);
@@ -113,21 +113,21 @@ class HallOfFameServiceTest {
     }
 
     @Test
-    void 게스트로_나눠_모은_카드가_로그인으로_합쳐지면_완주_번호를_받는다() {
+    void 게스트로_나눠_모은_기록이_로그인으로_합쳐지면_완주_번호를_받는다() {
         Member member = memberRepository.store(Member.create(2L, "merge@example.com", "encoded", "합친사람"));
         Visitor phone = visitorService.resolve(null).visitor();
         Visitor tablet = visitorService.resolve(null).visitor();
         int half = collectibles.size() / 2;
-        collectibles.subList(0, half).forEach(exhibit -> cardService.issueCard(phone, null, exhibit.getId()));
-        collectibles.subList(half, collectibles.size()).forEach(exhibit -> cardService.issueCard(tablet, null, exhibit.getId()));
+        collectibles.subList(0, half).forEach(exhibit -> collectionService.collect(phone, null, exhibit.getId()));
+        collectibles.subList(half, collectibles.size()).forEach(exhibit -> collectionService.collect(tablet, null, exhibit.getId()));
         assertThat(hallOfFameService.getHallOfFame(phone, null).total()).isZero();
 
         visitorService.linkToMember(phone, member);
-        cardService.syncFinisher(phone, member.getId());
+        collectionService.syncFinisher(phone, member.getId());
         visitorService.linkToMember(tablet, member);
-        cardService.syncFinisher(tablet, member.getId());
+        collectionService.syncFinisher(tablet, member.getId());
         // 이미 완주했으면 다시 불러도 번호가 늘지 않는다.
-        cardService.syncFinisher(tablet, member.getId());
+        collectionService.syncFinisher(tablet, member.getId());
 
         HallOfFameResponseDTO hall = hallOfFameService.getHallOfFame(tablet, member.getId());
         assertThat(hall.total()).isEqualTo(1);

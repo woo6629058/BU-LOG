@@ -27,10 +27,10 @@
 ```text
 BU-LOG/
 ├── src/main/java/com/bulog/       Spring Boot 백엔드
-│   ├── domain/                    전시물·퀴즈·카드·방문자·회원 도메인
+│   ├── domain/                    전시물·퀴즈·수집 기록·명예의 전당·방문자·회원 도메인
 │   │   ├── exhibit/               전시물 조회와 공공데이터 연동
 │   │   ├── quiz/                  퀴즈 조회와 정답 검증
-│   │   ├── card/                  카드 발급과 아카이브
+│   │   ├── collection/            수집 기록과 아카이브
 │   │   ├── visitor/               게스트 방문자 식별과 기록
 │   │   ├── member/                회원가입과 로그인
 │   │   └── halloffame/            명예의 전당 (완주 기록과 실시간 기록)
@@ -54,7 +54,7 @@ BU-LOG/
 ```
 
 - 백엔드 기능은 기존 `src/main/java/com/bulog/domain/<domain>` 구조와 인접 코드의 패턴을 따릅니다.
-- 도메인은 `exhibit`, `quiz`, `card`, `visitor`, `member`, `halloffame`를 기준으로 분리합니다. 카드 발급 규칙은 `card`, 완주 판정과 명예의 전당 기록은 `halloffame`이 맡습니다.
+- 도메인은 `exhibit`, `quiz`, `collection`, `visitor`, `member`, `halloffame`를 기준으로 분리합니다. 수집 규칙은 `collection`, 완주 판정과 명예의 전당 기록은 `halloffame`이 맡습니다.
 - 각 도메인은 `controller`, `service`, `repository`, `entity`, `dto`, `converter`, `exception` 구조를 사용합니다.
 - 여러 도메인이 함께 사용하는 코드만 `src/main/java/com/bulog/global`에 배치하고 특정 도메인 로직은 넣지 않습니다.
 - 프론트엔드 화면은 `src/main/resources/static/pages`, 페이지별 스타일은 `static/css/pages`, 페이지별 동작은 `static/js/pages`에 배치합니다.
@@ -69,7 +69,7 @@ BU-LOG/
 - Entity를 API 응답으로 직접 반환하지 않고 요청·응답 DTO를 사용합니다.
 - Controller는 HTTP 요청과 응답을 담당하고 핵심 비즈니스 규칙은 Service 또는 Domain 계층에 둡니다.
 - 퀴즈 정답은 조회 API 응답에 포함하지 않으며 백엔드에서 검증합니다.
-- 카드 발급은 중복 요청에도 같은 방문자에게 같은 카드가 중복 생성되지 않도록 설계합니다.
+- 수집은 중복 요청에도 같은 방문자에게 같은 유물 기록이 중복 생성되지 않도록 설계합니다.
 - 익명 방문자 식별 정보는 예측하기 어려운 값으로 생성하고 HttpOnly 쿠키 사용을 우선합니다.
 - API 경로는 `/api`로 시작합니다.
 - 예외 응답 형식은 기능마다 다르게 만들지 않고 공통 구조를 사용합니다.

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
-import com.bulog.domain.card.repository.LocalCardCollectionRepository;
-import com.bulog.domain.card.service.CardService;
+import com.bulog.domain.collection.repository.LocalCollectionRecordRepository;
+import com.bulog.domain.collection.service.CollectionService;
 import com.bulog.domain.halloffame.repository.LocalFinisherRepository;
 import com.bulog.domain.halloffame.repository.LocalHallRecordRepository;
 import com.bulog.domain.halloffame.service.HallOfFameService;
@@ -47,14 +47,14 @@ class QuizServiceTest {
     private final Visitor visitor = Visitor.create(1L, "sample-token-hash");
     private final QuizService quizService = new QuizService(
             new StubQuizReader(quiz),
-            cardService()
+            collectionService()
     );
 
-    private CardService cardService() {
+    private CollectionService collectionService() {
         StubExhibitCatalog exhibitCatalog = new StubExhibitCatalog();
         VisitorService visitorService = new VisitorService(new StubVisitorStore(visitor), new VisitorTokenService());
-        return new CardService(
-                new LocalCardCollectionRepository(),
+        return new CollectionService(
+                new LocalCollectionRecordRepository(),
                 exhibitCatalog,
                 visitorService,
                 new HallOfFameService(
@@ -87,8 +87,8 @@ class QuizServiceTest {
 
         assertThat(response.correct()).isTrue();
         assertThat(response.explanation()).contains("고려 시대");
-        assertThat(response.card()).isNotNull();
-        assertThat(response.card().newlyAcquired()).isTrue();
+        assertThat(response.collection()).isNotNull();
+        assertThat(response.collection().newlyAcquired()).isTrue();
     }
 
     @Test
@@ -98,7 +98,7 @@ class QuizServiceTest {
         assertThat(response.correct()).isFalse();
         // 오답에는 정답이 담긴 해설을 보내지 않는다.
         assertThat(response.explanation()).isNull();
-        assertThat(response.card()).isNull();
+        assertThat(response.collection()).isNull();
     }
 
     @Test

@@ -16,7 +16,7 @@ const imagePlaceholderEl = document.querySelector('.exhibit-photo__placeholder')
 const imageEl = document.querySelector('#exhibit-image');
 const galleryEl = document.querySelector('#exhibit-gallery');          // 상단 뒤로가기 옆 전시실 이름
 const galleryTagEl = document.querySelector('#exhibit-gallery-tag');   // 태그: 옹기2전시실
-const cardNoEl = document.querySelector('#exhibit-card-no');           // 태그: 유물 No.08
+const numberEl = document.querySelector('#exhibit-number');           // 태그: 유물 No.08
 const missionQuestionEl = document.querySelector('#mission-question'); // 관찰 미션 질문
 
 // 서버 응답은 { isSuccess, code, message, result } 형태라 result만 꺼냄
@@ -121,8 +121,8 @@ async function renderExhibit() {
     // 전시실 이름과 유물 번호 (피그마: "옹기2전시실", "유물 No.08")
     if (exhibit.exhibitionRoom) galleryEl.textContent = exhibit.exhibitionRoom;
     setTag(galleryTagEl, exhibit.exhibitionRoom);
-    const numberText = formatNumber(exhibit.cardNumber);
-    setTag(cardNoEl, numberText ? `유물 ${numberText}` : null);
+    const numberText = formatNumber(exhibit.exhibitNumber);
+    setTag(numberEl, numberText ? `유물 ${numberText}` : null);
 
     if (exhibit.imageUrl) {
       imageEl.alt = exhibit.name;

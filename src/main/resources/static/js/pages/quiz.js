@@ -8,88 +8,20 @@ mountLayout();
 
 // 1. 주소에서 정보 꺼내기
 //   ?exhibitId=ongi2-sojutgori  → 서버의 진짜 퀴즈
-//   ?demo=choice | count | handle | lock → 예전 예시 문제
 const params = new URLSearchParams(window.location.search);
 const exhibitId = params.get('exhibitId');
-const demoKey = params.get('demo');
 const exhibitPageUrl = exhibitId ? `/pages/exhibit.html?id=${encodeURIComponent(exhibitId)}` : '/';
 
-// 체험 모드는 카드를 받지 않으므로 preview=1을 붙여 채우기 화면을 미리 보기로 연다.
-function fillResultUrl(id, newlyAcquired, preview = false) {
+function fillResultUrl(id, newlyAcquired) {
   const again = newlyAcquired === false ? '&new=0' : '';
-  return `/pages/fill-result.html?exhibitId=${encodeURIComponent(id)}${again}${preview ? '&preview=1' : ''}`;
+  return `/pages/fill-result.html?exhibitId=${encodeURIComponent(id)}${again}`;
 }
 
-// ---------------------------------------------------------
-// 체험 모드용 가짜 문제 (정답은 모두 예시라 실제 유물과 다를 수 있음)
-// 서버에 객관식 샘플만 있어서, 숫자 세기·자물쇠를 보여주려고 만든 것
-// 진짜 데이터가 생기면 이 부분은 지워도 됨
-// ---------------------------------------------------------
-const DEMO_QUIZZES = {
-  choice: {
-    exhibit: { name: '소줏고리', exhibitionRoom: '옹기2전시실' },
-    quiz: {
-      question: '전시된 소줏고리에서 술이 흘러나오는 꼭지는 몇 개일까요?',
-      options: [
-        { id: 1, content: '1개' }, { id: 2, content: '2개' },
-        { id: 3, content: '3개' }, { id: 4, content: '꼭지가 없다' },
-      ],
-      hint: '아래위 두 동이가 맞붙은 곳 옆을 살펴보세요.',
-    },
-    answerOptionId: 1,
-    explanation: '체험용 예시 정답이에요. 실제 문제와 정답은 현장에서 관찰해서 정해요.',
-  },
-  count: {
-    exhibit: { name: '학 무늬 항아리', exhibitionRoom: '체험 전시실' },
-    quiz: {
-      question: '항아리에 그려진 학은 모두 몇 마리일까요?',
-      unit: '마리',
-      options: [
-        { id: 11, content: '4' }, { id: 12, content: '5' },
-        { id: 13, content: '6' }, { id: 14, content: '7' },
-      ],
-      hint: '앞면만 보지 말고 뒤쪽으로 돌아가서도 세어 보세요.',
-    },
-    answerOptionId: 13,
-    explanation: '체험용 예시 정답이에요. 실제 문제와 정답은 현장에서 관찰해서 정해요.',
-  },
-  handle: {
-    exhibit: { name: '소줏고리', exhibitionRoom: '옹기2전시실' },
-    quiz: {
-      question: '소줏고리에 달린 손잡이는 모두 몇 개일까요?',
-      options: [
-        { id: 31, content: '1' }, { id: 32, content: '2' },
-        { id: 33, content: '3' }, { id: 34, content: '4' },
-      ],
-      hint: '앞뒤로 돌아가며 옆면을 살펴보세요.',
-    },
-    answerOptionId: 32,
-    explanation: '체험용 예시 정답(2개)이에요. 실제 문제와 정답은 현장에서 관찰해서 정해요.',
-  },
-  lock: {
-    exhibit: { name: '소줏고리', exhibitionRoom: '옹기2전시실' },
-    quiz: {
-      question: '소줏고리를 관찰해서 자물쇠를 열어 보세요',
-      dialLabels: ['꼭지', '손잡이', '동이'],
-      options: [
-        { id: 21, content: '122' }, { id: 22, content: '212' },
-        { id: 23, content: '112' }, { id: 24, content: '221' },
-      ],
-      hint: '꼭지 수, 손잡이 수, 맞붙은 동이 수를 차례대로 세어 보세요.',
-    },
-    answerOptionId: 21,
-    explanation: '체험용 예시 정답(1-2-2)이에요. 실제 문제와 정답은 현장에서 관찰해서 정해요.',
-  },
-};
-
 // 관찰 미션 24개는 서버에 있음 (CuratedQuizzes.java). 주소: quiz.html?exhibitId=유물id
-const demo = DEMO_QUIZZES[demoKey] ?? null;
-const DEMO_FILL_ID = 'ongi2-sojutgori'; // 그림 도감의 소줏고리 자리
 
 // 2. 화면 자리(HTML 태그) 미리 찾아두기
 const els = {
   close: document.querySelector('#quiz-close'),
-  topbar: document.querySelector('.quiz-topbar'),
   exhibitName: document.querySelector('#quiz-exhibit-name'),
   gallery: document.querySelector('#quiz-gallery'),
   galleryWrap: document.querySelector('#quiz-gallery-wrap'),
@@ -106,7 +38,7 @@ els.close.href = exhibitPageUrl;
 
 // 3. 지금 퀴즈 상태
 const state = {
-  quiz: null,             // 서버(또는 체험 모드)에서 받은 퀴즈
+  quiz: null,             // 서버에서 받은 퀴즈
   game: null,             // 지금 화면에 그린 게임 (아래 GAME_RENDERERS가 만든 것)
   wrongCount: 0,          // 틀린 횟수 (기회 제한은 없음, '한 번에 정답' 문구에만 씀)
   usedHint: false,        // 힌트를 봤는지 (지금은 기록만)
@@ -297,7 +229,7 @@ function addSparks(target, { count = 6, radius = 44, x = '50%', y = '50%' } = {}
 // 서버는 그대로: 보기가 "4", "5"처럼 숫자면 찍은 개수와 같은 보기를 골라 제출
 const STAMP_SIZE = 34; // 도장 크기(px)
 
-// 사진이 없을 때 쓰는 기본 그림: 항아리 + 학 여섯 마리 (체험 모드용 예시)
+// 유물 사진을 못 불러왔을 때 쓰는 기본 그림: 항아리 + 학 여섯 마리
 const SAMPLE_PICTURE = `data:image/svg+xml,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
   <rect width="320" height="240" fill="#F6EADB"/>
@@ -872,8 +804,7 @@ function handleCorrect(result) {
     result.explanation ?? '',
   );
 
-  const fillId = demo ? (demo.fillId ?? DEMO_FILL_ID) : exhibitId;
-  finishQuiz('그림 채우러 가기', fillResultUrl(fillId, result.card?.newlyAcquired, Boolean(demo)));
+  finishQuiz('그림 채우러 가기', fillResultUrl(exhibitId, result.collection?.newlyAcquired));
 }
 
 // 틀려도 기회 제한 없이 다시 도전한다.
@@ -890,12 +821,8 @@ function handleWrong() {
   els.submit.disabled = true;
 }
 
-// 답을 채점함: 체험 모드는 화면에서, 진짜는 서버에서
+// 답을 서버에서 채점함
 async function grade(optionId) {
-  if (demo) {
-    const correct = optionId === demo.answerOptionId;
-    return { correct, explanation: demo.explanation };
-  }
   // 숫자 세기·자물쇠에서 보기에 없는 답을 고르면 서버에 보낼 id가 없어서 바로 오답
   if (optionId === null) return { correct: false };
   return unwrap(await submitQuizAnswer(state.quiz.quizId, optionId));
@@ -940,7 +867,7 @@ async function handleSubmit() {
 els.submit.addEventListener('click', handleSubmit);
 
 // ---------------------------------------------------------
-// 힌트 (서버가 hint를 보내줄 때만 보임. 체험 모드에는 있음)
+// 힌트 (서버가 hint를 보내줄 때만 보임)
 // ---------------------------------------------------------
 // 한 번 더 누르면 닫힘
 els.hint.addEventListener('click', () => {
@@ -975,20 +902,7 @@ function startGame(quiz) {
   updateSubmit();
 }
 
-function startDemo() {
-  const badge = element('span', 'quiz-demo-badge', '체험 모드');
-  els.topbar.append(badge);
-  els.close.href = '/';
-  renderLabel(demo.exhibit);
-  const fallbackImage = demo.exhibit.name === '소줏고리' ? '/images/exhibits/ongi2-sojutgori.jpg' : null;
-  startGame({ imageUrl: fallbackImage, ...demo.quiz });
-}
-
 async function renderQuiz() {
-  if (demo) {
-    startDemo();
-    return;
-  }
   if (!exhibitId) {
     showLoadError('주소에 전시물 정보가 없어요. QR 코드를 다시 찍어 주세요.');
     return;

@@ -7,7 +7,7 @@ public record ExhibitListItemResponseDTO(
         String imageUrl,
         String museumName,
         String exhibitionRoom,
-        Integer cardNumber,
+        Integer exhibitNumber,
         Integer visitOrder,
         boolean collectible
 ) {

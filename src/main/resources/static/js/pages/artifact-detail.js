@@ -1,5 +1,5 @@
 import { artifactFigure } from '../common/artifact-figure.js';
-import { getCard } from '../api/archive-api.js';
+import { getCollectionRecord } from '../api/archive-api.js';
 import { findRecord, findRegion, loadCollection } from '../common/collection-data.js';
 
 const SHOWCASE_URL = '/pages/showcase.html';
@@ -79,15 +79,15 @@ function renderDetail({ room, region }) {
 
 async function renderOwnedDetail({ room, region }) {
   try {
-    const card = unwrap(await getCard(record.cardId));
+    const detail = unwrap(await getCollectionRecord(record.recordId));
     renderDetail({
       room,
       region: {
         ...region,
-        artifactName: card.name,
-        description: card.description ?? '',
-        era: card.era ?? null,
-        photoUrl: card.imageUrl ?? null,
+        artifactName: detail.name,
+        description: detail.description ?? '',
+        era: detail.era ?? null,
+        photoUrl: detail.imageUrl ?? null,
       },
     });
   } catch {

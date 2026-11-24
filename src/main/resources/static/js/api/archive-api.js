@@ -1,4 +1,4 @@
 import { apiRequest } from './api-client.js';
 
 export const getArchive = () => apiRequest('/archive');
-export const getCard = (cardId) => apiRequest(`/cards/${encodeURIComponent(cardId)}`);
+export const getCollectionRecord = (recordId) => apiRequest(`/collections/${encodeURIComponent(recordId)}`);

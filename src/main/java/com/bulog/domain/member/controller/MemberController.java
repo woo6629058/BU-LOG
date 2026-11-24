@@ -1,6 +1,6 @@
 package com.bulog.domain.member.controller;
 
-import com.bulog.domain.card.service.CardService;
+import com.bulog.domain.collection.service.CollectionService;
 import com.bulog.domain.member.converter.MemberConverter;
 import com.bulog.domain.member.dto.req.MemberLoginRequestDTO;
 import com.bulog.domain.member.dto.req.MemberSignupRequestDTO;
@@ -49,7 +49,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final VisitorService visitorService;
-    private final CardService cardService;
+    private final CollectionService collectionService;
     private final VisitorCookieManager visitorCookieManager;
     private final SecurityContextRepository securityContextRepository;
     private final TokenBasedRememberMeServices rememberMeServices;
@@ -161,10 +161,10 @@ public class MemberController {
         if (resolution.tokenIssued()) {
             visitorCookieManager.write(response, resolution.rawToken());
         }
-        // 다른 기기에서 모은 카드와 합쳐져 모두 모았으면 이때 완주 번호를 준다.
+        // 다른 기기에서 모은 기록과 합쳐져 모두 모았으면 이때 완주 번호를 준다.
         // 가입·로그인은 이미 끝난 뒤라, 완주 판정이 실패해도 로그인 응답은 그대로 보낸다 (기록만 남김).
         try {
-            cardService.syncFinisher(resolution.visitor(), authenticatedMember.member().getId());
+            collectionService.syncFinisher(resolution.visitor(), authenticatedMember.member().getId());
         } catch (RuntimeException exception) {
             log.warn("로그인 후 완주 판정 실패: memberId={}", authenticatedMember.member().getId(), exception);
         }

@@ -3,8 +3,8 @@
 //
 // 데이터는 두 가지를 이어 붙인다.
 // - 그림 정보(이 파일): 전시실 순서, 그림 파일, 구역 모양. 그림을 바꿀 때는 이 파일의 그림·구역 모양만 바꾼다.
-// - 유물 정보(서버 GET /api/archive): 유물 24개의 이름·설명·사진·카드 번호와 내가 모은 기록.
-//   전시실(exhibitionRoom)과 카드 번호 순서로 구역 1~4번에 차례대로 들어간다.
+// - 유물 정보(서버 GET /api/archive): 유물 24개의 이름·설명·사진·유물 번호와 내가 모은 기록.
+//   전시실(exhibitionRoom)과 유물 번호 순서로 구역 1~4번에 차례대로 들어간다.
 // 이 파일의 유물 ID·이름은 서버 응답을 받기 전이나 받지 못했을 때 쓰는 기본값이다.
 import { getArchive } from '../api/archive-api.js';
 
@@ -32,7 +32,7 @@ const scene = (roomId) => ({
   originalSrc: `/images/scenes/${roomId}-original.webp`, // 번호·구역선이 없는 원화. 완주 화면에서 쓴다.
 });
 
-// 구역 번호는 그림 속 이름표 번호이자 서버 카드 번호 순서다 (전시실마다 1~4번).
+// 구역 번호는 그림 속 이름표 번호이자 서버 유물 번호 순서다 (전시실마다 1~4번).
 export const ROOMS = [
   {
     id: 'ongi1',
@@ -114,43 +114,43 @@ export const ROOMS = [
   },
 ];
 
-// 서버 카드 하나로 구역의 유물 정보를 바꾼다. 그림 모양(path·box)과 순서는 그대로 둔다.
-const fillRegion = (item, card) => ({
+// 서버 아카이브 항목 하나로 구역의 유물 정보를 바꾼다. 그림 모양(path·box)과 순서는 그대로 둔다.
+const fillRegion = (item, entry) => ({
   ...item,
-  exhibitId: card.exhibitId,
-  title: card.name,
-  artifactName: card.name,
-  description: card.description ?? '',
-  era: card.era ?? null,
-  photoUrl: card.imageUrl ?? null,
+  exhibitId: entry.exhibitId,
+  title: entry.name,
+  artifactName: entry.name,
+  description: entry.description ?? '',
+  era: entry.era ?? null,
+  photoUrl: entry.imageUrl ?? null,
 });
 
-// 서버 카드 목록을 전시실 그림에 이어 붙인다. 전시실 이름이 같은 카드를 카드 번호 순서로 구역 1번부터 채운다.
-export function mergeCards(rooms, cards) {
+// 서버 아카이브 항목을 전시실 그림에 이어 붙인다. 전시실 이름이 같은 항목을 유물 번호 순서로 구역 1번부터 채운다.
+export function mergeItems(rooms, items) {
   return rooms.map((room) => {
-    const roomCards = cards
-      .filter((card) => card.exhibitionRoom === room.name)
-      .sort((a, b) => (a.cardNumber ?? 0) - (b.cardNumber ?? 0));
+    const roomItems = items
+      .filter((entry) => entry.exhibitionRoom === room.name)
+      .sort((a, b) => (a.exhibitNumber ?? 0) - (b.exhibitNumber ?? 0));
     return {
       ...room,
-      regions: room.regions.map((item, index) => (roomCards[index] ? fillRegion(item, roomCards[index]) : item)),
+      regions: room.regions.map((item, index) => (roomItems[index] ? fillRegion(item, roomItems[index]) : item)),
     };
   });
 }
 
-// 모은 카드만 내 기록으로 바꾼다: { exhibitId, cardId, acquiredAt }
-export const toRecords = (cards) =>
-  cards
-    .filter((card) => card.acquired)
-    .map(({ exhibitId, cardId, acquiredAt }) => ({ exhibitId, cardId, acquiredAt }));
+// 모은 항목만 내 기록으로 바꾼다: { exhibitId, recordId, acquiredAt }
+export const toRecords = (items) =>
+  items
+    .filter((entry) => entry.acquired)
+    .map(({ exhibitId, recordId, acquiredAt }) => ({ exhibitId, recordId, acquiredAt }));
 
 // 화면이 쓰는 전시실 그림과 내 기록을 서버에서 받아 온다.
 // 받지 못하면 이 파일의 기본 유물로 그리고, 기록은 비운다.
 export async function loadCollection() {
   try {
     const response = await getArchive();
-    const cards = (response?.result ?? response)?.cards ?? [];
-    return { rooms: mergeCards(ROOMS, cards), records: toRecords(cards) };
+    const items = (response?.result ?? response)?.items ?? [];
+    return { rooms: mergeItems(ROOMS, items), records: toRecords(items) };
   } catch (error) {
     console.warn('[BU:LOG] 수집 기록을 불러오지 못해 기본 유물로 그립니다.', error);
     // failed: 기록을 못 받은 것과 정말 기록이 없는 것을 구분할 때 쓴다.
@@ -200,7 +200,7 @@ export function findClosestRoom(rooms, acquired) {
   return closest;
 }
 
-// 홈 진행 카드의 안내 문구.
+// 홈 수집 현황의 안내 문구.
 export function describeNextGoal(rooms, acquired) {
   const closest = findClosestRoom(rooms, acquired);
   return closest ? `${closest.room.shortName} 그림이 ${closest.remaining}칸 남았어요` : '모든 그림을 완성했어요';

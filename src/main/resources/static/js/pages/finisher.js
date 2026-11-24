@@ -192,7 +192,7 @@ function renderPreview({ name, nextNo, rooms, acquired, firstAcquiredAt, lastAcq
   if (nextNo && remaining > 0) badges.push(numberBadge(`완주하면 No.${nextNo}`));
   badges.push(element('p', 'finisher__date', remaining > 0 ? `완주까지 ${remaining}개 남았어요` : '모든 그림을 완성했어요'));
 
-  // 탐험 시간은 진짜 프로필처럼 첫 카드부터 잰다. 다 채웠으면 마지막 카드에서 멈춘다 (완주 기록과 같은 값).
+  // 탐험 시간은 진짜 프로필처럼 첫 유물부터 잰다. 다 채웠으면 마지막 유물에서 멈춘다 (완주 기록과 같은 값).
   const end = remaining > 0 ? Date.now() : lastAcquiredAt;
   const elapsed = firstAcquiredAt === null ? '아직 시작 전' : formatDuration((end - firstAcquiredAt) / 1000);
 

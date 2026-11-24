@@ -1,6 +1,6 @@
 package com.bulog.domain.quiz.converter;
 
-import com.bulog.domain.card.dto.res.CardAcquisitionResponseDTO;
+import com.bulog.domain.collection.dto.res.CollectionAcquisitionResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizAttemptResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizOptionResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizResponseDTO;
@@ -28,9 +28,9 @@ public final class QuizConverter {
     public static QuizAttemptResponseDTO toAttemptResponse(
             Quiz quiz,
             boolean correct,
-            CardAcquisitionResponseDTO card
+            CollectionAcquisitionResponseDTO collection
     ) {
         // 해설에는 정답이 들어 있어서 맞혔을 때만 보낸다.
-        return new QuizAttemptResponseDTO(correct, correct ? quiz.getExplanation() : null, card);
+        return new QuizAttemptResponseDTO(correct, correct ? quiz.getExplanation() : null, collection);
     }
 }

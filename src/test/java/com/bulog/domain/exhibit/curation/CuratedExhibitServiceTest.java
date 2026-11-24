@@ -35,7 +35,7 @@ class CuratedExhibitServiceTest {
         verify(exhibitRepository).save(saved.capture());
         assertThat(saved.getValue().getId()).isEqualTo("ongi2-janggun");
         assertThat(saved.getValue().getExternalId()).isNull();
-        assertThat(saved.getValue().getCardNumber()).isEqualTo(8);
+        assertThat(saved.getValue().getExhibitNumber()).isEqualTo(8);
     }
 
     @Test
@@ -74,7 +74,7 @@ class CuratedExhibitServiceTest {
 
         assertThat(result).isEqualTo(new CuratedExhibitResult(1, 1, 0, 1));
         assertThat(removed.isCollectible()).isFalse();
-        assertThat(removed.getCardNumber()).isNull();
+        assertThat(removed.getExhibitNumber()).isNull();
         assertThat(removed.getVisitOrder()).isNull();
         verify(exhibitRepository).saveAll(List.of(removed));
     }

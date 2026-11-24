@@ -12,7 +12,7 @@ BU:LOG는 Spring Boot 표준 구조 안에서 프론트엔드와 백엔드 담�
 feat/exhibit-detail
 feat/quiz
 feat/archive
-fix/card-duplicate
+fix/collection-duplicate
 refactor/api-response
 docs/api-spec
 chore/project-setting
@@ -28,10 +28,10 @@ chore/project-setting
 
 ## 2. 담당 영역
 
-- Frontend A: 전시물 상세, 퀴즈, QR URL 연동
-- Frontend B: 메인, 카드 획득, 아카이브, 카드 상세
-- Backend: DB, REST API, 퀴즈 검증, 카드 발급, 방문자 기록, 배포
-- Design: Figma, 카드 템플릿, 로고, 색상, QR 안내판, 콘텐츠
+- Frontend A: QR 스캔, 유물 소개, 관찰 미션
+- Frontend B: 홈, 그림 도감, 진열장, 명예의 전당
+- Backend: DB, REST API, 미션 채점, 수집 기록, 방문자·회원, 배포
+- Design: Figma, UI·UX, 로고, 색상, QR 안내판, 콘텐츠
 
 공통 CSS, 공통 JavaScript, API 명세처럼 여러 사람이 사용하는 파일은 수정 전에 작업 내용을 공유합니다.
 
@@ -42,7 +42,7 @@ chore/project-setting
 ```text
 feat: 전시물 상세 화면 추가
 feat: 퀴즈 정답 검증 API 추가
-fix: 카드 중복 발급 방지
+fix: 같은 유물 중복 수집 방지
 refactor: 전시물 응답 DTO 분리
 docs: API 명세 수정
 chore: 로컬 환경 설정 추가

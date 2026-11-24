@@ -276,18 +276,6 @@
    게임 종류별 화면 (숫자 세기, 자물쇠) + 연출
    ========================================================= */
 
-/* 체험 모드 표시 (?demo=...) */
-.quiz-demo-badge {
-  margin-left: auto;
-  margin-right: 10px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #8a6a12;
-  background: #f8efd6;
-}
-
 /* 오답: 좌우로 흔들기 */
 .is-shaking { animation: qz-shake 0.4s ease-in-out; }
 
@@ -634,7 +622,6 @@
 
 /* 작은 제목·버튼·배지: SUIT */
 .quiz-label,
-.quiz-demo-badge,
 .quiz-option,
 .quiz-option__letter,
 .quiz-hint,

@@ -7,7 +7,7 @@ import com.bulog.domain.exhibit.entity.Exhibit;
  *
  * @param id          전시물 ID. QR과 사진 파일 이름에도 같은 값을 쓴다.
  * @param imageUrl    우리 서버의 이미지 경로. null이면 기존 이미지를 유지한다.
- * @param order       카드 번호이자 관람 순서(1부터).
+ * @param order       유물 번호이자 관람 순서(1부터).
  */
 public record CuratedExhibit(
         String id,

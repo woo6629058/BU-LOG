@@ -42,7 +42,7 @@ public class LocalExhibitRepository implements ExhibitCatalog {
     public List<Exhibit> findAllCollectible() {
         return exhibits.values().stream()
                 .filter(Exhibit::isCollectible)
-                .sorted(Comparator.comparing(Exhibit::getCardNumber))
+                .sorted(Comparator.comparing(Exhibit::getExhibitNumber))
                 .toList();
     }
 
