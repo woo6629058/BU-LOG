@@ -997,3 +997,10 @@
   .quiz-lock.is-celebrate .quiz-lock__number,
   .quiz-lock.is-celebrate .quiz-lock__shackle { animation: none; }
 }
+  
+/* 아이폰: 자물쇠·순서 버튼을 빠르게 두 번 눌러도 화면이 확대되지 않게 */
+.quiz-lock__dials,
+.quiz-lock__step,
+.quiz-order__move {
+  touch-action: manipulation;
+}
