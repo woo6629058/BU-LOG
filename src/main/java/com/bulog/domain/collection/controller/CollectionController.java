@@ -1,9 +1,9 @@
-package com.bulog.domain.card.controller;
+package com.bulog.domain.collection.controller;
 
-import com.bulog.domain.card.dto.res.ArchiveResponseDTO;
-import com.bulog.domain.card.dto.res.CardDetailResponseDTO;
-import com.bulog.domain.card.exception.code.CardSuccessCode;
-import com.bulog.domain.card.service.CardService;
+import com.bulog.domain.collection.dto.res.ArchiveResponseDTO;
+import com.bulog.domain.collection.dto.res.CollectionRecordResponseDTO;
+import com.bulog.domain.collection.exception.code.CollectionSuccessCode;
+import com.bulog.domain.collection.service.CollectionService;
 import com.bulog.domain.visitor.entity.Visitor;
 import com.bulog.domain.visitor.service.VisitorRequestFilter;
 import com.bulog.global.apiPayload.ApiResponse;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-public class CardController {
+public class CollectionController {
 
-    private final CardService cardService;
+    private final CollectionService collectionService;
 
     @GetMapping("/archive")
     public ApiResponse<ArchiveResponseDTO> getArchive(
@@ -29,20 +29,20 @@ public class CardController {
             @AuthenticationPrincipal MemberPrincipal principal
     ) {
         return ApiResponse.of(
-                CardSuccessCode.ARCHIVE_FOUND,
-                cardService.getArchive(visitor, memberId(principal))
+                CollectionSuccessCode.ARCHIVE_FOUND,
+                collectionService.getArchive(visitor, memberId(principal))
         );
     }
 
-    @GetMapping("/cards/{cardId}")
-    public ApiResponse<CardDetailResponseDTO> getCard(
-            @PathVariable Long cardId,
+    @GetMapping("/collections/{recordId}")
+    public ApiResponse<CollectionRecordResponseDTO> getRecord(
+            @PathVariable Long recordId,
             @RequestAttribute(VisitorRequestFilter.VISITOR_ATTRIBUTE) Visitor visitor,
             @AuthenticationPrincipal MemberPrincipal principal
     ) {
         return ApiResponse.of(
-                CardSuccessCode.CARD_FOUND,
-                cardService.getCard(cardId, visitor, memberId(principal))
+                CollectionSuccessCode.RECORD_FOUND,
+                collectionService.getRecord(recordId, visitor, memberId(principal))
         );
     }
 

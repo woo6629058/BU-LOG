@@ -23,7 +23,7 @@ class CuratedExhibitsTest {
     }
 
     @Test
-    void 카드_번호는_1부터_24까지_차례대로다() {
+    void 유물_번호는_1부터_24까지_차례대로다() {
         assertThat(exhibits.stream().map(CuratedExhibit::order))
                 .containsExactlyElementsOf(IntStream.rangeClosed(1, 24).boxed().toList());
     }
@@ -61,7 +61,7 @@ class CuratedExhibitsTest {
     }
 
     @Test
-    void 새로_만든_전시물은_전시실과_카드_번호가_붙은_수집_대상이다() {
+    void 새로_만든_전시물은_전시실과_유물_번호가_붙은_수집_대상이다() {
         CuratedExhibit first = exhibits.getFirst();
 
         Exhibit exhibit = first.toNewExhibit();
@@ -69,7 +69,7 @@ class CuratedExhibitsTest {
         assertThat(exhibit.getId()).isEqualTo("ongi1-faith-jar");
         assertThat(exhibit.getName()).isEqualTo("신앙항아리");
         assertThat(exhibit.getExhibitionRoom()).isEqualTo("옹기1전시실");
-        assertThat(exhibit.getCardNumber()).isEqualTo(1);
+        assertThat(exhibit.getExhibitNumber()).isEqualTo(1);
         assertThat(exhibit.getVisitOrder()).isEqualTo(1);
         assertThat(exhibit.getImageUrl()).isEqualTo("/images/exhibits/ongi1-faith-jar.jpg");
         assertThat(exhibit.isCollectible()).isTrue();

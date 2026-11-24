@@ -1,4 +1,4 @@
-package com.bulog.domain.card.entity;
+package com.bulog.domain.collection.entity;
 
 import com.bulog.domain.visitor.entity.Visitor;
 import com.bulog.global.entity.BaseEntity;
@@ -20,14 +20,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(
-        name = "card_collections",
+        name = "collection_records",
         uniqueConstraints = @UniqueConstraint(
-                name = "uk_card_collection_visitor_exhibit",
+                name = "uk_collection_record_visitor_exhibit",
                 columnNames = {"visitor_id", "exhibit_id"}
         )
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CardCollection extends BaseEntity {
+public class CollectionRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,7 @@ public class CardCollection extends BaseEntity {
     @Column(name = "acquired_at", nullable = false, updatable = false)
     private LocalDateTime acquiredAt;
 
-    private CardCollection(
+    private CollectionRecord(
             Long id,
             Visitor visitor,
             String exhibitId,
@@ -61,12 +61,12 @@ public class CardCollection extends BaseEntity {
         this.acquiredAt = acquiredAt == null ? LocalDateTime.now() : acquiredAt;
     }
 
-    public static CardCollection create(
+    public static CollectionRecord create(
             Long id,
             Visitor visitor,
             String exhibitId,
             LocalDateTime acquiredAt
     ) {
-        return new CardCollection(id, visitor, exhibitId, acquiredAt);
+        return new CollectionRecord(id, visitor, exhibitId, acquiredAt);
     }
 }

@@ -22,7 +22,7 @@ public final class ExhibitConverter {
                 exhibit.getSourceName(),
                 exhibit.getSourceUrl(),
                 exhibit.getExhibitionRoom(),
-                exhibit.getCardNumber(),
+                exhibit.getExhibitNumber(),
                 exhibit.getVisitOrder(),
                 exhibit.isCollectible()
         );
@@ -48,7 +48,7 @@ public final class ExhibitConverter {
                 exhibit.getImageUrl(),
                 exhibit.getMuseumName(),
                 exhibit.getExhibitionRoom(),
-                exhibit.getCardNumber(),
+                exhibit.getExhibitNumber(),
                 exhibit.getVisitOrder(),
                 exhibit.isCollectible()
         );

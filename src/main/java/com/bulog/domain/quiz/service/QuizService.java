@@ -1,7 +1,7 @@
 package com.bulog.domain.quiz.service;
 
-import com.bulog.domain.card.dto.res.CardAcquisitionResponseDTO;
-import com.bulog.domain.card.service.CardService;
+import com.bulog.domain.collection.dto.res.CollectionAcquisitionResponseDTO;
+import com.bulog.domain.collection.service.CollectionService;
 import com.bulog.domain.quiz.converter.QuizConverter;
 import com.bulog.domain.quiz.dto.res.QuizAttemptResponseDTO;
 import com.bulog.domain.quiz.dto.res.QuizResponseDTO;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuizService {
 
     private final QuizReader quizReader;
-    private final CardService cardService;
+    private final CollectionService collectionService;
 
     @Transactional(readOnly = true)
     public QuizResponseDTO getQuizByExhibitId(String exhibitId) {
@@ -54,9 +54,9 @@ public class QuizService {
         }
 
         boolean correct = quiz.isCorrectOption(selectedOptionId);
-        CardAcquisitionResponseDTO card = correct
-                ? cardService.issueCard(visitor, authenticatedMemberId, quiz.getExhibitId())
+        CollectionAcquisitionResponseDTO collection = correct
+                ? collectionService.collect(visitor, authenticatedMemberId, quiz.getExhibitId())
                 : null;
-        return QuizConverter.toAttemptResponse(quiz, correct, card);
+        return QuizConverter.toAttemptResponse(quiz, correct, collection);
     }
 }

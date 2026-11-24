@@ -16,19 +16,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
- * local 프로필: 명예의 전당 화면을 볼 수 있게 예시 탐험가와 실시간 기록을 넣는다 (서버를 다시 켜면 처음부터).
+ * local 프로필 + BULOG_SAMPLE_DATA=true: 명예의 전당 화면을 볼 수 있게 예시 탐험가와 실시간 기록을 넣는다
+ * (기본은 넣지 않아 운영처럼 빈 상태로 시작한다. 서버를 다시 켜면 처음부터).
  * 닉네임이 있는 탐험가는 예시 회원이고(로그인은 안 됨), 없는 탐험가는 게스트다.
  */
 @Component
 @Profile("local")
 @RequiredArgsConstructor
 public class LocalHallOfFameSeeder implements ApplicationRunner {
+
+    @Value("${app.local.sample-data:false}")
+    private boolean sampleData;
 
     // 완주자: 닉네임(null이면 게스트), 몇 분 전에 완주했는지, 탐험 시간(초)
     private record SampleFinisher(String nickname, long minutesAgo, long durationSeconds) {
@@ -78,6 +83,9 @@ public class LocalHallOfFameSeeder implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        if (!sampleData) {
+            return;
+        }
         LocalDateTime now = LocalDateTime.now().withNano(0);
         // 기록 번호가 시간 순서대로 붙게 모아서 오래된 것부터 넣는다.
         List<Event> events = new ArrayList<>();

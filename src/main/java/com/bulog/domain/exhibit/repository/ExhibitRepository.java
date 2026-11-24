@@ -20,7 +20,7 @@ public interface ExhibitRepository extends JpaRepository<Exhibit, String>, Exhib
             select exhibit
             from Exhibit exhibit
             where exhibit.collectible = true
-            order by exhibit.cardNumber asc, exhibit.name asc
+            order by exhibit.exhibitNumber asc, exhibit.name asc
             """)
     List<Exhibit> findAllCollectible();
 

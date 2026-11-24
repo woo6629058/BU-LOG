@@ -10,7 +10,7 @@ public record ExhibitResponseDTO(
         String sourceName,
         String sourceUrl,
         String exhibitionRoom,
-        Integer cardNumber,
+        Integer exhibitNumber,
         Integer visitOrder,
         boolean collectible
 ) {

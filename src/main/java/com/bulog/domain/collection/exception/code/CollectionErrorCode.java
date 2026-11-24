@@ -1,4 +1,4 @@
-package com.bulog.domain.card.exception.code;
+package com.bulog.domain.collection.exception.code;
 
 import com.bulog.global.apiPayload.code.BaseErrorCode;
 import com.bulog.global.apiPayload.code.ErrorReasonDTO;
@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum CardErrorCode implements BaseErrorCode {
+public enum CollectionErrorCode implements BaseErrorCode {
 
-    CARD_NOT_FOUND(HttpStatus.NOT_FOUND, "CARD_404_001", "카드를 찾을 수 없습니다.");
+    RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "COLLECTION_404_001", "수집 기록을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

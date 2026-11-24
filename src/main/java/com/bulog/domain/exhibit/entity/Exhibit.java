@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 // 소장품 3,687건 중 수집 대상 24개만 자주 읽어서(도감·명예의 전당·채점) 수집 대상 조회용 인덱스를 둔다.
-@Table(name = "exhibits", indexes = @Index(name = "idx_exhibit_collectible_card", columnList = "collectible, card_number"))
+@Table(name = "exhibits", indexes = @Index(name = "idx_exhibit_collectible_number", columnList = "collectible, exhibit_number"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Exhibit extends BaseEntity {
 
@@ -53,8 +53,8 @@ public class Exhibit extends BaseEntity {
     @Column(name = "exhibition_room", length = 100)
     private String exhibitionRoom;
 
-    @Column(name = "card_number")
-    private Integer cardNumber;
+    @Column(name = "exhibit_number")
+    private Integer exhibitNumber;
 
     @Column(name = "visit_order")
     private Integer visitOrder;
@@ -160,7 +160,7 @@ public class Exhibit extends BaseEntity {
             String sourceName,
             String sourceUrl,
             String exhibitionRoom,
-            Integer cardNumber,
+            Integer exhibitNumber,
             Integer visitOrder
     ) {
         this.name = requireText(name, "name");
@@ -172,22 +172,22 @@ public class Exhibit extends BaseEntity {
         this.museumName = requireText(museumName, "museumName");
         this.sourceName = requireText(sourceName, "sourceName");
         this.sourceUrl = normalize(sourceUrl);
-        curate(exhibitionRoom, cardNumber, visitOrder);
+        curate(exhibitionRoom, exhibitNumber, visitOrder);
     }
 
     public void curate(
             String exhibitionRoom,
-            Integer cardNumber,
+            Integer exhibitNumber,
             Integer visitOrder
     ) {
         this.exhibitionRoom = requireText(exhibitionRoom, "exhibitionRoom");
-        this.cardNumber = requirePositive(cardNumber, "cardNumber");
+        this.exhibitNumber = requirePositive(exhibitNumber, "exhibitNumber");
         this.visitOrder = requirePositive(visitOrder, "visitOrder");
         this.collectible = true;
     }
 
     public void releaseCuration() {
-        this.cardNumber = null;
+        this.exhibitNumber = null;
         this.visitOrder = null;
         this.collectible = false;
     }

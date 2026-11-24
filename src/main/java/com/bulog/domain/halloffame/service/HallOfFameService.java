@@ -1,6 +1,6 @@
 package com.bulog.domain.halloffame.service;
 
-import com.bulog.domain.card.entity.CardCollection;
+import com.bulog.domain.collection.entity.CollectionRecord;
 import com.bulog.domain.exhibit.entity.Exhibit;
 import com.bulog.domain.exhibit.repository.ExhibitCatalog;
 import com.bulog.domain.halloffame.dto.res.FinisherResponseDTO;
@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 명예의 전당: 완주자 명단과 실시간 기록.
- * 카드를 새로 받을 때 CardService가 recordNewCard를 불러 기록을 쌓는다.
+ * 유물을 새로 모을 때 CollectionService가 recordNewCollection를 불러 기록을 쌓는다.
  */
 @Service
 @RequiredArgsConstructor
@@ -44,35 +44,35 @@ public class HallOfFameService {
     private final MemberStore memberStore;
 
     /**
-     * 새로 받은 카드를 기록한다.
-     * 그림 채움은 항상, 전시실 완료는 그 전시실 카드를 모두 모았을 때, 완주는 수집 대상 카드를 모두 모았을 때 남긴다.
+     * 새로 모은 유물을 기록한다.
+     * 그림 채움은 항상, 전시실 완료는 그 전시실 유물을 모두 모았을 때, 완주는 수집 대상 유물을 모두 모았을 때 남긴다.
      *
-     * @param ownerCards 이 사람이 카드를 받기 전에 가지고 있던 카드 (방금 받은 issuedCard는 들어 있지 않고, 판정할 때 따로 더한다)
+     * @param ownerRecords 이 사람이 유물을 모으기 전까지 모은 기록 (방금 받은 newRecord는 들어 있지 않고, 판정할 때 따로 더한다)
      */
     @Transactional
-    public void recordNewCard(
+    public void recordNewCollection(
             Visitor visitor,
             List<Long> ownerVisitorIds,
-            Collection<CardCollection> ownerCards,
-            CardCollection issuedCard
+            Collection<CollectionRecord> ownerRecords,
+            CollectionRecord newRecord
     ) {
         List<Exhibit> collectibles = exhibitCatalog.findAllCollectible();
         Exhibit exhibit = collectibles.stream()
-                .filter(candidate -> candidate.getId().equals(issuedCard.getExhibitId()))
+                .filter(candidate -> candidate.getId().equals(newRecord.getExhibitId()))
                 .findFirst()
                 .orElse(null);
         if (exhibit == null) {
             return;
         }
 
-        LocalDateTime acquiredAt = issuedCard.getAcquiredAt();
+        LocalDateTime acquiredAt = newRecord.getAcquiredAt();
         String room = exhibit.getExhibitionRoom();
         hallRecordStore.store(HallRecord.fill(visitor, exhibit.getId(), room, acquiredAt));
 
-        Set<String> owned = ownerCards.stream()
-                .map(CardCollection::getExhibitId)
+        Set<String> owned = ownerRecords.stream()
+                .map(CollectionRecord::getExhibitId)
                 .collect(Collectors.toSet());
-        owned.add(issuedCard.getExhibitId());
+        owned.add(newRecord.getExhibitId());
 
         if (room != null && collectibles.stream()
                 .filter(candidate -> room.equals(candidate.getExhibitionRoom()))
@@ -80,40 +80,40 @@ public class HallOfFameService {
             hallRecordStore.store(HallRecord.roomDone(visitor, room, acquiredAt));
         }
 
-        List<CardCollection> allCards = new ArrayList<>(ownerCards);
-        allCards.add(issuedCard);
-        finishIfComplete(visitor, ownerVisitorIds, allCards, collectibles);
+        List<CollectionRecord> allRecords = new ArrayList<>(ownerRecords);
+        allRecords.add(newRecord);
+        finishIfComplete(visitor, ownerVisitorIds, allRecords, collectibles);
     }
 
     /**
-     * 로그인으로 여러 방문자의 카드가 합쳐졌을 때: 합친 카드가 수집 대상을 모두 채우면 그때 완주 번호를 준다.
+     * 로그인으로 여러 방문자의 기록이 합쳐졌을 때: 합친 기록이 수집 대상을 모두 채우면 그때 완주 번호를 준다.
      * 이미 완주 번호가 있으면 그대로 둔다.
      *
-     * @param ownerCards 이 사람(합쳐진 방문자 전부)이 가진 카드
+     * @param ownerRecords 이 사람(합쳐진 방문자 전부)이 모은 기록
      */
     @Transactional
-    public void finishIfComplete(Visitor visitor, List<Long> ownerVisitorIds, Collection<CardCollection> ownerCards) {
-        finishIfComplete(visitor, ownerVisitorIds, ownerCards, exhibitCatalog.findAllCollectible());
+    public void finishIfComplete(Visitor visitor, List<Long> ownerVisitorIds, Collection<CollectionRecord> ownerRecords) {
+        finishIfComplete(visitor, ownerVisitorIds, ownerRecords, exhibitCatalog.findAllCollectible());
     }
 
-    // 완주 시각은 수집 대상 카드 중 마지막으로 받은 시각, 탐험 시간은 첫 카드부터 그때까지
+    // 완주 시각은 수집 대상 유물 중 마지막으로 받은 시각, 탐험 시간은 첫 유물부터 그때까지
     private void finishIfComplete(
             Visitor visitor,
             List<Long> ownerVisitorIds,
-            Collection<CardCollection> ownerCards,
+            Collection<CollectionRecord> ownerRecords,
             List<Exhibit> collectibles
     ) {
         Set<String> collectibleIds = collectibles.stream().map(Exhibit::getId).collect(Collectors.toSet());
-        // 기기가 합쳐져 같은 유물 카드가 둘 이상이면 먼저 받은 시각만 센다.
-        Collection<LocalDateTime> acquiredTimes = ownerCards.stream()
-                .filter(card -> collectibleIds.contains(card.getExhibitId()))
+        // 기기가 합쳐져 같은 유물 기록이 둘 이상이면 먼저 받은 시각만 센다.
+        Collection<LocalDateTime> acquiredTimes = ownerRecords.stream()
+                .filter(collected -> collectibleIds.contains(collected.getExhibitId()))
                 .collect(Collectors.toMap(
-                        CardCollection::getExhibitId,
-                        CardCollection::getAcquiredAt,
+                        CollectionRecord::getExhibitId,
+                        CollectionRecord::getAcquiredAt,
                         (first, second) -> first.isBefore(second) ? first : second
                 ))
                 .values();
-        Set<String> owned = ownerCards.stream().map(CardCollection::getExhibitId).collect(Collectors.toSet());
+        Set<String> owned = ownerRecords.stream().map(CollectionRecord::getExhibitId).collect(Collectors.toSet());
         if (collectibleIds.isEmpty() || !owned.containsAll(collectibleIds)
                 || finisherStore.findFirstByVisitor_IdInOrderByIdAsc(ownerVisitorIds).isPresent()) {
             return;

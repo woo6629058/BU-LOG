@@ -1,9 +1,9 @@
-package com.bulog.domain.card.dto.res;
+package com.bulog.domain.collection.dto.res;
 
 import java.time.LocalDateTime;
 
-public record CardDetailResponseDTO(
-        Long cardId,
+public record CollectionRecordResponseDTO(
+        Long recordId,
         String exhibitId,
         String name,
         String era,

@@ -19,7 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/** 명예의 전당 실시간 기록 한 줄. 카드를 새로 받을 때 함께 쌓인다. */
+/** 명예의 전당 실시간 기록 한 줄. 유물을 새로 모을 때 함께 쌓인다. */
 @Getter
 @Entity
 @Table(name = "hall_records", indexes = @Index(name = "idx_hall_record_occurred_at", columnList = "occurred_at"))
